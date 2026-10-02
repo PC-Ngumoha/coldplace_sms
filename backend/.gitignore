@@ -1,0 +1,33 @@
+/vendor/
+/node_modules/
+
+# Environment and secrets
+.env
+.env.*
+!.env.example
+/auth.json
+
+# Build, test, and analysis artifacts
+/build/
+/dist/
+/coverage/
+.phpunit.cache/
+.phpunit.result.cache
+.php-cs-fixer.cache
+.phpstan/
+.phpunit-watcher.yml
+
+# Runtime files
+/logs/
+/var/cache/
+/var/log/
+*.pid
+
+# Logs
+*.log
+
+# IDE and operating system files
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
