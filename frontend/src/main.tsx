@@ -5,6 +5,19 @@ import { RouterProvider } from "react-router/dom";
 import "./index.css";
 import App from "./App.tsx";
 
+// Routes
+import {
+  Dashboard,
+  Pricing,
+  Sales,
+  Products,
+  Receiving,
+  Transfers,
+  Reports,
+  Damages,
+  Settings,
+} from "@/pages";
+
 const router = createBrowserRouter([
   {
     path: "/",
@@ -16,11 +29,39 @@ const router = createBrowserRouter([
     children: [
       {
         path: "",
-        element: <div>Home Page</div>,
+        element: <Dashboard />,
       },
       {
-        path: "about",
-        element: <div>About Page</div>,
+        path: "products",
+        element: <Products />,
+      },
+      {
+        path: "receiving",
+        element: <Receiving />,
+      },
+      {
+        path: "transfers",
+        element: <Transfers />,
+      },
+      {
+        path: "sales",
+        element: <Sales />,
+      },
+      {
+        path: "damage",
+        element: <Damages />,
+      },
+      {
+        path: "pricing",
+        element: <Pricing />,
+      },
+      {
+        path: "reports",
+        element: <Reports />,
+      },
+      {
+        path: "settings",
+        element: <Settings />,
       },
     ],
   },
