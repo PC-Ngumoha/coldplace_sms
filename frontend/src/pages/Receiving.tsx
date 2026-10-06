@@ -89,6 +89,40 @@ export default function Receiving() {
                     <span className="text-sm">———</span>
                   </td>
                 </tr>
+                <tr className="grid gap-3 px-4 py-2 lg:table-row lg:p-0">
+                  <td className="flex items-center justify-between gap-3 lg:table-cell lg:px-3 lg:py-3">
+                    <span className="text-xs font-medium uppercase tracking-wide text-slate-500 lg:hidden">
+                      Reference
+                    </span>
+                    <span className="font-mono text-sm font-semibold">
+                      TRF-0001
+                    </span>
+                  </td>
+                  <td className="flex items-center justify-between gap-3 lg:table-cell lg:px-3 lg:py-3">
+                    <span className="text-xs font-medium uppercase tracking-wide text-slate-500 lg:hidden">
+                      Date
+                    </span>
+                    <span className="text-sm">2026-09-24</span>
+                  </td>
+                  <td className="flex items-center justify-between gap-3 lg:table-cell lg:px-3 lg:py-3">
+                    <span className="text-xs font-medium uppercase tracking-wide text-slate-500 lg:hidden">
+                      Supplier
+                    </span>
+                    <span className="text-sm">Timothy foods</span>
+                  </td>
+                  <td className="flex items-center justify-between gap-3 lg:table-cell lg:px-3 lg:py-3">
+                    <span className="text-xs font-medium uppercase tracking-wide text-slate-500 lg:hidden">
+                      Lines
+                    </span>
+                    <span className="text-sm">Chicken, whole</span>
+                  </td>
+                  <td className="flex items-center justify-between gap-3 lg:table-cell lg:px-3 lg:py-3 text-right">
+                    <span className="text-xs font-medium uppercase tracking-wide text-slate-500 lg:hidden">
+                      Damaged Lines
+                    </span>
+                    <span className="text-sm">———</span>
+                  </td>
+                </tr>
               </tbody>
             </table>
           </div>
