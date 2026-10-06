@@ -57,7 +57,7 @@ export default function Products() {
           aria-label="Product list"
           className="overflow-x-auto rounded-2xl border border-lightest-teal-blue bg-white"
         >
-          <div className="hidden overflow-x-auto md:block p-5">
+          <div className="hidden overflow-x-auto lg:block p-5">
             <table className="w-full min-w-[680px] table-fixed border-collapse text-sm lg:min-w-[760px]">
               <thead>
                 <tr
@@ -110,8 +110,8 @@ export default function Products() {
               </tbody>
             </table>
           </div>
-          {/* Mobile view */}
-          <ul className="divide-y divide-lighter-teal-blue md:hidden">
+          {/* Mobile & Tablet view */}
+          <ul className="divide-y divide-lighter-teal-blue lg:hidden">
             {products.map((product) => (
               <li key={product.code} className="p-4 sm:p-5">
                 <div className="flex items-start justify-between gap-3">
@@ -130,7 +130,7 @@ export default function Products() {
                     Active
                   </span>
                 </div>
-                <dl className="mt-4 grid grid-cols-2 gap-x-4 gap-y-3 text-sm">
+                <dl className="mt-4 grid grid-cols-2 md:grid-cols-3 gap-x-4 gap-y-3 text-sm">
                   <div>
                     <dt className="text-xs text-slate-500">Category</dt>
                     <dd className="mt-1">{product.category}</dd>
