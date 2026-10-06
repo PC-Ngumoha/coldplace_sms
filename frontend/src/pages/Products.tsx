@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button";
+import { Plus } from "lucide-react";
 
 export default function Products() {
   const products = [
@@ -33,23 +34,24 @@ export default function Products() {
   ];
 
   return (
-    <main className="min-h-screen bg-[#edf4f4] px-4 py-5 text-slate-900 sm:px-1 sm:py-4">
+    <main className="min-h-screen bg-lightest-teal-blue px-4 py-5 text-slate-900 sm:px-1 sm:py-4">
       <div className="mx-auto max-w-7xl">
         <header className="mb-4 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <h1 className="text-2xl font-semibold leading-7">Products</h1>
-            <p className="mt-1 text-sm text-slate-500">
+            <h1 className="text-xl md:text-2xl font-semibold leading-7">
+              Products
+            </h1>
+            <p className="mt-1 text-[12px] md:text-[16px] text-slate-500">
               Product setup, units, and carton conversion
             </p>
           </div>
-          <Button className="inline-flex w-full shrink-0 items-center justify-center gap-2 rounded-xl bg-teal-blue p-5 text-sm font-semibold text-white transition hover:bg-teal-900 focus:outline-none focus:ring-2 focus:ring-teal-700 focus:ring-offset-2 sm:w-auto">
-            <span
-              aria-hidden="true"
-              className="text-xl font-light leading-none"
-            >
-              +
-            </span>
-            New product
+          <Button
+            className="inline-flex w-full shrink-0 items-center justify-center gap-2 rounded-xl
+           bg-teal-blue p-5 text-sm font-semibold text-white transition hover:bg-teal-900 
+           focus:outline-none focus:ring-2 focus:ring-teal-700 focus:ring-offset-2 sm:w-auto"
+          >
+            <Plus size={18} />
+            <span>New product</span>
           </Button>
         </header>
 
@@ -77,7 +79,7 @@ export default function Products() {
                 {products.map((product) => (
                   <tr
                     key={product.code}
-                    className="h-14 border-b border-[#edf1f2] last:border-b-0 text-[10px] lg:text-[13px]"
+                    className="h-14 border-b border-lightest-teal-blue last:border-b-0 text-[10px] lg:text-[13px]"
                   >
                     <td className="px-2 font-mono lg:px-3">{product.code}</td>
                     <td className="px-2 font-medium lg:px-3">{product.name}</td>

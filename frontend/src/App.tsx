@@ -58,7 +58,7 @@ export default function App() {
             </div>
           </div>
         </div>
-        <div className="flex items-center gap-2.5 text-[10px] md:text-[16px] tracking-wider md:tracking-normal ">
+        <div className="flex items-center gap-2.5 text-[12px] md:text-[16px] tracking-wider md:tracking-normal ">
           <span
             className="inline-flex h-11 items-center rounded-md border border-teal-blue bg-darker-teal-blue px-4
            font-medium text-white"
@@ -89,7 +89,7 @@ export default function App() {
                   key={label}
                   to={to}
                   className={`flex flex-col md:flex-row h-11 items-center justify-center md:justify-start 
-                    gap-1 md:gap-3 rounded-xl px-4 text-[7px] md:text-[14px]
+                    gap-1 md:gap-3 rounded-xl px-4 text-[9px] md:text-[14px]
                     font-medium transition-colors ${
                       active
                         ? "text-teal-blue md:bg-teal-blue md:text-white"

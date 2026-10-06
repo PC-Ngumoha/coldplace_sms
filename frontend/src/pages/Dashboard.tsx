@@ -23,7 +23,7 @@ export default function Dashboard() {
     <main className="min-h-screen bg-slate-100 p-5 font-sans text-slate-900 max-sm:px-1 max-sm:py-4">
       <header>
         <h1 className="mb-1 text-xl md:text-2xl font-semibold">Dashboard</h1>
-        <p className="text-[10px] md:text-[16px] text-slate-500">
+        <p className="text-[12px] md:text-[16px] text-slate-500">
           Signed in as Administrator · 2026-10-05 · all locations
         </p>
       </header>
@@ -42,7 +42,8 @@ export default function Dashboard() {
               {metric.label}
             </div>
             <div
-              className={`mt-2.5 text-[26px] leading-none text-slate-950 max-sm:text-[23px]${metric.warning ? " text-amber-700" : ""}`}
+              className={`mt-2.5 text-[26px] leading-none text-slate-950 
+                max-sm:text-[23px]${metric.warning ? " text-amber-700" : ""}`}
             >
               {metric.value}
             </div>
@@ -61,15 +62,19 @@ export default function Dashboard() {
           </p>
         </div>
         <div className="overflow-x-auto">
-          <table className="w-full border-collapse text-left">
+          <table className="w-full min-w-max border-collapse text-left">
             <thead>
               <tr>
-                <th className="border-y border-slate-200 px-3 py-[11px] text-[8px] md:text-[13px] font-medium uppercase text-slate-400">
+                <th
+                  className="border-y border-slate-200 px-3 py-[11px] text-[8px] md:text-[13px] font-medium uppercase
+                 text-slate-400"
+                >
                   Product
                 </th>
                 {locations.map((location) => (
                   <th
-                    className="border-y border-slate-200 px-3 py-[11px] text-right text-[8px] md:text-[13px] font-medium uppercase text-slate-400"
+                    className="border-y border-slate-200 px-3 py-[11px] text-right text-[8px] md:text-[13px] font-medium 
+                    uppercase text-slate-400"
                     key={location}
                   >
                     {location} (kg)
@@ -96,6 +101,13 @@ export default function Dashboard() {
               ))}
             </tbody>
           </table>
+          {/* Inform user to swipe for more content on mobile screens. */}
+          <p
+            className="flex justify-end px-2 py-4 italic text-gray-400 tracking-widest text-[8px] md:text-[12px]
+          font-semibold font-mono md:hidden"
+          >
+            swipe to view more
+          </p>
         </div>
       </section>
 
