@@ -47,7 +47,7 @@ export default function Reports() {
 
   return (
     <main
-      className="min-h-screen border border-lighter-teal-blue bg-lightest-teal-blue px-4 py-6 text-slate-900
+      className="min-h-screen px-4 py-6 text-slate-900
     sm:px-6 lg:px-8"
     >
       <div className="mx-auto max-w-[1440px]">

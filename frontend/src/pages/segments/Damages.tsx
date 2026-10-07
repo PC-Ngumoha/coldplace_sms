@@ -37,13 +37,13 @@ export default function Damages() {
   }
 
   return (
-    <main className="min-h-screen bg-lightest-teal-blue px-2 py-4 text-slate-900 lg:px-8">
+    <main className="min-h-screen px-2 py-4 text-slate-900 lg:px-8">
       <div className="mx-auto max-w-[1440px]">
         <header className="mb-4">
-          <h1 className="text-xl md:text-2xl font-semibold tracking-tight">
+          <h1 className="text-xl md:text-2xl font-semibold leading-7">
             Damage &amp; loss
           </h1>
-          <p className="mt-1 text-[12px] text-slate-400 md:text-base">
+          <p className="mt-1 text-sm text-slate-400">
             Transit damage is logged at receiving; spoilage is recorded here and
             approved before it reduces stock
           </p>

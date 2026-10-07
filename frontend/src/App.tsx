@@ -38,7 +38,7 @@ export default function App() {
   return (
     <div
       className="flex  h-screen retro-mobile:h-fit flex-col overflow-auto border border-slate-200 
-    bg-lightest-teal-blue text-slate-900"
+      bg-lightest-teal-blue text-slate-900"
     >
       <header
         className="flex flex-col md:flex-row md:h-[73px] gap-3 md:gap-0 shrink-0 items-center justify-between 

@@ -1,12 +1,13 @@
-import Dashboard from "./Dashboard";
-import Pricing from "./Pricing";
-import Sales from "./Sales";
-import Transfers from "./Transfers";
-import Products from "./Products";
-import Receiving from "./Receiving";
-import Reports from "./Reports";
-import Damages from "./Damages";
-import Settings from "./Settings";
+import Dashboard from "./segments/Dashboard";
+import Pricing from "./segments/Pricing";
+import Sales from "./segments/Sales";
+import Transfers from "./segments/Transfers";
+import Products from "./segments/Products";
+import Receiving from "./segments/Receiving";
+import Reports from "./segments/Reports";
+import Damages from "./segments/Damages";
+import Settings from "./segments/Settings";
+import Login from "./routes/Login";
 
 export {
   Dashboard,
@@ -18,4 +19,5 @@ export {
   Reports,
   Damages,
   Settings,
+  Login,
 };

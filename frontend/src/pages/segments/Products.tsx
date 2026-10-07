@@ -34,14 +34,14 @@ export default function Products() {
   ];
 
   return (
-    <main className="min-h-screen bg-lightest-teal-blue px-4 py-5 text-slate-900 sm:px-1 sm:py-4">
+    <main className="min-h-screen px-4 py-5 text-slate-900 sm:px-1 sm:py-4">
       <div className="mx-auto max-w-7xl">
         <header className="mb-4 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <h1 className="text-xl md:text-2xl font-semibold leading-7">
               Products
             </h1>
-            <p className="mt-1 text-[12px] md:text-[16px] text-slate-500">
+            <p className="mt-1 text-sm text-slate-400">
               Product setup, units, and carton conversion
             </p>
           </div>

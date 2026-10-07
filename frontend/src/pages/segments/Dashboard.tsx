@@ -20,10 +20,10 @@ export default function Dashboard() {
   ];
 
   return (
-    <main className="min-h-screen bg-slate-100 p-5 font-sans text-slate-900 max-sm:px-1 max-sm:py-4">
+    <main className="min-h-screen p-5 font-sans text-slate-900 max-sm:px-1 max-sm:py-4">
       <header>
         <h1 className="mb-1 text-xl md:text-2xl font-semibold">Dashboard</h1>
-        <p className="text-[12px] md:text-[16px] text-slate-500">
+        <p className="text-sm text-slate-400">
           Signed in as Administrator · 2026-10-05 · all locations
         </p>
       </header>
@@ -101,13 +101,6 @@ export default function Dashboard() {
               ))}
             </tbody>
           </table>
-          {/* Inform user to swipe for more content on mobile screens. */}
-          <p
-            className="flex justify-end px-2 py-4 italic text-gray-400 tracking-widest text-[8px] md:text-[12px]
-          font-semibold font-mono md:hidden"
-          >
-            swipe to view more
-          </p>
         </div>
       </section>
 

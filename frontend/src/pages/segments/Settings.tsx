@@ -123,12 +123,14 @@ export default function Settings() {
   );
 
   return (
-    <main className="min-h-screen bg-slate-100 px-4 py-6 text-slate-700 sm:px-6 lg:px-8">
+    <main className="min-h-screen px-4 py-6 text-slate-700 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-7xl">
         <header className="flex flex-col gap-5 sm:flex-row sm:items-start sm:justify-between">
           <div>
-            <h1 className="text-lg font-semibold text-teal-950">Settings</h1>
-            <p className="mt-1 text-xs text-slate-500">
+            <h1 className="text-2xl font-semibold leading-7 text-teal-950">
+              Settings
+            </h1>
+            <p className="mt-1 text-sm text-slate-400">
               All admin settings are handled at this point.
             </p>
           </div>

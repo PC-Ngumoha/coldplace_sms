@@ -5,12 +5,12 @@ export default function Sales() {
   const businessDate = "2026-10-06";
 
   return (
-    <main className="min-h-screen bg-lightest-teal-blue px-2 py-5 text-slate-900 lg:px-5">
+    <main className="min-h-screen px-2 py-5 text-slate-900 lg:px-5">
       <div className="mx-auto w-full max-w-[1500px]">
         <header className="mb-4 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="md:w-1/3">
-            <h1 className="text-2xl font-semibold leading-tight">Sales</h1>
-            <p className="mt-1 text-sm text-slate-500">
+            <h1 className="text-2xl font-semibold leading-7">Sales</h1>
+            <p className="mt-1 text-sm text-slate-400">
               Record sales as they happen, then generate a report for any period
             </p>
           </div>

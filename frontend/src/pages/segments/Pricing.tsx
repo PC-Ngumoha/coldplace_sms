@@ -3,11 +3,11 @@ import { Check } from "lucide-react";
 
 export default function Pricing() {
   return (
-    <main className="min-h-screen bg-lightest-teal-blue px-4 py-6 text-slate-900 sm:px-6 lg:px-8">
+    <main className="min-h-screen px-4 py-6 text-slate-900 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-7xl">
         <header className="mb-5">
-          <h1 className="text-2xl font-semibold tracking-tight">Pricing</h1>
-          <p className="mt-1 text-sm text-slate-500">
+          <h1 className="text-2xl font-semibold leading-7">Pricing</h1>
+          <p className="mt-1 text-sm text-slate-400">
             One selling price per product, set by the Central Area — applies
             automatically at Gwarimpa and Mpape
           </p>

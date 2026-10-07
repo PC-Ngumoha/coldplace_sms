@@ -16,6 +16,7 @@ import {
   Reports,
   Damages,
   Settings,
+  Login,
 } from "@/pages";
 
 const router = createBrowserRouter([
@@ -64,6 +65,10 @@ const router = createBrowserRouter([
         element: <Settings />,
       },
     ],
+  },
+  {
+    path: "/login",
+    element: <Login />,
   },
 ]);
 
