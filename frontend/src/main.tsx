@@ -17,6 +17,7 @@ import {
   Damages,
   Settings,
   Login,
+  NotFound,
 } from "@/pages";
 
 const router = createBrowserRouter([
@@ -69,6 +70,10 @@ const router = createBrowserRouter([
   {
     path: "/login",
     element: <Login />,
+  },
+  {
+    path: "*",
+    element: <NotFound />,
   },
 ]);
 

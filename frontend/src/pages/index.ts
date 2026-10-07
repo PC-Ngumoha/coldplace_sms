@@ -8,6 +8,7 @@ import Reports from "./segments/Reports";
 import Damages from "./segments/Damages";
 import Settings from "./segments/Settings";
 import Login from "./routes/Login";
+import NotFound from "./routes/NotFound";
 
 export {
   Dashboard,
@@ -20,4 +21,5 @@ export {
   Damages,
   Settings,
   Login,
+  NotFound,
 };
