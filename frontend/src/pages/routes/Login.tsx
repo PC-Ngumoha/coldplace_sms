@@ -8,7 +8,7 @@ export default function Login() {
     <main className="min-h-screen bg-[#f5f6f8] font-sans text-slate-900 lg:grid lg:grid-cols-2">
       <section className="relative hidden min-h-screen overflow-hidden bg-slate-800 lg:block">
         <img
-          src="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=1800&q=80"
+          src="https://images.unsplash.com/photo-1662320154145-7263e998e7a2?q=80&w=735&auto=format&fit=crop"
           alt="Contemporary building facade"
           fetchPriority="high"
           className="absolute inset-0 h-full w-full object-cover"
