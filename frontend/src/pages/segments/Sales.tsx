@@ -1,8 +1,31 @@
 import { Button } from "@/components/ui/button";
-import { Plus, FileChartColumnIncreasing } from "lucide-react";
+import { Plus, FileChartColumnIncreasing, X, Check } from "lucide-react";
+import { useState } from "react";
 
 export default function Sales() {
   const businessDate = "2026-10-06";
+  const [isOpen, setIsOpen] = useState(false);
+  const [saleItems, setSaleItems] = useState([
+    { product: "", quantity: "", unit: "kg", price: "" },
+  ]);
+
+  const updateSaleItem = (
+    index: number,
+    field: "product" | "quantity" | "unit" | "price",
+    value: string,
+  ) => {
+    setSaleItems((items) =>
+      items.map((item, itemIndex) =>
+        itemIndex === index ? { ...item, [field]: value } : item,
+      ),
+    );
+  };
+
+  const saleTotal = saleItems.reduce(
+    (total, item) =>
+      total + (Number(item.quantity) || 0) * (Number(item.price) || 0),
+    0,
+  );
 
   return (
     <main className="min-h-screen px-2 py-5 text-slate-900 lg:px-5">
@@ -19,6 +42,7 @@ export default function Sales() {
               className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl 
               bg-teal-blue px-5 text-sm font-semibold text-white transition 
               hover:bg-darker-teal-blue focus:outline-none focus:ring-2 focus:ring-teal-blue focus:ring-offset-2"
+              onClick={() => setIsOpen(true)}
             >
               <Plus size={18} />
               <span>Create a sale</span>
@@ -67,6 +91,157 @@ export default function Sales() {
             </span>
           </div>
         </section>
+
+        {/* Add Sale Form. */}
+        {isOpen && (
+          <form
+            className="mb-5 overflow-hidden rounded-2xl border border-teal-blue bg-white"
+            onSubmit={(event) => {
+              event.preventDefault();
+              setIsOpen(false);
+            }}
+          >
+            <div className="flex items-center justify-between border-b border-slate-200 px-5 py-4">
+              <div>
+                <h2 className="font-semibold text-slate-900">Create a sale</h2>
+                <p className="mt-0.5 text-sm text-slate-500">
+                  Central Area · {businessDate}
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsOpen(false)}
+                className="inline-flex items-center gap-2 rounded-lg px-2 py-1 text-sm text-slate-600 hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-teal-blue"
+              >
+                <X size={16} aria-hidden="true" />
+                <span>Close</span>
+              </button>
+            </div>
+
+            <div className="space-y-3 p-4 sm:p-5">
+              {saleItems.map((item, index) => (
+                <div
+                  key={index}
+                  className="grid grid-cols-1 gap-3 rounded-xl bg-[#eef3f3] p-3 sm:grid-cols-2 
+                  lg:grid-cols-[minmax(180px,1.35fr)_minmax(140px,1fr)_minmax(100px,.6fr)_minmax(160px,1fr)_32px] 
+                  lg:items-center"
+                >
+                  <label className="flex flex-col gap-1.5 text-sm text-slate-600">
+                    Product
+                    <select
+                      value={item.product}
+                      onChange={(event) =>
+                        updateSaleItem(index, "product", event.target.value)
+                      }
+                      className="h-11 w-full rounded-lg border border-slate-200 bg-white px-3 text-base 
+                      text-slate-900 outline-none focus:border-teal-blue focus:ring-2 focus:ring-teal-blue/20"
+                    >
+                      <option value="">Select fish, chicken, etc…</option>
+                      <option value="Fish">Fish</option>
+                      <option value="Chicken">Chicken</option>
+                    </select>
+                  </label>
+                  <label className="flex flex-col gap-1.5 text-sm text-slate-600">
+                    Quantity
+                    <input
+                      type="number"
+                      min="0"
+                      step="any"
+                      value={item.quantity}
+                      onChange={(event) =>
+                        updateSaleItem(index, "quantity", event.target.value)
+                      }
+                      className="h-11 w-full rounded-lg border border-slate-200 bg-white px-3 text-base 
+                      text-slate-900 outline-none focus:border-teal-blue focus:ring-2 focus:ring-teal-blue/20"
+                    />
+                  </label>
+                  <label className="flex flex-col gap-1.5 text-sm text-slate-600">
+                    Unit
+                    <select
+                      value={item.unit}
+                      onChange={(event) =>
+                        updateSaleItem(index, "unit", event.target.value)
+                      }
+                      className="h-11 w-full rounded-lg border border-slate-200 bg-white px-3 text-base 
+                      text-slate-900 outline-none focus:border-teal-blue focus:ring-2 focus:ring-teal-blue/20"
+                    >
+                      <option value="kg">kg</option>
+                      <option value="cartons">Cartons</option>
+                    </select>
+                  </label>
+                  <label className="flex flex-col gap-1.5 text-sm text-slate-600">
+                    Sale price (₦)
+                    <input
+                      type="number"
+                      min="0"
+                      step="any"
+                      value={item.price}
+                      onChange={(event) =>
+                        updateSaleItem(index, "price", event.target.value)
+                      }
+                      className="h-11 w-full rounded-lg border border-slate-200 bg-white px-3 text-base 
+                      text-slate-900 outline-none focus:border-teal-blue focus:ring-2 focus:ring-teal-blue/20"
+                    />
+                    <span className="text-xs text-slate-400">
+                      No set price — enter manually
+                    </span>
+                  </label>
+                  <button
+                    type="button"
+                    aria-label="Remove product"
+                    disabled={saleItems.length === 1}
+                    onClick={() =>
+                      setSaleItems((items) =>
+                        items.filter((_, itemIndex) => itemIndex !== index),
+                      )
+                    }
+                    className="justify-self-end rounded p-1 text-slate-500 hover:bg-white 
+                    disabled:cursor-not-allowed disabled:opacity-40 lg:justify-self-center"
+                  >
+                    <X size={18} />
+                  </button>
+                </div>
+              ))}
+
+              <button
+                type="button"
+                onClick={() =>
+                  setSaleItems((items) => [
+                    ...items,
+                    { product: "", quantity: "", unit: "kg", price: "" },
+                  ])
+                }
+                className="inline-flex min-h-9 items-center gap-2 rounded-lg border border-slate-200 px-3 
+                text-sm font-medium text-slate-800 hover:bg-slate-50 focus:outline-none focus:ring-2 
+                focus:ring-teal-blue"
+              >
+                <Plus size={16} />
+                <span>Add another product</span>
+              </button>
+
+              <div className="flex flex-col gap-3 border-t border-slate-200 pt-4 sm:flex-row sm:items-center sm:justify-between">
+                <p className="text-sm text-slate-700">
+                  Sale total:{" "}
+                  <strong className="font-semibold">
+                    ₦
+                    {saleTotal.toLocaleString("en-NG", {
+                      minimumFractionDigits: 2,
+                    })}
+                  </strong>
+                </p>
+                <Button
+                  type="submit"
+                  className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-[#176879] 
+                  px-5 text-sm font-semibold text-white transition hover:bg-[#125664] focus:outline-none focus:ring-2 
+                  focus:ring-teal-blue focus:ring-offset-2"
+                >
+                  <Check size={18} />
+                  <span>Record sale</span>
+                </Button>
+              </div>
+            </div>
+          </form>
+        )}
 
         <section
           aria-labelledby="recorded-sales-title"
