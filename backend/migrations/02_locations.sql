@@ -1,4 +1,5 @@
 -- Create locations table & add 3 default locations
+USE coldplace;
 
 -- Create table to be compatible on MYSQL 5.7, 8.0 & MariaDB
 CREATE TABLE IF NOT EXISTS locations (
