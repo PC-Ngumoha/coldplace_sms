@@ -6,23 +6,24 @@ define('APP_ROOT', dirname(__DIR__));
 
 require APP_ROOT . '/vendor/autoload.php';
 
-use Psr\Http\Message\ServerRequestInterface as Request;
-use Psr\Http\Message\ResponseInterface as Response;
 use Slim\Factory\AppFactory;
 
 use App\Middleware\AddJsonToResponse;
+use App\Middleware\CorsMiddleware;
+
+$dotenv = Dotenv\Dotenv::createImmutable(APP_ROOT);
+$dotenv->load();
+
+$allowedOrigins = array_filter(array_map('trim', explode(',', $_ENV['ALLOWED_ORIGINS'] ?? '')));
 
 $app = AppFactory::create();
 
+$app->addBodyParsingMiddleware();
+$app->addErrorMiddleware(true, true, true);
+
 $app->add(new AddJsonToResponse);
+$app->add(new CorsMiddleware($allowedOrigins));
 
-$app->get('/testing', function (Request $request, Response $response) {
-    $body = [
-        "message" => "Hello World!"
-    ];
-
-    $response->getBody()->write(json_encode($body));
-    return $response;
-});
+(require APP_ROOT . '/public/routes.php')($app);
 
 $app->run();

@@ -11,6 +11,7 @@ import {
   Truck,
   Settings,
 } from "lucide-react";
+// import { useEffect } from "react";
 // import { useState } from "react";
 import { Link, Outlet, useLocation } from "react-router";
 
@@ -34,6 +35,18 @@ const locations = [
 
 export default function App() {
   const location = useLocation();
+
+  // Testing purposes - Enable connection to backend
+  // useEffect(() => {
+  //   async function testConnection() {
+  //     const response = await fetch("http://localhost:8080/testing");
+  //     const data = await response.json();
+
+  //     console.log(data);
+  //   }
+
+  //   testConnection();
+  // }, []);
 
   return (
     <div
