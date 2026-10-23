@@ -5,6 +5,7 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
 use Slim\Routing\RouteCollectorProxy;
 
+use App\Middleware\JwtAuthMiddleware;
 
 
 return function (SlimApp $app) {
@@ -24,7 +25,7 @@ return function (SlimApp $app) {
         $group->post('/users', App\Controllers\Users::class . ':create');
 
         $group->get('/users', App\Controllers\Users::class . ':list');
-    });
+    })->add(new JwtAuthMiddleware($_ENV['JWT_SECRET']));
 
-    $app->post('/auth/login', App\Controllers\Auth::class . ':login');
+    $app->post('/api/auth/login', App\Controllers\Auth::class . ':login');
 };
