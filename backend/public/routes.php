@@ -3,8 +3,8 @@
 use Slim\App as SlimApp;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
+use Slim\Routing\RouteCollectorProxy;
 
-use App\Constants\Roles;
 
 
 return function (SlimApp $app) {
@@ -18,9 +18,13 @@ return function (SlimApp $app) {
         return $response;
     });
 
-    $app->get('/api/locations', App\Controllers\Locations::class . ':list');
+    $app->group('/api', function (RouteCollectorProxy $group) {
+        $group->get('/locations', App\Controllers\Locations::class . ':list');
 
-    $app->post('/api/users', App\Controllers\Users::class . ':create');
+        $group->post('/users', App\Controllers\Users::class . ':create');
 
-    $app->get('/api/users', App\Controllers\Users::class . ':list');
+        $group->get('/users', App\Controllers\Users::class . ':list');
+    });
+
+    $app->post('/auth/login', App\Controllers\Auth::class . ':login');
 };
