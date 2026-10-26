@@ -44,4 +44,44 @@ class Users
         $result = $this->repo->addUser($body);
         return $this->json($result, 201);
     }
+
+    /**
+     * TODO: New password should have some criteria for validation.
+     */
+    public function changePassword(Request $req, Response $res, array $args): Response
+    {
+        $userId = (int) $args['id'];
+        $data = $req->getParsedBody();
+        $old = (string) $data['old_password'] ?? '';
+        $new = (string) $data['new_password'] ?? '';
+
+        $user = $this->repo->retrieveUser($userId);
+
+        if (!$user) {
+            return $this->json(['error' => 'Not found'], 404);
+        }
+
+        if (!$old || !password_verify($old, $user['password_hash'])) {
+            return $this->json(['error' => 'Password missing or incorrect'], 400);
+        }
+
+        // Create data
+        $updatedData = [];
+        foreach ($user as $key => $value) {
+            // Copy every field except the hashed password.
+            if ($key !== 'password_hash') {
+                $updatedData[$key] = $value;
+            }
+        }
+        $updatedData['password'] = $new;
+
+        $rows = $this->repo->updateUser($userId, $updatedData);
+
+        return $this->json([
+            'message' => 'Record updated',
+            'row_count' => $rows
+            ]);
+    }
+
+
 }

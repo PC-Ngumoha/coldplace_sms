@@ -9,7 +9,7 @@ CREATE TABLE IF NOT EXISTS locations (
     address                 VARCHAR(1000),
     status                  VARCHAR(255) NOT NULL DEFAULT 'active',
 
-    CONSTRAINT chk_status CHECK (status IN ('active', 'inactive'))
+    CONSTRAINT chk_loc_status CHECK (status IN ('active', 'inactive'))
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 

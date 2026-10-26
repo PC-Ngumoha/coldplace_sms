@@ -47,4 +47,33 @@ class UserRepository
 
         return $this->conn->query($sql)->fetchAll();
     }
+
+    public function retrieveUser(int $userId): array | bool {
+        $sql = 'SELECT * FROM users WHERE id = ?';
+        $stmt = $this->conn->prepare($sql);
+        $stmt->execute([$userId]);
+
+        return $stmt->fetch();
+    }
+
+    public function updateUser(int $userId, array $data): int {
+        $sql = 'UPDATE users SET name = ?, email = ?,
+                password_hash = ?, location_id = ?,
+                role = ?, status = ?, is_primary_handler = ?
+                WHERE id = ?';
+
+        $stmt = $this->conn->prepare($sql);
+        $stmt->execute([
+            $data['name'],
+            $data['email'],
+            password_hash($data['password'], PASSWORD_DEFAULT),
+            $data['location_id'],
+            $data['role'],
+            $data['status'],
+            $data['is_primary_handler'],
+            $userId
+        ]);
+
+        return $stmt->rowCount();
+    }
 }
