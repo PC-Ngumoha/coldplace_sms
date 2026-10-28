@@ -1,8 +1,30 @@
 import { Eye, Mail, Lock, EyeOff, ArrowRight } from "lucide-react";
-import { useState } from "react";
+import { useState, type SubmitEvent } from "react";
+import { isAxiosError } from "axios";
+import { useAuth } from "@/contexts/auth_context";
 
 export default function Login() {
+  const { login } = useAuth();
   const [isVisible, setIsVisible] = useState(false);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleLogin = async (evt: SubmitEvent<HTMLFormElement>) => {
+    evt.preventDefault();
+    setError(null);
+    setIsSubmitting(true);
+    try {
+      await login({ email, password });
+    } catch (err) {
+      setError(
+        isAxiosError(err) && err.response?.status === 401
+          ? "Incorrect email or password."
+          : "Couldn't sign in. Check your internet & try again.",
+      );
+    }
+  };
 
   return (
     <main className="min-h-screen bg-[#f5f6f8] font-sans text-slate-900 lg:grid lg:grid-cols-2">
@@ -47,10 +69,16 @@ export default function Login() {
             </p>
           </div>
 
-          <form
-            className="space-y-4"
-            onSubmit={(event) => event.preventDefault()}
-          >
+          {error && (
+            <div
+              role="alert"
+              className="mb-4 rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700"
+            >
+              {error}
+            </div>
+          )}
+
+          <form className="space-y-4" onSubmit={handleLogin}>
             <div>
               <label htmlFor="email" className="mb-2 block text-sm font-medium">
                 Email Address <span className="text-red-500">*</span>
@@ -67,6 +95,8 @@ export default function Login() {
                   autoComplete="email"
                   placeholder="name@thecoldplace.com"
                   className="w-full bg-transparent text-sm outline-none placeholder:text-slate-400"
+                  value={email}
+                  onChange={(evt) => setEmail(evt.target.value)}
                 />
               </div>
             </div>
@@ -89,6 +119,8 @@ export default function Login() {
                   autoComplete="current-password"
                   placeholder="••••••••"
                   className="w-full bg-transparent text-sm outline-none placeholder:text-slate-400"
+                  value={password}
+                  onChange={(evt) => setPassword(evt.target.value)}
                 />
                 <button
                   type="button"
@@ -124,7 +156,14 @@ export default function Login() {
               text-white shadow-sm transition hover:bg-darker-teal-blue focus:outline-none focus:ring-2 focus:ring-teal-blue
               focus:ring-offset-2"
             >
-              <span>Sign in</span> <ArrowRight size={18} />
+              {isSubmitting ? (
+                <span>Loading ...</span>
+              ) : (
+                <>
+                  <span>Sign in</span>
+                  <ArrowRight size={18} />
+                </>
+              )}
             </button>
           </form>
         </div>

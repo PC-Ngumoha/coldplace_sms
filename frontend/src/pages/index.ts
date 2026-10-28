@@ -9,8 +9,10 @@ import Damages from "./segments/Damages";
 import Settings from "./segments/Settings";
 import Login from "./routes/Login";
 import NotFound from "./routes/NotFound";
+import Home from "./Home";
 
 export {
+  Home,
   Dashboard,
   Pricing,
   Sales,
