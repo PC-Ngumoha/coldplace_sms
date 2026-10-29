@@ -13,6 +13,9 @@ class Users
 {
     use \App\Helpers\ResponseHelper;
 
+    private const ACTIVE = 'active';
+    private const INACTIVE = 'inactive';
+
     public function __construct(private UserRepository $repo) {}
 
     public function list(Request $req, Response $res): Response
@@ -100,5 +103,48 @@ class Users
             ]);
     }
 
+    public function deactivate(Request $req, Response $res, array $args): Response {
+        $userId = (int) $args['id'];
+        $rows = 0;
+
+        $user = $this->repo->retrieveUser($userId);
+
+        if (!$user) {
+            return $this->json(['error' => 'Not found'], 404);
+        }
+
+        if ($user['status'] === self::ACTIVE) {
+            $data = $this->filterOutput(source: $user, excluded: ['password_hash']);
+            $data['status'] = self::INACTIVE;
+            $rows = $this->repo->updateUser($userId, $data);
+        }
+
+        return $this->json([
+            'message' => 'Record updated',
+            'row_count' => $rows,
+        ]);
+    }
+
+    public function activate(Request $req, Response $res, array $args): Response {
+        $userId = (int) $args['id'];
+        $rows = 0;
+
+        $user = $this->repo->retrieveUser($userId);
+
+        if (!$user) {
+            return $this->json(['error' => 'Not found'], 404);
+        }
+
+        if ($user['status'] === self::INACTIVE) {
+            $data = $this->filterOutput(source: $user, excluded: ['password_hash']);
+            $data['status'] = self::ACTIVE;
+            $rows = $this->repo->updateUser($userId, $data);
+        }
+
+        return $this->json([
+            'message' => 'Record updated',
+            'row_count' => $rows,
+        ]);
+    }
 
 }

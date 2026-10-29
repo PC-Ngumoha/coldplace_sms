@@ -19,4 +19,28 @@ class LocationRepository
 
         return $this->conn->query($sql)->fetchAll();
     }
+
+    public function retrieveLocation(int $locationId): array | bool {
+        $sql = 'SELECT * FROM locations WHERE id = ?';
+
+        $stmt = $this->conn->prepare($sql);
+        $stmt->execute([$locationId]);
+
+        return $stmt->fetch();
+    }
+
+    public function updateLocation(int $locationId, array $data): int {
+        $sql = 'UPDATE locations SET name = ?, address = ?, status = ?
+                WHERE id = ?';
+        
+        $stmt = $this->conn->prepare($sql);
+        $stmt->execute([
+            $data['name'],
+            $data['address'],
+            $data['status'],
+            $locationId
+        ]);
+
+        return $stmt->rowCount();
+    }
 }

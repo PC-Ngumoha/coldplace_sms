@@ -59,20 +59,23 @@ export default function Settings() {
   const [showAddLocation, setShowAddLocation] = useState(false);
   const [menu, setMenu] = useState<string | null>(null);
 
+  async function fetchUsers() {
+    const result = await userApi.list();
+    setUsers(result);
+  }
+
+  async function fetchLocations() {
+    const result = await locationApi.list();
+    setLocations(result);
+  }
+
   useEffect(() => {
-    async function fetchUsers() {
-      const result = await userApi.list();
-      setUsers(result);
+    async function fetchData() {
+      fetchUsers();
+      fetchLocations();
     }
 
-    async function fetchLocations() {
-      const result = await locationApi.list();
-      setLocations(result);
-    }
-
-    fetchUsers();
-    fetchLocations();
-    console.log(users);
+    fetchData();
   }, []);
 
   const filteredUsers = useMemo(
@@ -221,6 +224,7 @@ export default function Settings() {
                           >
                             <EllipsisVertical size={16} />
                           </button>
+                          {/* TODO: Convert to shadcn dropdown for better readability */}
                           {menu === user.email && (
                             <div
                               className="absolute right-7 top-8 z-10 w-32 rounded-md border border-slate-200 bg-white 
@@ -232,14 +236,27 @@ export default function Settings() {
                               >
                                 Edit
                               </button>
-                              <button
-                                onClick={() => setMenu(null)}
-                                className="block w-full px-3 py-2 text-xs hover:bg-slate-50"
-                              >
-                                {user.status.toLowerCase() === "active"
-                                  ? "Deactivate"
-                                  : "Activate"}
-                              </button>
+                              {user.status.toLocaleLowerCase() === "active" ? (
+                                <button
+                                  onClick={async () => {
+                                    await userApi.deactivate(user.id);
+                                    await fetchUsers(); // Refetch users to see changes made
+                                  }}
+                                  className="block w-full px-3 py-2 text-xs hover:bg-slate-50"
+                                >
+                                  Deactivate
+                                </button>
+                              ) : (
+                                <button
+                                  onClick={async () => {
+                                    await userApi.activate(user.id);
+                                    await fetchUsers();
+                                  }}
+                                  className="block w-full px-3 py-2 text-xs hover:bg-slate-50"
+                                >
+                                  Activate
+                                </button>
+                              )}
                               <button
                                 onClick={() => setMenu(null)}
                                 className="block w-full px-3 py-2 text-xs hover:bg-slate-50"
@@ -321,14 +338,27 @@ export default function Settings() {
                               >
                                 Edit
                               </button>
-                              <button
-                                onClick={() => setMenu(null)}
-                                className="block w-full px-3 py-2 text-xs hover:bg-slate-50"
-                              >
-                                {location.status.toLowerCase() === "active"
-                                  ? "Deactivate"
-                                  : "Activate"}
-                              </button>
+                              {location.status.toLowerCase() === "active" ? (
+                                <button
+                                  onClick={async () => {
+                                    await locationApi.deactivate(location.id);
+                                    await fetchLocations(); // refetch locations to see changes made.
+                                  }}
+                                  className="block w-full px-3 py-2 text-xs hover:bg-slate-50"
+                                >
+                                  Deactivate
+                                </button>
+                              ) : (
+                                <button
+                                  onClick={async () => {
+                                    await locationApi.activate(location.id);
+                                    await fetchLocations();
+                                  }}
+                                  className="block w-full px-3 py-2 text-xs hover:bg-slate-50"
+                                >
+                                  Activate
+                                </button>
+                              )}
                               <button
                                 onClick={() => setMenu(null)}
                                 className="block w-full px-3 py-2 text-xs hover:bg-slate-50"
