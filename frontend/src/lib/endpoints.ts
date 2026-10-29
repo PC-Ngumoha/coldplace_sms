@@ -9,3 +9,7 @@ export const USER_PATHS = {
   list: "/api/users",
   create: "/api/users",
 };
+
+export const LOCATION_PATHS = {
+  list: "/api/locations",
+};

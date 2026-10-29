@@ -18,7 +18,8 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { ROLES, type RoleName } from "@/lib/definitions";
 import { userApi } from "@/services/Userapi";
-import type { User } from "@/types";
+import { locationApi } from "@/services/Locationapi";
+import type { User, Location } from "@/types";
 
 const roles: Array<{ name: RoleName; icon: LucideIcon }> = [
   {
@@ -47,59 +48,9 @@ const roles: Array<{ name: RoleName; icon: LucideIcon }> = [
   },
 ];
 
-// const users = [
-//   {
-//     name: "Abdulbasit Bello",
-//     email: "abdul@thecoldplace.com",
-//     role: "Administrator",
-//     status: "Active",
-//   },
-//   {
-//     name: "Sarah Jenkins",
-//     email: "s.jenkins@thecoldplace.com",
-//     role: "Manager",
-//     status: "Active",
-//   },
-//   {
-//     name: "Michael Chen",
-//     email: "m.chen@thecoldplace.com",
-//     role: "Staff",
-//     status: "Active",
-//   },
-//   {
-//     name: "Emma Watson",
-//     email: "emma.w@thecoldplace.com",
-//     role: "Technician",
-//     status: "Inactive",
-//   },
-//   {
-//     name: "David Smith",
-//     email: "d.smith@thecoldplace.com",
-//     role: "Staff",
-//     status: "Active",
-//   },
-// ];
-
-const locations = [
-  {
-    name: "The Cold Place — Main",
-    address: "Lagos, Nigeria",
-    status: "Active",
-  },
-  {
-    name: "The Cold Place — Ikeja",
-    address: "Ikeja, Nigeria",
-    status: "Active",
-  },
-  {
-    name: "The Cold Place — Lekki",
-    address: "Lekki, Nigeria",
-    status: "Inactive",
-  },
-];
-
 export default function Settings() {
   const [users, setUsers] = useState<User[]>([]);
+  const [locations, setLocations] = useState<Location[]>([]);
   const [tab, setTab] = useState<"Users & Roles" | "Locations">(
     "Users & Roles",
   );
@@ -114,7 +65,13 @@ export default function Settings() {
       setUsers(result);
     }
 
+    async function fetchLocations() {
+      const result = await locationApi.list();
+      setLocations(result);
+    }
+
     fetchUsers();
+    fetchLocations();
     console.log(users);
   }, []);
 
@@ -134,7 +91,7 @@ export default function Settings() {
           .toLowerCase()
           .includes(query.toLowerCase()),
       ),
-    [query],
+    [query, locations],
   );
 
   return (
@@ -217,6 +174,7 @@ export default function Settings() {
 
           <div className="mt-3 overflow-visible rounded-lg border border-slate-200/80 bg-white shadow-sm">
             {tab === "Users & Roles" ? (
+              // Display users
               <div className="overflow-x-auto rounded-lg">
                 <table className="w-full min-w-[680px] text-left">
                   <thead className="text-[9px] font-semibold uppercase tracking-wide text-slate-500">
@@ -307,6 +265,7 @@ export default function Settings() {
                 </table>
               </div>
             ) : (
+              // Display locations
               <div className="overflow-x-auto rounded-lg">
                 <table className="w-full min-w-[520px] text-left">
                   <thead className="text-[9px] font-semibold uppercase tracking-wide text-slate-500">
@@ -324,11 +283,16 @@ export default function Settings() {
                           {location.name}
                         </td>
                         <td className="px-5 py-3.5 text-slate-600">
-                          {location.address}
+                          {location.address ?? "_______"}
                         </td>
                         <td className="px-5 py-3.5">
                           <span
-                            className={`inline-flex rounded-md border px-1.5 py-0.5 text-[9px] font-semibold uppercase ${location.status === "Active" ? "border-teal-200 bg-teal-50 text-teal-700" : "border-slate-200 bg-slate-100 text-slate-600"}`}
+                            className={`inline-flex rounded-md border px-1.5 py-0.5 text-[9px] font-semibold uppercase 
+                              ${
+                                location.status === "active"
+                                  ? "border-teal-200 bg-teal-50 text-teal-700"
+                                  : "border-slate-200 bg-slate-100 text-slate-600"
+                              }`}
                           >
                             {location.status}
                           </span>

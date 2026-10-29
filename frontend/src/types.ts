@@ -5,7 +5,7 @@ export interface User {
   must_change_password: 1;
   name: string;
   role: string;
-  status: string;
+  status: "active" | "inactive";
 }
 
 export interface LoginResponse {
@@ -27,4 +27,12 @@ export interface AuthContextValue {
   status: AuthStatus;
   login: (credentials: LoginCredentials) => Promise<void>;
   logout: () => Promise<void>;
+}
+
+export interface Location {
+  id: number;
+  name: string;
+  address: string | null;
+  is_central: number;
+  status: "active" | "inactive";
 }
