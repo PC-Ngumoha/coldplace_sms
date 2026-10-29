@@ -11,12 +11,14 @@ import {
   Building2,
   Store,
   Eye,
+  type LucideIcon,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
+import { ROLES, type RoleName } from "@/lib/definitions";
 
-const roles = [
+const roles: Array<{ name: RoleName; icon: LucideIcon }> = [
   {
     name: "executive",
     icon: Crown,
@@ -26,7 +28,7 @@ const roles = [
     icon: BriefcaseBusiness,
   },
   {
-    name: "administrator",
+    name: "admin",
     icon: UserCog,
   },
   {
@@ -448,14 +450,13 @@ export default function Settings() {
                       <Label
                         key={role.name}
                         htmlFor={role.name}
-                        className="border border-lightest-teal-blue p-3 w-full flex
-                    rounded-lg shadow shadow-lighter-teal-blue text-slate-600
-                    has-data-checked:border-teal-blue has-data-checked:bg-lighter-teal-blue
-                    has-data-checked:font-semibold capitalize"
+                        className={`border border-lightest-teal-blue p-3 w-full flex
+                    rounded-lg shadow ${ROLES[role.name].color} ${ROLES[role.name].label}
+                    has-data-checked:font-semibold capitalize`}
                       >
                         <div className="w-full flex flex-col gap-3 items-center">
                           <Icon size={25} />
-                          <span>{role.name}</span>
+                          <span>{ROLES[role.name].display}</span>
                         </div>
 
                         <RadioGroupItem

@@ -27,6 +27,8 @@ return function (SlimApp $app) {
 
         $group->get('/users', App\Controllers\Users::class . ':list');
 
+        $group->get('/me', App\Controllers\Users::class . ':me');
+
         $group->patch('/users/{id:[0-9]+}/changePassword', App\Controllers\Users::class . ':changePassword');
     })->add(new JwtAuthMiddleware($_ENV['JWT_SECRET']));
 

@@ -25,7 +25,7 @@ export default function PageLoading() {
       </div>
 
       <div className="text-[12px] font-bold uppercase tracking-[.28em]">
-        Cold storage
+        Cold Place
       </div>
       <div className="mt-[9px] text-[14px] text-[#9bbdd0]">
         Keeping everything safe and sound

@@ -45,6 +45,31 @@ class Users
         return $this->json($result, 201);
     }
 
+    public function me(Request $req, Response $res): Response
+    {
+        $userId = $req->getAttribute('jwt')['sub']; // get user id from JWT
+
+        $user = $this->repo->retrieveUser($userId);
+
+        if (!$user) {
+            return $this->json(['error' => 'User not found'], 404);
+        }
+
+
+        // Filtering what is displayed. 
+        $payload = [
+            'email' => $user['email'],
+            'id' => $user['id'],
+            'is_primary_handler' => $user['is_primary_handler'],
+            'must_change_password' => $user['must_change_password'],
+            'name' => $user['name'],
+            'role' => $user['role'],
+            'status' => $user['status']
+        ];
+
+        return $this->json($payload);
+    }
+
     /**
      * TODO: New password should have some criteria for validation.
      */
