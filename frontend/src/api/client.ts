@@ -1,16 +1,11 @@
 import axios, { AxiosError, type InternalAxiosRequestConfig } from "axios";
 import { tokenStorage } from "./TokenStorage";
 import { type LoginResponse } from "@/types";
+import { AUTH_PATHS } from "@/lib/endpoints";
 
 const BASE_URL = import.meta.env.VITE_API_URL ?? "http://localhost:8080";
 
 // Endpoints
-export const AUTH_PATHS = {
-  login: "/api/auth/login",
-  refresh: "/api/auth/refresh",
-  logout: "/api/auth/logout",
-  me: "/api/me",
-};
 
 let accessToken: string | null = null;
 

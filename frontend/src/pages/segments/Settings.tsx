@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   UserPlus,
   MapPinPlus,
@@ -17,6 +17,8 @@ import { Button } from "@/components/ui/button";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { ROLES, type RoleName } from "@/lib/definitions";
+import { userApi } from "@/services/Userapi";
+import type { User } from "@/types";
 
 const roles: Array<{ name: RoleName; icon: LucideIcon }> = [
   {
@@ -45,38 +47,38 @@ const roles: Array<{ name: RoleName; icon: LucideIcon }> = [
   },
 ];
 
-const users = [
-  {
-    name: "Abdulbasit Bello",
-    email: "abdul@thecoldplace.com",
-    role: "Administrator",
-    status: "Active",
-  },
-  {
-    name: "Sarah Jenkins",
-    email: "s.jenkins@thecoldplace.com",
-    role: "Manager",
-    status: "Active",
-  },
-  {
-    name: "Michael Chen",
-    email: "m.chen@thecoldplace.com",
-    role: "Staff",
-    status: "Active",
-  },
-  {
-    name: "Emma Watson",
-    email: "emma.w@thecoldplace.com",
-    role: "Technician",
-    status: "Inactive",
-  },
-  {
-    name: "David Smith",
-    email: "d.smith@thecoldplace.com",
-    role: "Staff",
-    status: "Active",
-  },
-];
+// const users = [
+//   {
+//     name: "Abdulbasit Bello",
+//     email: "abdul@thecoldplace.com",
+//     role: "Administrator",
+//     status: "Active",
+//   },
+//   {
+//     name: "Sarah Jenkins",
+//     email: "s.jenkins@thecoldplace.com",
+//     role: "Manager",
+//     status: "Active",
+//   },
+//   {
+//     name: "Michael Chen",
+//     email: "m.chen@thecoldplace.com",
+//     role: "Staff",
+//     status: "Active",
+//   },
+//   {
+//     name: "Emma Watson",
+//     email: "emma.w@thecoldplace.com",
+//     role: "Technician",
+//     status: "Inactive",
+//   },
+//   {
+//     name: "David Smith",
+//     email: "d.smith@thecoldplace.com",
+//     role: "Staff",
+//     status: "Active",
+//   },
+// ];
 
 const locations = [
   {
@@ -97,6 +99,7 @@ const locations = [
 ];
 
 export default function Settings() {
+  const [users, setUsers] = useState<User[]>([]);
   const [tab, setTab] = useState<"Users & Roles" | "Locations">(
     "Users & Roles",
   );
@@ -105,6 +108,16 @@ export default function Settings() {
   const [showAddLocation, setShowAddLocation] = useState(false);
   const [menu, setMenu] = useState<string | null>(null);
 
+  useEffect(() => {
+    async function fetchUsers() {
+      const result = await userApi.list();
+      setUsers(result);
+    }
+
+    fetchUsers();
+    console.log(users);
+  }, []);
+
   const filteredUsers = useMemo(
     () =>
       users.filter((user) =>
@@ -112,7 +125,7 @@ export default function Settings() {
           .toLowerCase()
           .includes(query.toLowerCase()),
       ),
-    [query],
+    [query, users],
   );
   const filteredLocations = useMemo(
     () =>

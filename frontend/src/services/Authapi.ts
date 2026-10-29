@@ -1,4 +1,5 @@
-import { api, AUTH_PATHS } from "./client";
+import { api } from "@/api/client";
+import { AUTH_PATHS } from "@/lib/endpoints";
 import type { LoginResponse, LoginCredentials, User } from "@/types";
 
 export const authApi = {

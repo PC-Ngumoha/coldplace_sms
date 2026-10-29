@@ -19,7 +19,9 @@ class Users
     {
         $users = $this->repo->showAllUsers();
 
-        return $this->json($users);
+        $payload = $this->filterOutput(source: $users, excluded: ['password_hash', 'location_id']);
+
+        return $this->json($payload);
     }
 
     public function create(Request $req, Response $res): Response
@@ -55,17 +57,7 @@ class Users
             return $this->json(['error' => 'User not found'], 404);
         }
 
-
-        // Filtering what is displayed. 
-        $payload = [
-            'email' => $user['email'],
-            'id' => $user['id'],
-            'is_primary_handler' => $user['is_primary_handler'],
-            'must_change_password' => $user['must_change_password'],
-            'name' => $user['name'],
-            'role' => $user['role'],
-            'status' => $user['status']
-        ];
+        $payload = $this->filterOutput(source: $user, excluded: ['password_hash', 'location_id']);
 
         return $this->json($payload);
     }

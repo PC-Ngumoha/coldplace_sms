@@ -7,13 +7,13 @@ import {
   type ReactNode,
   useContext,
 } from "react";
-import { authApi } from "../auth/Authapi";
+import { authApi } from "../services/Authapi";
 import {
   refreshSession,
   registerOnForcedLogoutHandler,
   setAccessToken,
-} from "../auth/client";
-import { tokenStorage } from "../auth/TokenStorage";
+} from "../api/client";
+import { tokenStorage } from "../api/TokenStorage";
 import type { AuthStatus, LoginCredentials, User } from "../types";
 
 interface AuthContextValue {
