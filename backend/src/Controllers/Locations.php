@@ -10,8 +10,8 @@ use App\Repositories\LocationRepository;
 class Locations {
     use \App\Helpers\ResponseHelper;
 
-    private const ACTIVE = 'active';
-    private const INACTIVE = 'inactive';
+    public const ACTIVE = 'active';
+    public const INACTIVE = 'inactive';
 
     public function __construct(private LocationRepository $repo) {}
 
@@ -33,9 +33,7 @@ class Locations {
         }
 
         if ($location['status'] === self::ACTIVE) {
-            $data = $this->filterOutput(source: $location, excluded: ['is_central']);
-            $data['status'] = self::INACTIVE;
-            $rows = $this->repo->updateLocation($locationId, $data);
+            $rows = $this->repo->setStatus($locationId, self::INACTIVE);
         }
 
         return $this->json([
@@ -55,9 +53,7 @@ class Locations {
         }
 
         if ($location['status'] === self::INACTIVE) {
-            $data = $this->filterOutput(source: $location, excluded: ['is_central']);
-            $data['status'] = self::ACTIVE;
-            $rows = $this->repo->updateLocation($locationId, $data);
+            $rows = $this->repo->setStatus($locationId, self::ACTIVE);
         }
 
         return $this->json([

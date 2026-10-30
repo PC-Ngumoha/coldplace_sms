@@ -23,9 +23,16 @@ class Auth
 
         $user = $this->repo->retrieveUserByEmail($email);
 
-        if (!$user || !password_verify($password, $user['password_hash'])) {
+        if (!$user || !password_verify(trim($password), $user['password_hash'])) {
             return $this->json(['error' => 'Invalid credentials'], 401);
         }
+
+        if ($user['status'] === \App\Controllers\Users::INACTIVE) {
+            return $this->json([
+                'error' => 'Your account has been deactivated.'
+                ], 401);
+        }
+
 
         $refresh = $this->tokens->createRefreshToken($user['id']);
         return $this->json($this->tokenResponse($user, $refresh));
@@ -44,6 +51,12 @@ class Auth
         $user = $this->repo->retrieveUserById((int) $result['user_id']);
         if (!$user) {
             return $this->json(['error' => 'Invalid refresh token'], 401);
+        }
+
+        if ($user['status'] === \App\Controllers\Users::INACTIVE) {
+            // Revoke all tokens linked to this user.
+            $this->tokens->revokeAllByToken($result['refresh_token']);
+            return $this->json(['error' => 'Your account has been deactivated'], 401);
         }
 
         return $this->json($this->tokenResponse($user, $result['refresh_token']));

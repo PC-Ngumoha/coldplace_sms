@@ -6,7 +6,7 @@ CREATE TABLE IF NOT EXISTS users (
     id                      INT PRIMARY KEY AUTO_INCREMENT,
     name                    VARCHAR(255) NOT NULL,
     email                   VARCHAR(255) NOT NULL UNIQUE,
-    password_hash           VARCHAR(100),
+    password_hash           VARCHAR(255), -- Prevents truncation of the hash
     role                    VARCHAR(60) NOT NULL,
     location_id             INT,
     is_primary_handler      BOOLEAN NOT NULL DEFAULT false,

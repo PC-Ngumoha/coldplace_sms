@@ -20,7 +20,7 @@ export default function Login() {
     } catch (err) {
       setError(
         isAxiosError(err) && err.response?.status === 401
-          ? "Incorrect email or password."
+          ? err.response?.data.error
           : "Couldn't sign in. Check your internet & try again.",
       );
     }

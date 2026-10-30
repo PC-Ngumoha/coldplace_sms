@@ -36,3 +36,9 @@ export interface Location {
   is_central: number;
   status: "active" | "inactive";
 }
+
+export interface ProcessResponse {
+  error?: string;
+  message?: string;
+  row_count?: number;
+}

@@ -13,8 +13,9 @@ class Users
 {
     use \App\Helpers\ResponseHelper;
 
-    private const ACTIVE = 'active';
-    private const INACTIVE = 'inactive';
+    public const ACTIVE = 'active';
+    public const INACTIVE = 'inactive';
+    public const ROOT_ADMIN = 1;
 
     public function __construct(private UserRepository $repo) {}
 
@@ -82,20 +83,14 @@ class Users
         }
 
         if (!$old || !password_verify($old, $user['password_hash'])) {
-            return $this->json(['error' => 'Password missing or incorrect'], 400);
+            return $this->json(['error' => 'Password missing or incorrect'], 401);
         }
 
-        // Create data
-        $updatedData = [];
-        foreach ($user as $key => $value) {
-            // Copy every field except the hashed password.
-            if ($key !== 'password_hash') {
-                $updatedData[$key] = $value;
-            }
+        if ($new === '') {
+            return $this->json(['error' => 'New password required', 400]);
         }
-        $updatedData['password'] = $new;
 
-        $rows = $this->repo->updateUser($userId, $updatedData);
+        $rows = $this->repo->updatePassword($userId, $new);
 
         return $this->json([
             'message' => 'Record updated',
@@ -105,7 +100,15 @@ class Users
 
     public function deactivate(Request $req, Response $res, array $args): Response {
         $userId = (int) $args['id'];
+        $owner = (int) $req->getAttribute('jwt')['sub'];
         $rows = 0;
+
+
+        // You can't deactivate the Root Admin or your own account
+        if ($userId === self::ROOT_ADMIN || $userId === $owner) {
+            return $this->json(['error' => 'This operation is forbidden.'],
+            403);
+        }
 
         $user = $this->repo->retrieveUser($userId);
 
@@ -114,9 +117,7 @@ class Users
         }
 
         if ($user['status'] === self::ACTIVE) {
-            $data = $this->filterOutput(source: $user, excluded: ['password_hash']);
-            $data['status'] = self::INACTIVE;
-            $rows = $this->repo->updateUser($userId, $data);
+            $rows = $this->repo->setStatus($userId, self::INACTIVE);
         }
 
         return $this->json([
@@ -127,7 +128,14 @@ class Users
 
     public function activate(Request $req, Response $res, array $args): Response {
         $userId = (int) $args['id'];
+        $owner = (int) $req->getAttribute('jwt')['sub'];
         $rows = 0;
+
+        // You can't activate the Root Admin or your own account
+        if ($userId === self::ROOT_ADMIN || $userId === $owner) {
+            return $this->json(['error' => 'This operation is forbidden.'],
+            403);
+        }
 
         $user = $this->repo->retrieveUser($userId);
 
@@ -136,9 +144,7 @@ class Users
         }
 
         if ($user['status'] === self::INACTIVE) {
-            $data = $this->filterOutput(source: $user, excluded: ['password_hash']);
-            $data['status'] = self::ACTIVE;
-            $rows = $this->repo->updateUser($userId, $data);
+            $rows = $this->repo->setStatus($userId, self::ACTIVE);
         }
 
         return $this->json([

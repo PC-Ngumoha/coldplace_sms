@@ -14,6 +14,14 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+} from "@/components/ui/dropdown-menu";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { ROLES, type RoleName } from "@/lib/definitions";
@@ -57,7 +65,6 @@ export default function Settings() {
   const [query, setQuery] = useState("");
   const [showAddUser, setShowAddUser] = useState(false);
   const [showAddLocation, setShowAddLocation] = useState(false);
-  const [menu, setMenu] = useState<string | null>(null);
 
   async function fetchUsers() {
     const result = await userApi.list();
@@ -214,57 +221,47 @@ export default function Settings() {
                           </span>
                         </td>
                         <td className="relative px-3 py-2 text-center">
-                          <button
-                            onClick={() =>
-                              setMenu(menu === user.email ? null : user.email)
-                            }
-                            aria-label={`Actions for ${user.name}`}
-                            aria-expanded={menu === user.email}
-                            className="rounded p-1 text-slate-600 hover:bg-slate-100"
-                          >
-                            <EllipsisVertical size={16} />
-                          </button>
-                          {/* TODO: Convert to shadcn dropdown for better readability */}
-                          {menu === user.email && (
-                            <div
-                              className="absolute right-7 top-8 z-10 w-32 rounded-md border border-slate-200 bg-white 
-                            py-1 text-left shadow-lg"
-                            >
-                              <button
-                                onClick={() => setMenu(null)}
-                                className="block w-full px-3 py-2 text-xs hover:bg-slate-50"
-                              >
-                                Edit
-                              </button>
-                              {user.status.toLocaleLowerCase() === "active" ? (
-                                <button
-                                  onClick={async () => {
-                                    await userApi.deactivate(user.id);
-                                    await fetchUsers(); // Refetch users to see changes made
-                                  }}
-                                  className="block w-full px-3 py-2 text-xs hover:bg-slate-50"
-                                >
-                                  Deactivate
+                          <DropdownMenu>
+                            <DropdownMenuTrigger
+                              render={
+                                <button className="rounded p-1 text-slate-600 hover:bg-slate-100">
+                                  <EllipsisVertical size={16} />
                                 </button>
-                              ) : (
-                                <button
-                                  onClick={async () => {
-                                    await userApi.activate(user.id);
-                                    await fetchUsers();
-                                  }}
-                                  className="block w-full px-3 py-2 text-xs hover:bg-slate-50"
-                                >
-                                  Activate
-                                </button>
-                              )}
-                              <button
-                                onClick={() => setMenu(null)}
-                                className="block w-full px-3 py-2 text-xs hover:bg-slate-50"
-                              >
-                                Delete
-                              </button>
-                            </div>
-                          )}
+                              }
+                            />
+                            <DropdownMenuContent>
+                              <DropdownMenuGroup>
+                                <DropdownMenuItem>Edit</DropdownMenuItem>
+                              </DropdownMenuGroup>
+                              <DropdownMenuSeparator />
+                              <DropdownMenuGroup>
+                                {user.status.toLocaleLowerCase() ===
+                                "active" ? (
+                                  <DropdownMenuItem
+                                    onClick={async () => {
+                                      await userApi.deactivate(user.id);
+                                      await fetchUsers(); // Refetch users to see changes made
+                                    }}
+                                  >
+                                    Deactivate
+                                  </DropdownMenuItem>
+                                ) : (
+                                  <DropdownMenuItem
+                                    onClick={async () => {
+                                      await userApi.activate(user.id);
+                                      await fetchUsers(); // Refetch users to see changes made
+                                    }}
+                                  >
+                                    Activate
+                                  </DropdownMenuItem>
+                                )}
+                              </DropdownMenuGroup>
+                              <DropdownMenuSeparator />
+                              <DropdownMenuGroup>
+                                <DropdownMenuItem>Delete</DropdownMenuItem>
+                              </DropdownMenuGroup>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
                         </td>
                       </tr>
                     ))}
@@ -315,58 +312,47 @@ export default function Settings() {
                           </span>
                         </td>
                         <td className="relative px-3 py-2 text-center">
-                          <button
-                            onClick={() =>
-                              setMenu(
-                                menu === location.name ? null : location.name,
-                              )
-                            }
-                            aria-label={`Actions for ${location.name}`}
-                            aria-expanded={menu === location.name}
-                            className="rounded p-1 text-slate-600 hover:bg-slate-100"
-                          >
-                            <EllipsisVertical size={16} />
-                          </button>
-                          {menu === location.name && (
-                            <div
-                              className="absolute right-7 top-8 z-10 w-32 rounded-md border border-slate-200 bg-white 
-                            py-1 text-left shadow-lg"
-                            >
-                              <button
-                                onClick={() => setMenu(null)}
-                                className="block w-full px-3 py-2 text-xs hover:bg-slate-50"
-                              >
-                                Edit
-                              </button>
-                              {location.status.toLowerCase() === "active" ? (
-                                <button
-                                  onClick={async () => {
-                                    await locationApi.deactivate(location.id);
-                                    await fetchLocations(); // refetch locations to see changes made.
-                                  }}
-                                  className="block w-full px-3 py-2 text-xs hover:bg-slate-50"
-                                >
-                                  Deactivate
+                          <DropdownMenu>
+                            <DropdownMenuTrigger
+                              render={
+                                <button className="rounded p-1 text-slate-600 hover:bg-slate-100">
+                                  <EllipsisVertical size={16} />
                                 </button>
-                              ) : (
-                                <button
-                                  onClick={async () => {
-                                    await locationApi.activate(location.id);
-                                    await fetchLocations();
-                                  }}
-                                  className="block w-full px-3 py-2 text-xs hover:bg-slate-50"
-                                >
-                                  Activate
-                                </button>
-                              )}
-                              <button
-                                onClick={() => setMenu(null)}
-                                className="block w-full px-3 py-2 text-xs hover:bg-slate-50"
-                              >
-                                Delete
-                              </button>
-                            </div>
-                          )}
+                              }
+                            />
+                            <DropdownMenuContent>
+                              <DropdownMenuGroup>
+                                <DropdownMenuItem>Edit</DropdownMenuItem>
+                              </DropdownMenuGroup>
+                              <DropdownMenuSeparator />
+                              <DropdownMenuGroup>
+                                {location.status.toLocaleLowerCase() ===
+                                "active" ? (
+                                  <DropdownMenuItem
+                                    onClick={async () => {
+                                      await locationApi.deactivate(location.id);
+                                      await fetchLocations(); // Refetch locations to see changes made
+                                    }}
+                                  >
+                                    Deactivate
+                                  </DropdownMenuItem>
+                                ) : (
+                                  <DropdownMenuItem
+                                    onClick={async () => {
+                                      await locationApi.activate(location.id);
+                                      await fetchLocations(); // Refetch locations to see changes made
+                                    }}
+                                  >
+                                    Activate
+                                  </DropdownMenuItem>
+                                )}
+                              </DropdownMenuGroup>
+                              <DropdownMenuSeparator />
+                              <DropdownMenuGroup>
+                                <DropdownMenuItem>Delete</DropdownMenuItem>
+                              </DropdownMenuGroup>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
                         </td>
                       </tr>
                     ))}
