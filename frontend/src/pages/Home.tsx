@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button";
+import { Toaster } from "@/components/ui/toast";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -55,7 +56,7 @@ export default function Home() {
   const userRole = currentUser?.role as RoleName;
 
   return (
-    <div className="flex h-screen bg-[#edf3f2] text-slate-800">
+    <div className="flex h-full bg-[#edf3f2] text-slate-800">
       <aside
         className="flex w-[260px] shrink-0 flex-col justify-between border-r border-[#c9c6d8] bg-[#f7f7fa]
         px-4 py-4 shadow-[inset_-1px_0_0_rgba(115,120,149,0.18)]"
@@ -201,6 +202,8 @@ export default function Home() {
         </header>
 
         <Outlet />
+
+        <Toaster />
       </div>
     </div>
   );

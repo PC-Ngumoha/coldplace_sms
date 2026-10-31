@@ -23,6 +23,8 @@ export default function Login() {
           ? err.response?.data.error
           : "Couldn't sign in. Check your internet & try again.",
       );
+    } finally {
+      setIsSubmitting(false);
     }
   };
 

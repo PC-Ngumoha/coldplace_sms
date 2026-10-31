@@ -27,7 +27,9 @@ import { Label } from "@/components/ui/label";
 import { ROLES, type RoleName } from "@/lib/definitions";
 import { userApi } from "@/services/Userapi";
 import { locationApi } from "@/services/Locationapi";
+import { showSuccess, showError } from "@/services/toasts";
 import type { User, Location } from "@/types";
+import { isAxiosError } from "axios";
 
 const roles: Array<{ name: RoleName; icon: LucideIcon }> = [
   {
@@ -239,8 +241,19 @@ export default function Settings() {
                                 "active" ? (
                                   <DropdownMenuItem
                                     onClick={async () => {
-                                      await userApi.deactivate(user.id);
-                                      await fetchUsers(); // Refetch users to see changes made
+                                      try {
+                                        await userApi.deactivate(user.id);
+                                        showSuccess(
+                                          "User deactivated successfully",
+                                        );
+                                        await fetchUsers();
+                                      } catch (err) {
+                                        showError(
+                                          isAxiosError(err)
+                                            ? err.response?.data.error
+                                            : "Oops! please try again later",
+                                        );
+                                      }
                                     }}
                                   >
                                     Deactivate
@@ -248,8 +261,19 @@ export default function Settings() {
                                 ) : (
                                   <DropdownMenuItem
                                     onClick={async () => {
-                                      await userApi.activate(user.id);
-                                      await fetchUsers(); // Refetch users to see changes made
+                                      try {
+                                        await userApi.activate(user.id);
+                                        showSuccess(
+                                          "User activated successfully",
+                                        );
+                                        await fetchUsers();
+                                      } catch (err) {
+                                        showError(
+                                          isAxiosError(err)
+                                            ? err.response?.data.error
+                                            : "Oops! please try again later",
+                                        );
+                                      }
                                     }}
                                   >
                                     Activate
@@ -330,8 +354,21 @@ export default function Settings() {
                                 "active" ? (
                                   <DropdownMenuItem
                                     onClick={async () => {
-                                      await locationApi.deactivate(location.id);
-                                      await fetchLocations(); // Refetch locations to see changes made
+                                      try {
+                                        await locationApi.deactivate(
+                                          location.id,
+                                        );
+                                        showSuccess(
+                                          "Location deactivated successfully",
+                                        );
+                                        await fetchLocations();
+                                      } catch (err) {
+                                        showError(
+                                          isAxiosError(err)
+                                            ? err.response?.data.error
+                                            : "Oops! please try again later",
+                                        );
+                                      }
                                     }}
                                   >
                                     Deactivate
@@ -339,8 +376,19 @@ export default function Settings() {
                                 ) : (
                                   <DropdownMenuItem
                                     onClick={async () => {
-                                      await locationApi.activate(location.id);
-                                      await fetchLocations(); // Refetch locations to see changes made
+                                      try {
+                                        await locationApi.activate(location.id);
+                                        showSuccess(
+                                          "Location activated successfully",
+                                        );
+                                        await fetchLocations();
+                                      } catch (err) {
+                                        showError(
+                                          isAxiosError(err)
+                                            ? err.response?.data.error
+                                            : "Oops! please try again later",
+                                        );
+                                      }
                                     }}
                                   >
                                     Activate

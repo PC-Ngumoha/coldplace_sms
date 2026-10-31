@@ -32,6 +32,10 @@ class Locations {
             return $this->json(['error' => 'Not found'], 404);
         }
 
+        if ($location['is_central']) {
+            return $this->json(['error' => 'This operation is forbidden'], 403);
+        }
+
         if ($location['status'] === self::ACTIVE) {
             $rows = $this->repo->setStatus($locationId, self::INACTIVE);
         }
@@ -50,6 +54,10 @@ class Locations {
 
         if (!$location) {
             return $this->json(['error' => 'Not found'], 404);
+        }
+
+        if ($location['is_central']) {
+            return $this->json(['error' => 'This operation is forbidden'], 403);
         }
 
         if ($location['status'] === self::INACTIVE) {
