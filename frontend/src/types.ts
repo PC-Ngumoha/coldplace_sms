@@ -1,11 +1,21 @@
+import type { RoleName } from "@/lib/definitions";
+
 export interface User {
   id: number;
   email: string;
   is_primary_handler: number;
   must_change_password: 1;
   name: string;
-  role: string;
+  role: RoleName;
   status: "active" | "inactive";
+}
+
+export interface CreateUser {
+  email: string;
+  password: string;
+  name: string;
+  role: RoleName;
+  location_id?: number;
 }
 
 export interface LoginResponse {

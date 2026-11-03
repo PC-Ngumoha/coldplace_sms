@@ -1,9 +1,11 @@
 import { api } from "@/api/client";
 import { USER_PATHS } from "@/lib/endpoints";
-import type { User, ProcessResponse } from "@/types";
+import type { User, ProcessResponse, CreateUser } from "@/types";
 
 export const userApi = {
   list: () => api.get<User[]>(USER_PATHS.list).then((r) => r.data),
+  create: (data: CreateUser) =>
+    api.post(USER_PATHS.create, data).then((r) => r.data),
   activate: (id: number) =>
     api
       .post<ProcessResponse>(`${USER_PATHS.list}/${id}/activate`)

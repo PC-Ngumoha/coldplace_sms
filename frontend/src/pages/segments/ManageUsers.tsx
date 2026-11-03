@@ -7,11 +7,15 @@ import {
   Building2,
   Store,
   Eye,
+  EyeOff,
   type LucideIcon,
 } from "lucide-react";
 import { type RoleName, ROLES } from "@/lib/definitions";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import type { CreateUser, Location } from "@/types";
+import { useEffect, useState } from "react";
+import { locationApi } from "@/services/Locationapi";
 
 const roles: Array<{ name: RoleName; icon: LucideIcon }> = [
   {
@@ -40,12 +44,36 @@ const roles: Array<{ name: RoleName; icon: LucideIcon }> = [
   },
 ];
 
+const initialFieldValues: CreateUser = {
+  name: "",
+  email: "",
+  password: "",
+  role: "viewer",
+};
+
 export default function ManageUsers() {
   const navigate = useNavigate();
+  const [field, setField] = useState<CreateUser>(initialFieldValues);
+  const [locations, setLocations] = useState<Location[]>([]);
+  const [isPasswordVisible, setIsPasswordVisible] = useState(false);
 
   const goBack = () => {
     navigate(-1);
   };
+
+  const updateField = (field: string, value: string) => {
+    setField((prev) => ({ ...prev, [field]: value }));
+  };
+
+  // fetch locations
+  useEffect(() => {
+    async function fetchLocations() {
+      const data = await locationApi.list();
+      setLocations(data);
+    }
+
+    fetchLocations();
+  }, []);
 
   return (
     <div
@@ -80,6 +108,7 @@ export default function ManageUsers() {
           className="mt-5 space-y-4"
           onSubmit={(event) => {
             event.preventDefault();
+            console.log(field);
             // setShowAddUser(false);
           }}
         >
@@ -90,7 +119,34 @@ export default function ManageUsers() {
               className="mt-1.5 block w-full rounded-md border border-slate-200 px-3 py-2 text-sm outline-none 
                   focus:border-teal-blue focus:ring-1 focus:ring-teal-blue"
               placeholder="Enter full name"
+              value={field.name}
+              onChange={(evt) => updateField("name", evt.target.value)}
             />
+          </label>
+          <label className="block text-xs font-medium text-slate-700">
+            Password
+            <div className="relative mt-1.5">
+              <input
+                required
+                type={isPasswordVisible ? "text" : "password"}
+                className="block w-full rounded-md border border-slate-200 px-3 py-2 pr-10 text-sm outline-none
+                  focus:border-teal-blue focus:ring-1 focus:ring-teal-blue"
+                placeholder="Enter password"
+                value={field.password}
+                onChange={(evt) => updateField("password", evt.target.value)}
+              />
+              <button
+                type="button"
+                aria-label={
+                  isPasswordVisible ? "Hide password" : "Show password"
+                }
+                aria-pressed={isPasswordVisible}
+                onClick={() => setIsPasswordVisible((visible) => !visible)}
+                className="absolute inset-y-0 right-0 flex items-center px-3 text-slate-600 hover:text-slate-900"
+              >
+                {isPasswordVisible ? <EyeOff size={18} /> : <Eye size={18} />}
+              </button>
+            </div>
           </label>
           <label className="block text-xs font-medium text-slate-700">
             Email address
@@ -100,12 +156,16 @@ export default function ManageUsers() {
               className="mt-1.5 block w-full rounded-md border border-slate-200 px-3 py-2 text-sm outline-none 
                   focus:border-teal-blue focus:ring-1 focus:ring-teal-blue"
               placeholder="name@example.com"
+              value={field.email}
+              onChange={(evt) => updateField("email", evt.target.value)}
             />
           </label>
           <label className="block text-xs font-medium text-slate-700">
             Role
             <RadioGroup
-              defaultValue={roles[0].name}
+              defaultValue={field.role}
+              value={field.role}
+              onValueChange={(value) => updateField("role", value)}
               className="my-3 grid grid-cols-2"
             >
               {roles.map((role) => {
@@ -134,20 +194,25 @@ export default function ManageUsers() {
               })}
             </RadioGroup>
           </label>
-          {/* FIXME: The "Assigned location" field should only appear for
-              Users with the Outlet role. */}
-          <label className="block text-xs font-medium text-slate-700">
-            Assigned Location
-            <select
-              className="mt-1.5 block w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm outline-none
+          {/* The "Assigned location" field should only appears for
+              Users with the Outlet or Manager role. */}
+          {["outlet", "manager"].includes(field.role) && (
+            <label className="block text-xs font-medium text-slate-700">
+              Assigned Location
+              <select
+                className="mt-1.5 block w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm outline-none
                 focus:border-teal-blue"
-            >
-              <option>Gwarinpa</option>
-              <option>Central Area</option>
-              <option>Mpape</option>
-              <option>Guzape</option>
-            </select>
-          </label>
+                value={field.location_id}
+                onChange={(evt) => updateField("location_id", evt.target.value)}
+              >
+                {locations.map((location) => (
+                  <option key={location.id} value={location.id}>
+                    {location.name}
+                  </option>
+                ))}
+              </select>
+            </label>
+          )}
           <div className="flex justify-end gap-2 pt-2">
             <button
               type="button"
