@@ -10,6 +10,8 @@ import Settings from "./segments/Settings";
 import Login from "./routes/Login";
 import NotFound from "./routes/NotFound";
 import Home from "./Home";
+import ManageUsers from "./segments/ManageUsers";
+import ManageLocations from "./segments/ManageLocations";
 
 export {
   Home,
@@ -24,4 +26,6 @@ export {
   Settings,
   Login,
   NotFound,
+  ManageUsers,
+  ManageLocations,
 };

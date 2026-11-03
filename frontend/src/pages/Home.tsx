@@ -70,7 +70,7 @@ export default function Home() {
       {/* Sidebar */}
       <aside
         className={clsx(
-          "w-full h-full md:w-fit bg-slate-950/50 fixed md:relative",
+          "w-full h-full md:w-fit bg-slate-950/50 fixed md:relative z-20",
           open ? "flex" : "hidden md:flex",
         )}
         onClick={() => {

@@ -1,18 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import {
-  UserPlus,
-  MapPinPlus,
-  X,
-  Search,
-  EllipsisVertical,
-  Crown,
-  BriefcaseBusiness,
-  UserCog,
-  Building2,
-  Store,
-  Eye,
-  type LucideIcon,
-} from "lucide-react";
+import { UserPlus, MapPinPlus, Search, EllipsisVertical } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -22,51 +9,50 @@ import {
   DropdownMenuItem,
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Label } from "@/components/ui/label";
-import { ROLES, type RoleName } from "@/lib/definitions";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { userApi } from "@/services/Userapi";
 import { locationApi } from "@/services/Locationapi";
 import { showSuccess, showError } from "@/services/toasts";
 import type { User, Location } from "@/types";
 import { isAxiosError } from "axios";
-
-const roles: Array<{ name: RoleName; icon: LucideIcon }> = [
-  {
-    name: "executive",
-    icon: Crown,
-  },
-  {
-    name: "manager",
-    icon: BriefcaseBusiness,
-  },
-  {
-    name: "admin",
-    icon: UserCog,
-  },
-  {
-    name: "central",
-    icon: Building2,
-  },
-  {
-    name: "outlet",
-    icon: Store,
-  },
-  {
-    name: "viewer",
-    icon: Eye,
-  },
-];
+import { useNavigate, useLocation } from "react-router";
+// import { clsx } from "cn";
 
 export default function Settings() {
   const [users, setUsers] = useState<User[]>([]);
   const [locations, setLocations] = useState<Location[]>([]);
-  const [tab, setTab] = useState<"Users & Roles" | "Locations">(
-    "Users & Roles",
+  const [tab, setTab] = useState<"users & roles" | "locations">(
+    "users & roles",
   );
   const [query, setQuery] = useState("");
-  const [showAddUser, setShowAddUser] = useState(false);
-  const [showAddLocation, setShowAddLocation] = useState(false);
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const openAddUserForm = () => {
+    navigate("/add/users", {
+      // Keep page we're leaving in the background of the new page.
+      state: { background: location },
+    });
+  };
+
+  const openAddLocationForm = () => {
+    navigate("/add/locations", {
+      // Keep page we're leaving in the background of the new page.
+      state: { background: location },
+    });
+  };
+
+  const openEditUserForm = (id: number) => {
+    navigate(`/edit/users/${id}`, {
+      state: { background: location },
+    });
+  };
+
+  const openEditLocationForm = (id: number) => {
+    navigate(`/edit/locations/${id}`, {
+      state: { background: location },
+    });
+  };
 
   async function fetchUsers() {
     const result = await userApi.list();
@@ -119,9 +105,10 @@ export default function Settings() {
             </p>
           </div>
           <div className="flex gap-2 self-start">
-            {tab === "Users & Roles" ? (
+            {tab === "users & roles" ? (
               <Button
-                onClick={() => setShowAddUser(true)}
+                // onClick={() => setShowAddUser(true)}
+                onClick={() => openAddUserForm()}
                 className="inline-flex items-center gap-2 rounded-md bg-teal-blue px-3 py-2 text-xs
                 font-semibold text-white shadow-sm hover:bg-darker-teal-blue"
               >
@@ -130,7 +117,7 @@ export default function Settings() {
               </Button>
             ) : (
               <Button
-                onClick={() => setShowAddLocation(true)}
+                onClick={() => openAddLocationForm()}
                 className="inline-flex items-center gap-2 rounded-md bg-teal-blue px-3 py-2 text-xs font-semibold 
                 text-white shadow-sm hover:bg-darker-teal-blue"
               >
@@ -141,34 +128,25 @@ export default function Settings() {
           </div>
         </header>
 
-        <section className="mt-5">
+        <Tabs value={tab} onValueChange={setTab} className="mt-5">
           <div className="flex flex-col-reverse gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <div
-              className="flex border-b border-slate-200"
-              role="tablist"
-              aria-label="Settings sections"
-            >
-              {(["Users & Roles", "Locations"] as const).map((label) => (
-                // Using a native HTML button fits the UI best.
-                <button
-                  key={label}
-                  role="tab"
-                  aria-selected={tab === label}
-                  onClick={() => {
-                    setTab(label);
-                    setQuery("");
-                  }}
-                  className={`-mb-px border-b-2 px-1 pb-2.5 pt-1 text-xs font-semibold transition-colors 
-                    ${
-                      tab === label
-                        ? "border-teal-900 text-darker-teal-blue"
-                        : "border-transparent text-slate-500 hover:text-teal-blue"
-                    }`}
-                >
-                  <span className="px-1">{label}</span>
-                </button>
-              ))}
-            </div>
+            <TabsList className="flex border-b border-slate-200 bg-white z-0 p-3">
+              <TabsTrigger
+                value="users & roles"
+                className="py-3 px-4 mr-2 data-active:bg-lighter-teal-blue data-active:text-teal-blue
+                hover:text-teal-blue"
+              >
+                Users & Roles
+              </TabsTrigger>
+              <TabsTrigger
+                value="locations"
+                className="py-3 px-4 mr-2 data-active:bg-lighter-teal-blue data-active:text-teal-blue
+                hover:text-teal-blue"
+              >
+                Locations
+              </TabsTrigger>
+            </TabsList>
+
             <label
               className="flex h-9 w-full items-center gap-2 rounded-md border border-slate-200 
             bg-white px-2.5 text-slate-400 shadow-sm sm:w-48"
@@ -183,10 +161,8 @@ export default function Settings() {
               />
             </label>
           </div>
-
           <div className="mt-3 overflow-visible rounded-lg border border-slate-200/80 bg-white shadow-sm">
-            {tab === "Users & Roles" ? (
-              // Display users
+            <TabsContent value="users & roles">
               <div className="overflow-x-auto rounded-lg">
                 <table className="w-full min-w-[680px] text-left">
                   <thead className="text-[9px] font-semibold uppercase tracking-wide text-slate-500">
@@ -233,7 +209,11 @@ export default function Settings() {
                             />
                             <DropdownMenuContent>
                               <DropdownMenuGroup>
-                                <DropdownMenuItem>Edit</DropdownMenuItem>
+                                <DropdownMenuItem
+                                  onClick={() => openEditUserForm(user.id)}
+                                >
+                                  Edit
+                                </DropdownMenuItem>
                               </DropdownMenuGroup>
                               <DropdownMenuSeparator />
                               <DropdownMenuGroup>
@@ -302,8 +282,8 @@ export default function Settings() {
                   </tbody>
                 </table>
               </div>
-            ) : (
-              // Display locations
+            </TabsContent>
+            <TabsContent value="locations">
               <div className="overflow-x-auto rounded-lg">
                 <table className="w-full min-w-[520px] text-left">
                   <thead className="text-[9px] font-semibold uppercase tracking-wide text-slate-500">
@@ -346,7 +326,13 @@ export default function Settings() {
                             />
                             <DropdownMenuContent>
                               <DropdownMenuGroup>
-                                <DropdownMenuItem>Edit</DropdownMenuItem>
+                                <DropdownMenuItem
+                                  onClick={() =>
+                                    openEditLocationForm(location.id)
+                                  }
+                                >
+                                  Edit
+                                </DropdownMenuItem>
                               </DropdownMenuGroup>
                               <DropdownMenuSeparator />
                               <DropdownMenuGroup>
@@ -417,208 +403,10 @@ export default function Settings() {
                   </tbody>
                 </table>
               </div>
-            )}
+            </TabsContent>
           </div>
-        </section>
+        </Tabs>
       </div>
-
-      {/* Add user modal */}
-      {showAddUser && (
-        <div
-          className="fixed inset-0 z-20 flex items-center justify-center bg-slate-950/40 p-4"
-          role="presentation"
-          onClick={(event) => {
-            if (event.target === event.currentTarget) setShowAddUser(false);
-          }}
-        >
-          <div
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="add-user-title"
-            className="w-full max-w-md rounded-xl bg-white p-5 shadow-xl sm:p-6"
-          >
-            <div className="flex items-center justify-between">
-              <h2
-                id="add-user-title"
-                className="text-base font-semibold text-slate-900"
-              >
-                Add User
-              </h2>
-              <button
-                onClick={() => setShowAddUser(false)}
-                aria-label="Close"
-                className="rounded p-1 text-slate-600 hover:bg-slate-100"
-              >
-                <X size={24} />
-              </button>
-            </div>
-            <form
-              className="mt-5 space-y-4"
-              onSubmit={(event) => {
-                event.preventDefault();
-                setShowAddUser(false);
-              }}
-            >
-              <label className="block text-xs font-medium text-slate-700">
-                Full name
-                <input
-                  required
-                  className="mt-1.5 block w-full rounded-md border border-slate-200 px-3 py-2 text-sm outline-none 
-                  focus:border-teal-blue focus:ring-1 focus:ring-teal-blue"
-                  placeholder="Enter full name"
-                />
-              </label>
-              <label className="block text-xs font-medium text-slate-700">
-                Email address
-                <input
-                  required
-                  type="email"
-                  className="mt-1.5 block w-full rounded-md border border-slate-200 px-3 py-2 text-sm outline-none 
-                  focus:border-teal-blue focus:ring-1 focus:ring-teal-blue"
-                  placeholder="name@example.com"
-                />
-              </label>
-              <label className="block text-xs font-medium text-slate-700">
-                Role
-                <RadioGroup
-                  defaultValue={roles[0].name}
-                  className="my-3 grid grid-cols-2"
-                >
-                  {roles.map((role) => {
-                    const Icon = role.icon;
-
-                    return (
-                      <Label
-                        key={role.name}
-                        htmlFor={role.name}
-                        className={`border border-lightest-teal-blue p-3 w-full flex
-                    rounded-lg shadow ${ROLES[role.name].color} ${ROLES[role.name].label}
-                    has-data-checked:font-semibold capitalize`}
-                      >
-                        <div className="w-full flex flex-col gap-3 items-center">
-                          <Icon size={25} />
-                          <span>{ROLES[role.name].display}</span>
-                        </div>
-
-                        <RadioGroupItem
-                          value={role.name}
-                          id={role.name}
-                          className="self-start data-checked:bg-slate-500"
-                        />
-                      </Label>
-                    );
-                  })}
-                </RadioGroup>
-              </label>
-              {/* FIXME: The "Assigned location" field should only appear for
-              Users with the Outlet role. */}
-              <label className="block text-xs font-medium text-slate-700">
-                Assigned Location
-                <select
-                  className="mt-1.5 block w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm outline-none
-                focus:border-teal-blue"
-                >
-                  <option>Gwarinpa</option>
-                  <option>Central Area</option>
-                  <option>Mpape</option>
-                  <option>Guzape</option>
-                </select>
-              </label>
-              <div className="flex justify-end gap-2 pt-2">
-                <button
-                  type="button"
-                  onClick={() => setShowAddUser(false)}
-                  className="rounded-md border border-slate-200 px-3 py-2 text-xs font-medium hover:bg-slate-50"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="rounded-md bg-teal-blue px-3 py-2 text-xs font-semibold text-white hover:bg-darker-teal-blue"
-                >
-                  Add user
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
-
-      {/* Add location modal */}
-      {showAddLocation && (
-        <div
-          className="fixed inset-0 z-20 flex items-center justify-center bg-slate-950/40 p-4"
-          role="presentation"
-          onClick={(event) => {
-            if (event.target === event.currentTarget) setShowAddLocation(false);
-          }}
-        >
-          <div
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="add-user-title"
-            className="w-full max-w-md rounded-xl bg-white p-5 shadow-xl sm:p-6"
-          >
-            <div className="flex items-center justify-between">
-              <h2
-                id="add-user-title"
-                className="text-base font-semibold text-slate-900"
-              >
-                Add Location
-              </h2>
-              <button
-                onClick={() => setShowAddLocation(false)}
-                aria-label="Close"
-                className="rounded p-1 text-slate-600 hover:bg-slate-100"
-              >
-                <X size={24} />
-              </button>
-            </div>
-            <form
-              className="mt-5 space-y-4"
-              onSubmit={(event) => {
-                event.preventDefault();
-                setShowAddLocation(false);
-              }}
-            >
-              <label className="block text-xs font-medium text-slate-700">
-                Name
-                <input
-                  required
-                  className="mt-1.5 block w-full rounded-md border border-slate-200 px-3 py-2 text-sm outline-none 
-                  focus:border-teal-blue focus:ring-1 focus:ring-teal-blue"
-                  placeholder="Enter location name"
-                />
-              </label>
-              <label className="block text-xs font-medium text-slate-700">
-                Address
-                <textarea
-                  required
-                  className="mt-1.5 block w-full rounded-md border border-slate-200 px-3 py-2 text-sm outline-none 
-                  focus:border-teal-blue focus:ring-1 focus:ring-teal-blue"
-                  placeholder="e.g No. 123 Adebayo Chika Str, Ikeja, Lagos."
-                />
-              </label>
-
-              <div className="flex justify-end gap-2 pt-2">
-                <button
-                  type="button"
-                  onClick={() => setShowAddLocation(false)}
-                  className="rounded-md border border-slate-200 px-3 py-2 text-xs font-medium hover:bg-slate-50"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="rounded-md bg-teal-blue px-3 py-2 text-xs font-semibold text-white hover:bg-darker-teal-blue"
-                >
-                  Add Location
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
     </main>
   );
 }
