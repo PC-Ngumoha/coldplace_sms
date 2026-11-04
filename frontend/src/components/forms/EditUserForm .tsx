@@ -2,6 +2,8 @@ import type { Location, EditUser, User } from "@/types";
 import { type RoleName, ROLES } from "@/lib/definitions";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { userApi } from "@/services/Userapi";
+import { showSuccess } from "@/services/toasts";
 import {
   type LucideIcon,
   Crown,
@@ -14,6 +16,7 @@ import {
 } from "lucide-react";
 import { useState, useMemo, type SubmitEvent } from "react";
 import { clsx } from "cn";
+import { isAxiosError } from "axios";
 
 const roles: Array<{ name: RoleName; icon: LucideIcon }> = [
   {
@@ -56,18 +59,19 @@ export default function EditUserForm({
     email: user.email,
     role: user.role,
   });
+  const [error, setError] = useState("");
 
   const updateField = (field: string, value: string) => {
     setField((prev) => ({ ...prev, [field]: value }));
   };
 
-  const resetFields = () => {
-    setField({
-      name: "",
-      email: "",
-      role: "viewer",
-    });
-  };
+  // const resetFields = () => {
+  //   setField({
+  //     name: "",
+  //     email: "",
+  //     role: "viewer",
+  //   });
+  // };
 
   // What locations are available to a new user based on their assigned role.
   const filteredLocations = useMemo(() => {
@@ -78,10 +82,18 @@ export default function EditUserForm({
     else return locations;
   }, [field.role, locations]);
 
-  const handleSubmit = (evt: SubmitEvent<HTMLFormElement>) => {
+  const handleSubmit = async (evt: SubmitEvent<HTMLFormElement>) => {
     evt.preventDefault();
     console.log(field);
-    resetFields();
+    try {
+      await userApi.update(user.id, field);
+      showSuccess("User account updated successfully");
+      onClose();
+    } catch (err) {
+      setError(
+        isAxiosError(err) ? err.response?.data.error : "Operation failed",
+      );
+    }
   };
 
   return (
@@ -113,6 +125,15 @@ export default function EditUserForm({
             <X size={24} />
           </button>
         </div>
+
+        {error && (
+          <div
+            role="alert"
+            className="mt-3 rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700"
+          >
+            {error}
+          </div>
+        )}
 
         <form className="mt-5 space-y-4" onSubmit={handleSubmit}>
           <label className="block text-xs font-medium text-slate-700 relative">
@@ -206,7 +227,7 @@ export default function EditUserForm({
               type="submit"
               className="rounded-md bg-teal-blue px-3 py-2 text-xs font-semibold text-white hover:bg-darker-teal-blue"
             >
-              Add user
+              Update user
             </button>
           </div>
         </form>

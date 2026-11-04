@@ -64,6 +64,29 @@ class Users
         return $this->json($result, 201);
     }
 
+    public function update(Request $req, Response $res, array $args): Response
+    {
+        $userId = (int) $args['id'];
+        $body = $req->getParsedBody();
+
+        if (!$body['name'] || !$body['email'] || !$body['role']) {
+            return $this->json(['error' => 'Missing parameter'], 400);
+        }
+
+        // Verify email address contains @coldplace in it's name
+        $emailPattern = "/^[a-zA-Z0-9._%+-]+@coldplace\.[a-zA-Z0-9.-]+$/";
+        if (!preg_match($emailPattern, $body['email'])) {
+            return $this->json(['error' => 'Unsupported email pattern'], 400);
+        }
+
+        $rows = $this->repo->updateUser($userId, $body);
+
+        return $this->json([
+            'message' => 'Record updated',
+            'row_count' => $rows,
+        ]);
+    }
+
     public function me(Request $req, Response $res): Response
     {
         $userId = $req->getAttribute('jwt')['sub']; // get user id from JWT

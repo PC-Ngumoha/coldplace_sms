@@ -58,7 +58,7 @@ class UserRepository
 
     public function updateUser(int $userId, array $data): int {
         $sql = 'UPDATE users SET name = ?, email = ?,
-                location_id = ?, role = ?, is_primary_handler = ?
+                location_id = ?, role = ?
                 WHERE id = ?';
 
         $stmt = $this->conn->prepare($sql);
@@ -67,7 +67,6 @@ class UserRepository
             $data['email'],
             $data['location_id'],
             $data['role'],
-            $data['is_primary_handler'],
             $userId
         ]);
 

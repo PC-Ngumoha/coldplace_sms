@@ -29,15 +29,18 @@ return function (SlimApp $app) {
 
         $group->post('/locations/{id:[0-9]+}/activate', App\Controllers\Locations::class . ':activate');
 
-        $group->post('/users', App\Controllers\Users::class . ':create');
 
         $group->get('/users', App\Controllers\Users::class . ':list');
 
         $group->get('/users/{id:[0-9]+}', App\Controllers\Users::class . ':retrieve');
 
-        $group->post('/users/{id:[0-9]+}/deactivate', App\Controllers\Users::class . ':deactivate');
+        $group->post('/users', App\Controllers\Users::class . ':create');
 
+        $group->post('/users/{id:[0-9]+}/deactivate', App\Controllers\Users::class . ':deactivate');
+        
         $group->post('/users/{id:[0-9]+}/activate', App\Controllers\Users::class . ':activate');
+        
+        $group->patch('/users/{id:[0-9]+}', App\Controllers\Users::class . ':update');
 
         $group->patch('/users/{id:[0-9]+}/changePassword', App\Controllers\Users::class . ':changePassword');
 
