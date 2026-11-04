@@ -2,6 +2,8 @@ import type { Location, CreateUser } from "@/types";
 import { type RoleName, ROLES } from "@/lib/definitions";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { userApi } from "@/services/Userapi";
+import { showSuccess } from "@/services/toasts";
 import {
   type LucideIcon,
   Crown,
@@ -15,6 +17,7 @@ import {
 } from "lucide-react";
 import { useState, useMemo, type SubmitEvent } from "react";
 import { clsx } from "cn";
+import { isAxiosError } from "axios";
 
 const roles: Array<{ name: RoleName; icon: LucideIcon }> = [
   {
@@ -58,15 +61,16 @@ export default function CreateUserForm({
   locations: Location[];
 }) {
   const [field, setField] = useState<CreateUser>(initialFieldValues);
+  const [error, setError] = useState("");
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
 
   const updateField = (field: string, value: string) => {
     setField((prev) => ({ ...prev, [field]: value }));
   };
 
-  const resetFields = () => {
-    setField(initialFieldValues);
-  };
+  // const resetFields = () => {
+  //   setField(initialFieldValues);
+  // };
 
   // What locations are available to a new user based on their assigned role.
   const filteredLocations = useMemo(() => {
@@ -77,10 +81,18 @@ export default function CreateUserForm({
     else return locations;
   }, [field.role, locations]);
 
-  const handleSubmit = (evt: SubmitEvent<HTMLFormElement>) => {
+  const handleSubmit = async (evt: SubmitEvent<HTMLFormElement>) => {
     evt.preventDefault();
     console.log(field);
-    resetFields();
+    try {
+      await userApi.create(field);
+      showSuccess("User account created successfully");
+      onClose();
+    } catch (err) {
+      setError(
+        isAxiosError(err) ? err.response?.data.error : "Operation failed",
+      );
+    }
   };
 
   return (
@@ -112,6 +124,15 @@ export default function CreateUserForm({
             <X size={24} />
           </button>
         </div>
+
+        {error && (
+          <div
+            role="alert"
+            className="mt-3 rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700"
+          >
+            {error}
+          </div>
+        )}
 
         <form className="mt-5 space-y-4" onSubmit={handleSubmit}>
           <label className="block text-xs font-medium text-slate-700 relative">

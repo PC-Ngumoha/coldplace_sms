@@ -71,7 +71,7 @@ export default function Settings() {
     }
 
     fetchData();
-  }, []);
+  }, [location]);
 
   const filteredUsers = useMemo(
     () =>
