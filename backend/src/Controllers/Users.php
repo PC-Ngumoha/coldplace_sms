@@ -28,6 +28,19 @@ class Users
         return $this->json($payload);
     }
 
+    public function retrieve(Request $req, Response $res, array $args): Response {
+        $userId = (int) $args['id'];
+
+        $user = $this->repo->retrieveUser($userId);
+
+        if (!$user) {
+            return $this->json(['error' => 'Not found'], 404);
+        }
+
+        $payload = $this->filterOutput(source: $user, excluded: ['password_hash']);
+        return $this->json($payload);
+    }
+
     public function create(Request $req, Response $res): Response
     {
         $body = $req->getParsedBody();

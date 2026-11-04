@@ -31,6 +31,8 @@ return function (SlimApp $app) {
 
         $group->get('/users', App\Controllers\Users::class . ':list');
 
+        $group->get('/users/{id:[0-9]+}', App\Controllers\Users::class . ':retrieve');
+
         $group->post('/users/{id:[0-9]+}/deactivate', App\Controllers\Users::class . ':deactivate');
 
         $group->post('/users/{id:[0-9]+}/activate', App\Controllers\Users::class . ':activate');

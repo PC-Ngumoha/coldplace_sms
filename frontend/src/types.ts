@@ -18,6 +18,8 @@ export interface CreateUser {
   location_id?: number;
 }
 
+export type EditUser = Omit<CreateUser, "password">;
+
 export interface LoginResponse {
   access_token: string;
   refresh_token: string;
