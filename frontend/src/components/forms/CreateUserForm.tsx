@@ -68,10 +68,6 @@ export default function CreateUserForm({
     setField((prev) => ({ ...prev, [field]: value }));
   };
 
-  // const resetFields = () => {
-  //   setField(initialFieldValues);
-  // };
-
   // What locations are available to a new user based on their assigned role.
   const filteredLocations = useMemo(() => {
     if (field.role === "central")

@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
 import { UserPlus, MapPinPlus, Search, EllipsisVertical } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -16,7 +15,6 @@ import { showSuccess, showError } from "@/services/toasts";
 import type { User, Location } from "@/types";
 import { isAxiosError } from "axios";
 import { useNavigate, useLocation } from "react-router";
-// import { clsx } from "cn";
 
 export default function Settings() {
   const [users, setUsers] = useState<User[]>([]);
@@ -30,14 +28,12 @@ export default function Settings() {
 
   const openAddUserForm = () => {
     navigate("/add/users", {
-      // Keep page we're leaving in the background of the new page.
       state: { background: location },
     });
   };
 
   const openAddLocationForm = () => {
     navigate("/add/locations", {
-      // Keep page we're leaving in the background of the new page.
       state: { background: location },
     });
   };
@@ -106,24 +102,23 @@ export default function Settings() {
           </div>
           <div className="flex gap-2 self-start">
             {tab === "users & roles" ? (
-              <Button
-                // onClick={() => setShowAddUser(true)}
+              <button
                 onClick={() => openAddUserForm()}
                 className="inline-flex items-center gap-2 rounded-md bg-teal-blue px-3 py-2 text-xs
                 font-semibold text-white shadow-sm hover:bg-darker-teal-blue"
               >
                 <UserPlus size={18} />
                 <span>Add User</span>
-              </Button>
+              </button>
             ) : (
-              <Button
+              <button
                 onClick={() => openAddLocationForm()}
                 className="inline-flex items-center gap-2 rounded-md bg-teal-blue px-3 py-2 text-xs font-semibold 
                 text-white shadow-sm hover:bg-darker-teal-blue"
               >
                 <MapPinPlus size={18} />
                 <span>Add Location</span>
-              </Button>
+              </button>
             )}
           </div>
         </header>

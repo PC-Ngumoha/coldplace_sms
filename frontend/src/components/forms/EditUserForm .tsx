@@ -65,14 +65,6 @@ export default function EditUserForm({
     setField((prev) => ({ ...prev, [field]: value }));
   };
 
-  // const resetFields = () => {
-  //   setField({
-  //     name: "",
-  //     email: "",
-  //     role: "viewer",
-  //   });
-  // };
-
   // What locations are available to a new user based on their assigned role.
   const filteredLocations = useMemo(() => {
     if (field.role === "central")
