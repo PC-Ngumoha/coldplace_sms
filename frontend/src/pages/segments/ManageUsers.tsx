@@ -31,7 +31,9 @@ export default function ManageUsers() {
     }
 
     fetchLocations();
-    fetchUser();
+    if (userId) {
+      fetchUser();
+    }
   }, []);
 
   return user ? (
