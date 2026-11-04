@@ -22,6 +22,18 @@ class Locations {
         return $this->json($locations);
     }
 
+    public function retrieve(Request $req, Response $res, array $args): Response {
+        $locationId = (int) $args['id'];
+
+        $location = $this->repo->retrieveLocation($locationId);
+
+        if (!$location) {
+            return $this->json(['error' => 'Not Found'], 404);
+        }
+
+        return $this->json($location);
+    }
+
     public function deactivate(Request $req, Response $res, array $args): Response {
         $locationId = (int) $args['id'];
         $rows = 0;

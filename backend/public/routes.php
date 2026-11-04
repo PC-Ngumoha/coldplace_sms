@@ -23,6 +23,8 @@ return function (SlimApp $app) {
     $app->group('/api', function (RouteCollectorProxy $group) {
         $group->get('/locations', App\Controllers\Locations::class . ':list');
 
+        $group->get('/locations/{id:[0-9]+}', App\Controllers\Locations::class . ':retrieve');
+
         $group->post('/locations/{id:[0-9]+}/deactivate', App\Controllers\Locations::class . ':deactivate');
 
         $group->post('/locations/{id:[0-9]+}/activate', App\Controllers\Locations::class . ':activate');

@@ -34,7 +34,7 @@ export default function ManageUsers() {
     if (userId) {
       fetchUser();
     }
-  }, []);
+  }, [userId]);
 
   return user ? (
     <EditUserForm user={user} onClose={goBack} locations={locations} />
