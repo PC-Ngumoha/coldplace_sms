@@ -257,7 +257,23 @@ export default function Settings() {
                               </DropdownMenuGroup>
                               <DropdownMenuSeparator />
                               <DropdownMenuGroup>
-                                <DropdownMenuItem>Delete</DropdownMenuItem>
+                                <DropdownMenuItem
+                                  onClick={async () => {
+                                    try {
+                                      await userApi.delete(user.id);
+                                      showSuccess("User deleted successfully");
+                                      await fetchUsers();
+                                    } catch (err) {
+                                      showError(
+                                        isAxiosError(err)
+                                          ? err.response?.data.error
+                                          : "Oops ! please try again later.",
+                                      );
+                                    }
+                                  }}
+                                >
+                                  Delete
+                                </DropdownMenuItem>
                               </DropdownMenuGroup>
                             </DropdownMenuContent>
                           </DropdownMenu>

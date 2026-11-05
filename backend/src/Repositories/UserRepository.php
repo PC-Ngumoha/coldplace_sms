@@ -88,4 +88,12 @@ class UserRepository
 
         return $stmt->rowCount();
     }
+
+    public function deleteUser(int $userId): int {
+        $sql = 'DELETE FROM users WHERE id = ?';
+        $stmt = $this->conn->prepare($sql);
+        $stmt->execute([$userId]);
+
+        return $stmt->rowCount();
+    }
 }

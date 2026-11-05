@@ -44,6 +44,8 @@ return function (SlimApp $app) {
 
         $group->patch('/users/{id:[0-9]+}/changePassword', App\Controllers\Users::class . ':changePassword');
 
+        $group->delete('/users/{id:[0-9]+}', App\Controllers\Users::class . ':delete');
+
         $group->get('/me', App\Controllers\Users::class . ':me');
 
     })->add(new JwtAuthMiddleware($_ENV['JWT_SECRET']));

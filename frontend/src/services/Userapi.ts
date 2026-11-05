@@ -25,4 +25,9 @@ export const userApi = {
     api
       .patch<ProcessResponse>(`${USER_PATHS.create}/${id}`, data)
       .then((r) => r.data),
+
+  delete: (id: number) =>
+    api
+      .delete<ProcessResponse>(`${USER_PATHS.create}/${id}`)
+      .then((r) => r.data),
 };
