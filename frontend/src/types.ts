@@ -10,6 +10,10 @@ export interface User {
   status: "active" | "inactive";
 }
 
+export interface UpdatePassword {
+  password: string;
+}
+
 export interface CreateUser {
   email: string;
   password: string;

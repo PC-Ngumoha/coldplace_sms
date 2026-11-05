@@ -44,6 +44,12 @@ export default function Settings() {
     });
   };
 
+  const openChangePasswordForm = (id: number) => {
+    navigate(`/edit/users/${id}/changePassword`, {
+      state: { background: location },
+    });
+  };
+
   const openEditLocationForm = (id: number) => {
     navigate(`/edit/locations/${id}`, {
       state: { background: location },
@@ -202,12 +208,22 @@ export default function Settings() {
                                 </button>
                               }
                             />
-                            <DropdownMenuContent>
+                            <DropdownMenuContent className="w-50">
                               <DropdownMenuGroup>
                                 <DropdownMenuItem
                                   onClick={() => openEditUserForm(user.id)}
                                 >
                                   Edit
+                                </DropdownMenuItem>
+                              </DropdownMenuGroup>
+                              <DropdownMenuSeparator />
+                              <DropdownMenuGroup>
+                                <DropdownMenuItem
+                                  onClick={() =>
+                                    openChangePasswordForm(user.id)
+                                  }
+                                >
+                                  Change Password
                                 </DropdownMenuItem>
                               </DropdownMenuGroup>
                               <DropdownMenuSeparator />

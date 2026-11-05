@@ -15,7 +15,7 @@ CREATE TABLE IF NOT EXISTS users (
 
     CONSTRAINT chk_role CHECK (role IN ('executive', 'admin', 'manager', 'central', 'outlet', 'viewer')),
     CONSTRAINT chk_usr_status CHECK (status IN ('active', 'inactive')),
-    CONSTRAINT fk_user_location FOREIGN KEY (location_id) REFERENCES locations(id)
+    CONSTRAINT fk_user_location FOREIGN KEY (location_id) REFERENCES locations(id) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Refresh tokens
@@ -23,10 +23,9 @@ CREATE TABLE IF NOT EXISTS refresh_tokens (
     id                      INT PRIMARY KEY AUTO_INCREMENT,
     user_id                 INT NOT NULL,
     token_hash              CHAR(64) NOT NULL,
-    expires_at              INT NOT NULL,
-    revoked_at              INT,
-    replaced_by             INT,
+    expires_at              BIGINT NOT NULL,
+    revoked_at              BIGINT,
     created_at              TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     UNIQUE KEY uq_token_hash (token_hash),
-    CONSTRAINT fk_rt_user FOREIGN KEY (user_id) REFERENCES users(id)
+    CONSTRAINT fk_rt_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

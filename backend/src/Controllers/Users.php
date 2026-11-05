@@ -108,19 +108,17 @@ class Users
     public function changePassword(Request $req, Response $res, array $args): Response
     {
         $userId = (int) $args['id'];
-        $data = $req->getParsedBody();
-        $old = (string) $data['old_password'] ?? '';
-        $new = (string) $data['new_password'] ?? '';
+        $data = $req->getParsedBody() ?? [];
 
-        $user = $this->repo->retrieveUser($userId);
-
-        if (!$user) {
-            return $this->json(['error' => 'Not found'], 404);
+        if (empty($data)) {
+            return $this->json(['error' => 'Missing parameter'], 400);
         }
 
-        if (!$old || !password_verify($old, $user['password_hash'])) {
-            return $this->json(['error' => 'Password missing or incorrect'], 401);
+        if ($userId === self::ROOT_ADMIN) {
+            return $this->json(['error' => 'This operation is forbidden'], 403);
         }
+
+        $new = (string) $data['password'] ?? '';
 
         if ($new === '') {
             return $this->json(['error' => 'New password required', 400]);
@@ -128,10 +126,12 @@ class Users
 
         $rows = $this->repo->updatePassword($userId, $new);
 
-        return $this->json([
-            'message' => 'Record updated',
-            'row_count' => $rows
-            ]);
+        return $rows > 0 
+            ? $this->json([
+                'message' => 'Record updated',
+                'row_count' => $rows
+                ])
+            : $this->json(['error' => 'Not found'], 404);
     }
 
     public function deactivate(Request $req, Response $res, array $args): Response {

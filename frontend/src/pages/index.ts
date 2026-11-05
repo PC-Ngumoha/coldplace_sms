@@ -12,6 +12,7 @@ import NotFound from "./routes/NotFound";
 import Home from "./Home";
 import ManageUsers from "./segments/ManageUsers";
 import ManageLocations from "./segments/ManageLocations";
+import AdminChangePassword from "./segments/AdminChangePassword";
 
 export {
   Home,
@@ -28,4 +29,5 @@ export {
   NotFound,
   ManageUsers,
   ManageLocations,
+  AdminChangePassword,
 };

@@ -16,6 +16,7 @@ import {
   Settings,
   ManageUsers,
   ManageLocations,
+  AdminChangePassword,
 } from "@/pages";
 import { useLocation } from "react-router";
 
@@ -53,6 +54,10 @@ export default function App() {
         <Routes>
           <Route path="/add/users" element={<ManageUsers />} />
           <Route path="/edit/users/:id" element={<ManageUsers />} />
+          <Route
+            path="/edit/users/:id/changePassword"
+            element={<AdminChangePassword />}
+          />
           <Route path="/add/locations" element={<ManageLocations />} />
           <Route path="/edit/locations/:id" element={<ManageLocations />} />
         </Routes>
