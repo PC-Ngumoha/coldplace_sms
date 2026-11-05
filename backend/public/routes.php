@@ -25,9 +25,15 @@ return function (SlimApp $app) {
 
         $group->get('/locations/{id:[0-9]+}', App\Controllers\Locations::class . ':retrieve');
 
+        $group->post('/locations', App\Controllers\Locations::class . ':create');
+
         $group->post('/locations/{id:[0-9]+}/deactivate', App\Controllers\Locations::class . ':deactivate');
 
         $group->post('/locations/{id:[0-9]+}/activate', App\Controllers\Locations::class . ':activate');
+
+        $group->patch('/locations/{id:[0-9]+}', App\Controllers\Locations::class . ':update');
+
+        $group->delete('/locations/{id:[0-9]+}', App\Controllers\Locations::class . ':delete');
 
 
         $group->get('/users', App\Controllers\Users::class . ':list');

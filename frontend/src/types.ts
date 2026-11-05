@@ -49,6 +49,11 @@ export interface Location {
   status: "active" | "inactive";
 }
 
+export interface ModifyLocation {
+  name: string;
+  address: string | null;
+}
+
 export interface ProcessResponse {
   error?: string;
   message?: string;

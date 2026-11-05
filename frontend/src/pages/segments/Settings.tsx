@@ -159,7 +159,7 @@ export default function Settings() {
           <div className="mt-3 overflow-visible rounded-lg border border-slate-200/80 bg-white shadow-sm">
             <TabsContent value="users & roles">
               <div className="overflow-x-auto rounded-lg">
-                <table className="w-full min-w-[680px] text-left">
+                <table className="w-full min-w-[680px] table-fixed text-left">
                   <thead className="text-[9px] font-semibold uppercase tracking-wide text-slate-500">
                     <tr>
                       <th className="px-4 py-3.5 sm:px-5">Name</th>
@@ -296,7 +296,7 @@ export default function Settings() {
             </TabsContent>
             <TabsContent value="locations">
               <div className="overflow-x-auto rounded-lg">
-                <table className="w-full min-w-[520px] text-left">
+                <table className="w-full min-w-[520px] table-fixed text-left">
                   <thead className="text-[9px] font-semibold uppercase tracking-wide text-slate-500">
                     <tr>
                       <th className="px-5 py-3.5">Location</th>
@@ -311,7 +311,7 @@ export default function Settings() {
                         <td className="px-5 py-3.5 font-medium text-teal-950">
                           {location.name}
                         </td>
-                        <td className="px-5 py-3.5 text-slate-600">
+                        <td className="px-5 py-3.5 text-slate-600 text-wrap">
                           {location.address ?? "_______"}
                         </td>
                         <td className="px-5 py-3.5">
@@ -394,7 +394,25 @@ export default function Settings() {
                               </DropdownMenuGroup>
                               <DropdownMenuSeparator />
                               <DropdownMenuGroup>
-                                <DropdownMenuItem>Delete</DropdownMenuItem>
+                                <DropdownMenuItem
+                                  onClick={async () => {
+                                    try {
+                                      await locationApi.delete(location.id);
+                                      showSuccess(
+                                        "Location deleted successfully",
+                                      );
+                                      await fetchLocations();
+                                    } catch (err) {
+                                      showError(
+                                        isAxiosError(err)
+                                          ? err.response?.data.error
+                                          : "Oops! please try again later",
+                                      );
+                                    }
+                                  }}
+                                >
+                                  Delete
+                                </DropdownMenuItem>
                               </DropdownMenuGroup>
                             </DropdownMenuContent>
                           </DropdownMenu>

@@ -1,6 +1,9 @@
 import type { Location } from "@/types";
+import { locationApi } from "@/services/Locationapi";
+import { showSuccess } from "@/services/toasts";
 import { X } from "lucide-react";
-import { useState } from "react";
+import { useState, type SubmitEvent } from "react";
+import { isAxiosError } from "axios";
 
 export default function EditLocationForm({
   onClose,
@@ -13,9 +16,26 @@ export default function EditLocationForm({
     name: location.name,
     address: location.address,
   });
+  const [error, setError] = useState("");
 
   const updateField = (field: string, value: string) => {
     setField((prev) => ({ ...prev, [field]: value }));
+  };
+
+  const handleSubmit = async (evt: SubmitEvent<HTMLFormElement>) => {
+    evt.preventDefault();
+    console.log(field);
+    try {
+      await locationApi.update(location.id, field);
+      showSuccess("Location created successfully");
+      onClose();
+    } catch (err) {
+      setError(
+        isAxiosError(err)
+          ? err.response?.data.error
+          : "Oops! please try again later.",
+      );
+    }
   };
 
   return (
@@ -37,7 +57,7 @@ export default function EditLocationForm({
             id="add-user-title"
             className="text-base font-semibold text-slate-900"
           >
-            Add Location
+            Edit Location
           </h2>
           <button
             onClick={() => onClose()}
@@ -47,13 +67,17 @@ export default function EditLocationForm({
             <X size={24} />
           </button>
         </div>
-        <form
-          className="mt-5 space-y-4"
-          onSubmit={(event) => {
-            event.preventDefault();
-            // setShowAddLocation(false);
-          }}
-        >
+
+        {error && (
+          <div
+            role="alert"
+            className="mt-3 rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700"
+          >
+            {error}
+          </div>
+        )}
+
+        <form className="mt-5 space-y-4" onSubmit={handleSubmit}>
           <label className="block text-xs font-medium text-slate-700">
             Name
             <input
@@ -89,7 +113,7 @@ export default function EditLocationForm({
               type="submit"
               className="rounded-md bg-teal-blue px-3 py-2 text-xs font-semibold text-white hover:bg-darker-teal-blue"
             >
-              Add Location
+              Update Location
             </button>
           </div>
         </form>

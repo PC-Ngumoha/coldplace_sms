@@ -22,7 +22,8 @@ class Locations {
         return $this->json($locations);
     }
 
-    public function retrieve(Request $req, Response $res, array $args): Response {
+    public function retrieve(Request $req, Response $res, array $args): Response
+    {
         $locationId = (int) $args['id'];
 
         $location = $this->repo->retrieveLocation($locationId);
@@ -34,7 +35,41 @@ class Locations {
         return $this->json($location);
     }
 
-    public function deactivate(Request $req, Response $res, array $args): Response {
+    public function create(Request $req, Response $res): Response
+    {
+        $body = $req->getParsedBody() ?? [];
+
+        if (empty($body) || !$body['name']) {
+            return $this->json(['error' => 'Missing parameters'], 400);
+        }
+
+        $rows = $this->repo->createLocation($body);
+
+        return $this->json([
+            'message' => 'Record created',
+            'row_count' => $rows,
+        ], 201);
+    }
+
+    public function update(Request $req, Response $res, array $args): Response 
+    {
+        $locationId = (int) $args['id'];
+        $body = $req->getParsedBody() ?? [];
+
+        if (empty($body) || !$body['name']) {
+            return $this->json(['error' => 'Missing parameters'], 400);
+        }
+
+        $rows = $this->repo->updateLocation($locationId, $body);
+
+        return $this->json([
+            'message' => 'Record updated',
+            'row_count' => $rows,
+        ]);
+    }
+
+    public function deactivate(Request $req, Response $res, array $args): Response
+    {
         $locationId = (int) $args['id'];
         $rows = 0;
 
@@ -58,7 +93,8 @@ class Locations {
         ]);
     }
 
-    public function activate(Request $req, Response $res, array $args): Response {
+    public function activate(Request $req, Response $res, array $args): Response
+    {
         $locationId = (int) $args['id'];
         $rows = 0;
 
@@ -80,5 +116,19 @@ class Locations {
             'message' => 'Record Updated',
             'row_count' => $rows,
         ]);
+    }
+
+    public function delete(Request $req, Response $res, array $args): Response
+    {
+        $locationId = (int) $args['id'];
+
+        $rows = $this->repo->deleteLocation($locationId);
+
+        return $rows > 0 
+            ? $this->json([
+                'message' => 'Record deleted',
+                'row_count' => $rows,
+            ])
+            : $this->json(['error' => 'Not found'], 404);
     }
 }

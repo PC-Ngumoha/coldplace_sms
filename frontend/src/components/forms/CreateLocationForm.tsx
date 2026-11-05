@@ -1,5 +1,8 @@
 import { X } from "lucide-react";
-import { useState } from "react";
+import { useState, type SubmitEvent } from "react";
+import { isAxiosError } from "axios";
+import { locationApi } from "@/services/Locationapi";
+import { showSuccess } from "@/services/toasts";
 
 export default function CreateLocationForm({
   onClose,
@@ -8,11 +11,28 @@ export default function CreateLocationForm({
 }) {
   const [field, setField] = useState({
     name: "",
-    address: "",
+    address: null,
   });
+  const [error, setError] = useState("");
 
   const updateField = (field: string, value: string) => {
     setField((prev) => ({ ...prev, [field]: value }));
+  };
+
+  const handleSubmit = async (evt: SubmitEvent<HTMLFormElement>) => {
+    evt.preventDefault();
+    console.log(field);
+    try {
+      await locationApi.create(field);
+      showSuccess("Location created successfully");
+      onClose();
+    } catch (err) {
+      setError(
+        isAxiosError(err)
+          ? err.response?.data.error
+          : "Oops! please try again later.",
+      );
+    }
   };
 
   return (
@@ -44,13 +64,17 @@ export default function CreateLocationForm({
             <X size={24} />
           </button>
         </div>
-        <form
-          className="mt-5 space-y-4"
-          onSubmit={(event) => {
-            event.preventDefault();
-            // setShowAddLocation(false);
-          }}
-        >
+
+        {error && (
+          <div
+            role="alert"
+            className="mt-3 rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700"
+          >
+            {error}
+          </div>
+        )}
+
+        <form className="mt-5 space-y-4" onSubmit={handleSubmit}>
           <label className="block text-xs font-medium text-slate-700">
             Name
             <input
@@ -65,11 +89,10 @@ export default function CreateLocationForm({
           <label className="block text-xs font-medium text-slate-700">
             Address
             <textarea
-              required
               className="mt-1.5 block w-full rounded-md border border-slate-200 px-3 py-2 text-sm outline-none 
                   focus:border-teal-blue focus:ring-1 focus:ring-teal-blue"
               placeholder="e.g No. 123 Adebayo Chika Str, Ikeja, Lagos."
-              value={field.address}
+              value={field.address ?? ""}
               onChange={(evt) => updateField("address", evt.target.value)}
             />
           </label>

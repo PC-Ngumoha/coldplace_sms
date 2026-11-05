@@ -12,4 +12,5 @@ export const USER_PATHS = {
 
 export const LOCATION_PATHS = {
   list: "/api/locations",
+  create: "/api/locations",
 };

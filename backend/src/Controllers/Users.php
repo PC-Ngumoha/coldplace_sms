@@ -43,9 +43,9 @@ class Users
 
     public function create(Request $req, Response $res): Response
     {
-        $body = $req->getParsedBody();
+        $body = $req->getParsedBody() ?? [];
 
-        if (!$body['name'] || !$body['email'] || !$body['password'] || !$body['role']) {
+        if (empty($body) || !$body['name'] || !$body['email'] || !$body['password'] || !$body['role']) {
             return $this->json(['error' => 'Missing parameter'], 400);
         }
 
@@ -64,12 +64,27 @@ class Users
         return $this->json($result, 201);
     }
 
+    public function me(Request $req, Response $res): Response
+    {
+        $userId = $req->getAttribute('jwt')['sub']; // get user id from JWT
+
+        $user = $this->repo->retrieveUser($userId);
+
+        if (!$user) {
+            return $this->json(['error' => 'User not found'], 404);
+        }
+
+        $payload = $this->filterOutput(source: $user, excluded: ['password_hash', 'location_id']);
+
+        return $this->json($payload);
+    }
+
     public function update(Request $req, Response $res, array $args): Response
     {
         $userId = (int) $args['id'];
-        $body = $req->getParsedBody();
+        $body = $req->getParsedBody() ?? [];
 
-        if (!$body['name'] || !$body['email'] || !$body['role']) {
+        if (empty($body) || !$body['name'] || !$body['email'] || !$body['role']) {
             return $this->json(['error' => 'Missing parameter'], 400);
         }
 
@@ -85,38 +100,6 @@ class Users
             'message' => 'Record updated',
             'row_count' => $rows,
         ]);
-    }
-
-    public function delete(Request $req, Response $res, array $args): Response
-    {
-        $userId = (int) $args['id'];
-        $owner = (int) $req->getAttribute('jwt')['sub'];
-
-        if ($userId === self::ROOT_ADMIN || $userId === $owner) {
-            return $this->json(['error' => 'This operation is forbidden'], 403);
-        }
-
-        $rows = $this->repo->deleteUser($userId);
-
-        return $this->json([
-            'message' => 'Record deleted',
-            'row_count' => $rows
-        ]);
-    }
-
-    public function me(Request $req, Response $res): Response
-    {
-        $userId = $req->getAttribute('jwt')['sub']; // get user id from JWT
-
-        $user = $this->repo->retrieveUser($userId);
-
-        if (!$user) {
-            return $this->json(['error' => 'User not found'], 404);
-        }
-
-        $payload = $this->filterOutput(source: $user, excluded: ['password_hash', 'location_id']);
-
-        return $this->json($payload);
     }
 
     /**
@@ -204,6 +187,25 @@ class Users
             'message' => 'Record updated',
             'row_count' => $rows,
         ]);
+    }
+
+    public function delete(Request $req, Response $res, array $args): Response
+    {
+        $userId = (int) $args['id'];
+        $owner = (int) $req->getAttribute('jwt')['sub'];
+
+        if ($userId === self::ROOT_ADMIN || $userId === $owner) {
+            return $this->json(['error' => 'This operation is forbidden'], 403);
+        }
+
+        $rows = $this->repo->deleteUser($userId);
+
+        return $rows > 0
+            ? $this->json([
+                'message' => 'Record deleted',
+                'row_count' => $rows
+            ])
+            : $this->json(['error' => 'Not found'], 404);
     }
 
 }

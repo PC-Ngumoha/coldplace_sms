@@ -9,18 +9,21 @@ class LocationRepository
 {
     private PDO $conn;
 
-    public function __construct(Database $db) {
+    public function __construct(Database $db)
+    {
         $this->conn = $db->connect();
     }
 
 
-    public function showAllLocations(): array {
+    public function showAllLocations(): array
+    {
         $sql = 'SELECT * FROM locations';
 
         return $this->conn->query($sql)->fetchAll();
     }
 
-    public function retrieveLocation(int $locationId): array | bool {
+    public function retrieveLocation(int $locationId): array | bool
+    {
         $sql = 'SELECT * FROM locations WHERE id = ?';
 
         $stmt = $this->conn->prepare($sql);
@@ -29,7 +32,20 @@ class LocationRepository
         return $stmt->fetch();
     }
 
-    public function updateLocation(int $locationId, array $data): int {
+    public function createLocation(array $data): int
+    {
+        $sql = 'INSERT INTO locations (name, address) VALUES (? , ?)';
+        $stmt = $this->conn->prepare($sql);
+        $stmt->execute([
+            $data['name'],
+            $data['address']
+        ]);
+
+        return $stmt->rowCount();
+    }
+
+    public function updateLocation(int $locationId, array $data): int
+    {
         $sql = 'UPDATE locations SET name = ?, address = ?
                 WHERE id = ?';
         
@@ -43,10 +59,20 @@ class LocationRepository
         return $stmt->rowCount();
     }
 
-    public function setStatus(int $locationId, string $status): int {
+    public function setStatus(int $locationId, string $status): int
+    {
         $sql = 'UPDATE locations SET status = ? WHERE id = ?';
         $stmt = $this->conn->prepare($sql);
         $stmt->execute([$status, $locationId]);
+
+        return $stmt->rowCount();
+    }
+
+    public function deleteLocation(int $locationId): int
+    {
+        $sql = 'DELETE FROM locations WHERE id = ?';
+        $stmt = $this->conn->prepare($sql);
+        $stmt->execute([ $locationId ]);
 
         return $stmt->rowCount();
     }
