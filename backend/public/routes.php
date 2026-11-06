@@ -6,9 +6,10 @@ use Psr\Http\Message\ResponseInterface as Response;
 use Slim\Routing\RouteCollectorProxy;
 
 use App\Middleware\JwtAuthMiddleware;
+use App\Middleware\CsrfGuardMiddleware;
 
 
-return function (SlimApp $app) {
+return function (SlimApp $app, CsrfGuardMiddleware $csrf) {
 
     $app->get('/testing', function (Request $request, Response $response) {
         $body = [
@@ -61,5 +62,5 @@ return function (SlimApp $app) {
         $auth->post('/login', App\Controllers\Auth::class . ':login');
         $auth->post('/refresh', App\Controllers\Auth::class . ':refresh');
         $auth->post('/logout', App\Controllers\Auth::class . ':logout');
-    });
+    })->add($csrf);
 };

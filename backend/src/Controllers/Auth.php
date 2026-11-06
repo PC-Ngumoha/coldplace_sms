@@ -7,13 +7,15 @@ use Psr\Http\Message\ResponseInterface as Response;
 
 use App\Repositories\AuthRepository;
 use App\Services\TokenService;
+use App\Services\RefreshCookie;
 
 class Auth
 {
     use \App\Helpers\ResponseHelper;
 
     public function __construct(private AuthRepository $repo,
-                                private TokenService $tokens) {}
+                                private TokenService $tokens,
+                                private RefreshCookie $cookie) {}
 
     public function login(Request $req, Response $res): Response
     {
@@ -35,49 +37,60 @@ class Auth
 
 
         $refresh = $this->tokens->createRefreshToken($user['id']);
-        return $this->json($this->tokenResponse($user, $refresh));
+
+
+        $res = $this->json([
+            'access_token' => $this->tokens->createAccessToken($user),
+            'token_type' => 'Bearer',
+            'expires_in' => (int) $_ENV['JWT_TTL'],
+        ]);
+
+        return $this->cookie->set($res, $refresh);
     }
 
     public function refresh(Request $req, Response $res): Response
     {
-        $raw = ($req->getParsedBody() ?? [])['refresh_token'] ?? null;
+        $raw = $this->cookie->read($req);
 
-        $result = is_string($raw) ? $this->tokens->rotate($raw) : null;
+        $result = $raw !== null ? $this->tokens->rotate($raw) : null;
 
         if ($result === null) {
-            return $this->json(['error' => 'Invalid refresh token'], 401);
+            return $this->cookie->clear(
+                $this->json(['error' => 'Invalid refresh token'], 401)
+            );
         }
 
         $user = $this->repo->retrieveUserById((int) $result['user_id']);
         if (!$user) {
-            return $this->json(['error' => 'Invalid refresh token'], 401);
+            return $this->cookie->clear(
+                $this->json(['error' => 'Invalid refresh token'], 401)
+            );
         }
 
         if ($user['status'] === \App\Controllers\Users::INACTIVE) {
             // Revoke all tokens linked to this user.
             $this->tokens->revokeAllByToken($result['refresh_token']);
-            return $this->json(['error' => 'Your account has been deactivated'], 401);
+            return $this->cookie->clear(
+                $this->json(['error' => 'Your account has been deactivated'], 401)
+            );
         }
 
-        return $this->json($this->tokenResponse($user, $result['refresh_token']));
+        
+        $res = $this->json([
+            'access_token' => $this->tokens->createAccessToken($user),
+            'token_type' => 'Bearer',
+            'expires_in' => (int) $_ENV['JWT_TTL'],
+        ]);
+
+        return $this->cookie->set($res, $result['refresh_token']);
     }
 
     public function logout(Request $req, Response $res): Response
     {
-        $raw = ($req->getParsedBody() ?? [])['refresh_token'] ?? null;
-        if (is_string($raw)) {
+        $raw = $this->cookie->read($req);
+        if ($raw) {
             $this->tokens->revokeAllByToken($raw);
         }
-        return $this->json(['message' => 'Logged out']);
-    }
-
-    private function tokenResponse(array $user, string $refreshToken): array
-    {
-        return [
-            'access_token' => $this->tokens->createAccessToken($user),
-            'token_type' => 'Bearer',
-            'expires_in' => (int) $_ENV['JWT_TTL'],
-            'refresh_token' => $refreshToken,
-        ];
+        return $this->cookie->clear($this->json(['message' => 'Logged out']));
     }
 }

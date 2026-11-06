@@ -1,11 +1,19 @@
-import axios, { AxiosError, type InternalAxiosRequestConfig } from "axios";
-import { tokenStorage } from "./TokenStorage";
+import axios, {
+  AxiosError,
+  isAxiosError,
+  type InternalAxiosRequestConfig,
+} from "axios";
+// import { tokenStorage } from "./TokenStorage";
 import { type LoginResponse } from "@/types";
 import { AUTH_PATHS } from "@/lib/endpoints";
 
 const BASE_URL = import.meta.env.VITE_API_URL ?? "http://localhost:8080";
 
-// Endpoints
+const NO_REFRESH_PATHS = [
+  AUTH_PATHS.login,
+  AUTH_PATHS.logout,
+  AUTH_PATHS.refresh,
+];
 
 let accessToken: string | null = null;
 
@@ -22,31 +30,50 @@ export const registerOnForcedLogoutHandler = (fn: () => void) => {
 };
 
 // Main axios instance. Has interceptors
-export const api = axios.create({ baseURL: BASE_URL });
+export const api = axios.create({
+  baseURL: BASE_URL,
+  withCredentials: true,
+  headers: {
+    "X-Requested-With": "axios",
+  },
+});
 
 // Bare instance: Used internally for silent refresh. Has no interceptors
-const bareApi = axios.create({ baseURL: BASE_URL });
+const bareApi = axios.create({
+  baseURL: BASE_URL,
+  withCredentials: true,
+  timeout: 10_000,
+  headers: {
+    "X-Requested-With": "axios",
+  },
+});
 
-/** ----------- Single flight Refresh ------------ */
+/**----- Refresh: Single flight per tab, serialized across tabs */
+const LOCK_NAME = "auth-refresh";
+
+async function requestNewAccessToken(): Promise<string> {
+  const res = await bareApi.post<LoginResponse>(AUTH_PATHS.refresh);
+  setAccessToken(res.data.access_token);
+  return res.data.access_token;
+}
+
+// locked into refreshing one tab at a time, other tabs queue & run in turn
+function withCrossTabLock<T>(fn: () => Promise<T>): Promise<T> {
+  if (typeof navigator !== "undefined" && "locks" in navigator) {
+    return navigator.locks.request(LOCK_NAME, fn);
+  }
+
+  return fn(); // Older browsers that don't support web locks.
+}
+
 let refreshPromise: Promise<string> | null = null;
 
 export function refreshSession(): Promise<string> {
-  // If a refresh in progress, halt others.
-  if (refreshPromise) return refreshPromise;
-
-  const refreshToken = tokenStorage.getRefreshToken();
-  if (!refreshToken) return Promise.reject(new Error("No refresh token"));
-
-  refreshPromise = bareApi
-    .post<LoginResponse>(AUTH_PATHS.refresh, { refresh_token: refreshToken })
-    .then((res) => {
-      setAccessToken(res.data.access_token);
-      tokenStorage.setRefreshToken(res.data.refresh_token);
-      return res.data.access_token;
-    })
-    .finally(() => {
+  if (!refreshPromise) {
+    refreshPromise = withCrossTabLock(requestNewAccessToken).finally(() => {
       refreshPromise = null;
     });
+  }
 
   return refreshPromise;
 }
@@ -74,17 +101,12 @@ api.interceptors.response.use(
     // retrieve original request
     const originalReq = error.config as RetryableConfig | undefined;
 
-    // Was the call made to an Authentication route like login or refresh ?
-    const isAuthCall =
-      originalReq?.url === AUTH_PATHS.login ||
-      originalReq?.url === AUTH_PATHS.refresh;
-
     // Terminating conditions: Prevent an infinite loop
     if (
       !originalReq ||
       error.response?.status !== 401 ||
       originalReq._retry ||
-      isAuthCall
+      NO_REFRESH_PATHS.includes(originalReq.url ?? "")
     ) {
       return Promise.reject(error);
     }
@@ -96,7 +118,9 @@ api.interceptors.response.use(
       originalReq.headers.Authorization = `Bearer ${newAccessToken}`;
       return api(originalReq); // retry request
     } catch (refreshError) {
-      onForcedLogout();
+      if (isAxiosError(refreshError) && refreshError.response) {
+        onForcedLogout();
+      }
       return Promise.reject(refreshError);
     }
   },

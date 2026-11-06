@@ -5,6 +5,7 @@ use Psr\Container\ContainerInterface;
 
 use App\Database;
 use App\Services\TokenService;
+use App\Services\RefreshCookie;
 
 return [
     Database::class => function () {
@@ -27,4 +28,11 @@ return [
             refreshTtl: (int) $_ENV['REFRESH_TTL']
         );
     }),
+
+    RefreshCookie::class => function () {
+        return new RefreshCookie(
+            ttl: (int) $_ENV['REFRESH_TTL'],
+            secure: filter_var($_ENV['COOKIE_SECURE'] ?? 'true', FILTER_VALIDATE_BOOLEAN),
+        );
+    },
 ];

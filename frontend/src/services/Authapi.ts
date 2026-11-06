@@ -8,6 +8,5 @@ export const authApi = {
 
   getMe: () => api.get<User>(AUTH_PATHS.me).then((r) => r.data),
 
-  logout: (refreshToken: string) =>
-    api.post(AUTH_PATHS.logout, { refresh_token: refreshToken }),
+  logout: () => api.post(AUTH_PATHS.logout),
 };

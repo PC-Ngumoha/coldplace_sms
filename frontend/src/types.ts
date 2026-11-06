@@ -26,7 +26,7 @@ export type EditUser = Omit<CreateUser, "password">;
 
 export interface LoginResponse {
   access_token: string;
-  refresh_token: string;
+  // refresh_token: string; // Refresh token is now in HttpOnly cookie.
   expires_in: number;
   token_type: string;
 }

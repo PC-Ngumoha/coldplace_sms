@@ -6,14 +6,17 @@ import {
   useMemo,
   type ReactNode,
   useContext,
+  useRef,
 } from "react";
+import { isAxiosError } from "axios";
 import { authApi } from "../services/Authapi";
 import {
   refreshSession,
   registerOnForcedLogoutHandler,
   setAccessToken,
 } from "../api/client";
-import { tokenStorage } from "../api/TokenStorage";
+// import { tokenStorage } from "../api/TokenStorage";
+import { sessionHint } from "@/api/Sessionhint";
 import type { AuthStatus, LoginCredentials, User } from "../types";
 
 interface AuthContextValue {
@@ -30,98 +33,107 @@ export const AuthContext = createContext<AuthContextValue | undefined>(
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
-  const [status, setStatus] = useState<AuthStatus>("loading");
+  const [status, setStatus] = useState<AuthStatus>(() =>
+    sessionHint.exists() ? "loading" : "unauthenticated",
+  );
 
-  // Erases everything locally
-  const clearSession = useCallback(() => {
+  const needsBootstrap = useRef(status === "loading"); // Keeps tracking of the auth state we started in.
+
+  // Erases local browser session
+  const dropLocalSession = useCallback(() => {
     setAccessToken(null);
-    tokenStorage.clear();
     setUser(null);
     setStatus("unauthenticated");
   }, []);
 
-  // Enables API client have the ability to force a logout if silent refresh fails.
-  useEffect(() => {
-    registerOnForcedLogoutHandler(clearSession);
-  }, [clearSession]);
+  // Erases session across tabs
+  const endSession = useCallback(() => {
+    sessionHint.clear();
+    dropLocalSession();
+  }, [dropLocalSession]);
 
-  // Turn a surviving refresh token into a live session
-  useEffect(() => {
-    let cancelled = false;
-
-    async function bootstrap() {
-      if (!tokenStorage.getRefreshToken()) {
-        setStatus("unauthenticated");
-        return;
-      }
-
+  // Turns the cookie into a live session in this tab
+  const restoreSession = useCallback(
+    async (isCancelled: () => boolean = () => false) => {
       try {
-        await refreshSession();
+        await refreshSession(); // Cross-tab lock occurs internally
+        if (isCancelled()) return;
         const me = await authApi.getMe();
-
-        if (cancelled) return;
+        if (isCancelled()) return;
         setUser(me);
         setStatus("authenticated");
-      } catch {
-        if (!cancelled) clearSession();
+      } catch (err) {
+        if (isCancelled()) return;
+        if (isAxiosError(err) && err.response) {
+          endSession(); // End session across all tabs if server rejects.
+        } else {
+          dropLocalSession(); // Otherwise, just get rid of current tab's session
+        }
       }
-    }
+    },
+    [endSession, dropLocalSession],
+  );
 
-    bootstrap();
+  // Enables API client have the ability to force a logout if silent refresh fails.
+  useEffect(() => {
+    registerOnForcedLogoutHandler(endSession);
+  }, [endSession]);
 
+  // Bootstrap: Asks the browser if user has ever had a session
+  useEffect(() => {
+    if (!needsBootstrap.current) return;
+    let cancelled = false;
+    restoreSession(() => cancelled);
     return () => {
       cancelled = true;
     };
-  }, [clearSession]);
+  }, [restoreSession]);
 
-  // Cross-tab logout: log out in a browser tab should trigger logout in other tabs.
-  // This event will only be triggered in instances of the website running on other tabs.
+  // Cross-tab sync: fires only for session changes made on other tabs.
   useEffect(() => {
-    const onStorage = (evt: StorageEvent) => {
-      if (evt.key === tokenStorage.key && evt.newValue === null) {
-        setAccessToken(null);
-        setUser(null);
-        setStatus("unauthenticated");
-      }
-    };
-
-    window.addEventListener("storage", onStorage);
-    return () => window.removeEventListener("storage", onStorage);
-  }, []);
+    sessionHint.subscribe({
+      onSessionEnded: dropLocalSession, // another tab logged out: log out
+      onSessionStarted: () => {
+        restoreSession(); // another tab logged in: adopt that session
+      },
+    });
+  }, [dropLocalSession, restoreSession]);
 
   //Login
   const login = useCallback(
     async (credentials: LoginCredentials) => {
-      const { access_token: accessToken, refresh_token: refreshToken } =
-        await authApi.login(credentials);
+      const { access_token: accessToken } = await authApi.login(credentials);
 
       setAccessToken(accessToken);
-      tokenStorage.setRefreshToken(refreshToken);
+      // tokenStorage.setRefreshToken(refreshToken);
 
       try {
         // Try to get the user profile.
         const me = await authApi.getMe();
+        sessionHint.set();
         setUser(me);
         setStatus("authenticated");
       } catch (err) {
-        clearSession(); // Prevents half-logged in states.
+        // If the server already issued a cookie, ask it to clear that.
+        await authApi.logout().catch(() => {});
+        dropLocalSession();
         throw err;
       }
     },
-    [clearSession],
+    [dropLocalSession],
   );
 
   // Logout
   const logout = useCallback(async () => {
-    const refreshToken = tokenStorage.getRefreshToken();
+    // const refreshToken = tokenStorage.getRefreshToken();
     try {
-      if (refreshToken) await authApi.logout(refreshToken);
+      await authApi.logout();
     } catch {
       // Clean token
     } finally {
-      clearSession();
+      endSession();
     }
-  }, [clearSession]);
+  }, [endSession]);
 
   const value = useMemo(
     () => ({ user, status, login, logout }),

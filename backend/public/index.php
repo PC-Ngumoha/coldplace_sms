@@ -11,18 +11,12 @@ use DI\ContainerBuilder;
 
 use App\Middleware\AddJsonToResponse;
 use App\Middleware\CorsMiddleware;
+use App\Middleware\CsrfGuardMiddleware;
 
 $dotenv = Dotenv\Dotenv::createImmutable(APP_ROOT);
 $dotenv->load();
 
 $allowedOrigins = array_filter(array_map('trim', explode(',', $_ENV['ALLOWED_ORIGINS'] ?? '')));
-
-// $pdo = (new App\Database(
-//     host: $_ENV['DB_HOST'] ?? '',
-//     dbName: $_ENV['DB_NAME'] ?? '',
-//     user: $_ENV['DB_USER'] ?? '',
-//     password: $_ENV['DB_PASSWORD'] ?? '',
-// ))->connect();
 
 $builder = new ContainerBuilder();
 $container = $builder->addDefinitions(
@@ -39,6 +33,8 @@ $app->addErrorMiddleware(true, true, true);
 $app->add(new AddJsonToResponse);
 $app->add(new CorsMiddleware($allowedOrigins));
 
-(require APP_ROOT . '/public/routes.php')($app);
+$csrf = new CsrfGuardMiddleware($allowedOrigins);
+
+(require APP_ROOT . '/public/routes.php')($app, $csrf);
 
 $app->run();
