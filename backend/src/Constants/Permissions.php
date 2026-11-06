@@ -36,5 +36,6 @@ class Permissions
         self::USERS_CHANGE_PASSWORD_OWN,
         self::USERS_ACTIVATE,
         self::USERS_DEACTIVATE,
+        self::USERS_PROFILE,
     ];
 }

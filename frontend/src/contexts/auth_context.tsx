@@ -23,6 +23,7 @@ interface AuthContextValue {
   status: AuthStatus;
   login: (credentials: LoginCredentials) => Promise<void>;
   logout: () => Promise<void>;
+  restoreSession: () => Promise<void>;
 }
 
 // eslint-disable-next-line react-refresh/only-export-components
@@ -133,8 +134,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [endSession]);
 
   const value = useMemo(
-    () => ({ user, status, login, logout }),
-    [user, status, login, logout],
+    () => ({ user, status, login, logout, restoreSession }),
+    [user, status, login, logout, restoreSession],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

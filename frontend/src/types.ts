@@ -8,6 +8,7 @@ export interface User {
   name: string;
   role: RoleName;
   status: "active" | "inactive";
+  permissions: string[];
 }
 
 export interface UpdatePassword {

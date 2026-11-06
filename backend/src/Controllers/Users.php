@@ -65,7 +65,7 @@ class Users
 
     public function me(Request $req, Response $res): Response
     {
-        $userId = $req->getAttribute('jwt')['sub']; // get user id from JWT
+        $userId = (int) $req->getAttribute('jwt')['sub']; // get user id from JWT
 
         $user = $this->repo->retrieveUser($userId);
 

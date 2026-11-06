@@ -12,11 +12,11 @@
     "cookies": [
         {
             "domain": "localhost.local",
-            "expires": 1795268987,
+            "expires": 1795292127,
             "name": "refresh_token",
             "path": "/api/auth",
             "secure": false,
-            "value": "a9471c14dd3956f37bf6d899552c6fce7d8cd443a6027bc6734112a0524463d3"
+            "value": "2429d02b4e2c06198fd8449d7b14481fab6b83d6a15b78348169ddd404e61e07"
         }
     ],
     "headers": [
@@ -30,7 +30,7 @@
         },
         {
             "name": "Authorization",
-            "value": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE3OTM5NzI5ODcsImV4cCI6MTc5Mzk3Mzg4Nywic3ViIjozLCJlbWFpbCI6ImFuaXRhQGNvbGRwbGFjZS5jb20iLCJyb2xlIjoiY2VudHJhbCJ9.pv2GTZYENwHvZZwX35gySgUqbDRnFZNShb-fdt64iO8"
+            "value": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE3OTM5OTYxMjcsImV4cCI6MTc5Mzk5NzAyNywic3ViIjoxLCJlbWFpbCI6InJvb3RhZG1pbkBjb2xkcGxhY2UuY29tIiwicm9sZSI6ImFkbWluIn0.bn8J6qPJWwGUWc_-guxJd3aOus6Gog0BznnfRvXsy4I"
         }
     ]
 }
