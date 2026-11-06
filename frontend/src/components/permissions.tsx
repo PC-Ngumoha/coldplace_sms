@@ -3,6 +3,7 @@ import { Navigate, useLocation } from "react-router";
 import { usePermissions } from "@/hooks/use_permissions";
 import PageLoading from "./PageLoading";
 
+/**Component level role based UI controls. */
 export function Can({
   permission,
   fallback = null,
@@ -17,6 +18,7 @@ export function Can({
   return can(permission) ? children : fallback;
 }
 
+/**Route Guard: Prevent unauthorized access of certain routes. */
 export function RequirePermission({
   permission,
   children,

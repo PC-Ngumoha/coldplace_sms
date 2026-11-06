@@ -59,8 +59,11 @@ class Users
             return $this->json(['error' => 'Unsupported email pattern'], 400);
         }
 
-        $result = $this->repo->addUser($body);
-        return $this->json($result, 201);
+        $rows = $this->repo->addUser($body);
+        return $this->json([
+            'message' => 'Record created',
+            'row_count' => $rows,
+        ], 201);
     }
 
     public function me(Request $req, Response $res): Response
@@ -167,11 +170,6 @@ class Users
             return $this->json(['error' => 'Missing parameter'], 400);
         }
 
-        // // Root admin shouldn't change it's password ever
-        // if ($userId === self::ROOT_ADMIN) {
-        //     return $this->json(['error' => 'Forbidden'], 403);
-        // }
-
         $old = (string) $data['old_password'] ?? '';
         $new = (string) $data['new_password'] ?? '';
 
@@ -258,24 +256,4 @@ class Users
             'row_count' => $rows,
         ]);
     }
-
-    // public function delete(Request $req, Response $res, array $args): Response
-    // {
-    //     $userId = (int) $args['id'];
-    //     $owner = (int) $req->getAttribute('jwt')['sub'];
-
-    //     if ($userId === self::ROOT_ADMIN || $userId === $owner) {
-    //         return $this->json(['error' => 'This operation is forbidden'], 403);
-    //     }
-
-    //     $rows = $this->repo->deleteUser($userId);
-
-    //     return $rows > 0
-    //         ? $this->json([
-    //             'message' => 'Record deleted',
-    //             'row_count' => $rows
-    //         ])
-    //         : $this->json(['error' => 'Not found'], 404);
-    // }
-
 }

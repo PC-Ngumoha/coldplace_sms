@@ -13,7 +13,7 @@ class UserRepository
         $this->conn = $db->connect();
     }
 
-    public function addUser(array $data): array {
+    public function addUser(array $data): int {
         $name = $data['name'];
         $email = $data['email'];
         $password = trim($data['password']);
@@ -36,10 +36,7 @@ class UserRepository
 
         $stmt->execute();
 
-        return [
-            'message' => 'User created',
-            'Rows Affected' => $stmt->rowCount()
-            ];
+        return $stmt->rowCount();
     }
 
     public function showAllUsers(): array {
@@ -89,14 +86,6 @@ class UserRepository
         $sql = 'UPDATE users SET status = ? WHERE id = ?';
         $stmt = $this->conn->prepare($sql);
         $stmt->execute([ $status, $userId ]);
-
-        return $stmt->rowCount();
-    }
-
-    public function deleteUser(int $userId): int {
-        $sql = 'DELETE FROM users WHERE id = ?';
-        $stmt = $this->conn->prepare($sql);
-        $stmt->execute([$userId]);
 
         return $stmt->rowCount();
     }

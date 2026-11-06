@@ -48,12 +48,6 @@ const navigation = [
   { label: "Reports", to: "/reports", icon: ChartNoAxesColumn },
 ];
 
-// const locations = [
-//   { name: "Central", active: true },
-//   { name: "Gwarimpa", active: false },
-//   { name: "Mpape", active: false },
-// ];
-
 export default function Home() {
   const location = useLocation();
   const { logout, user: currentUser } = useAuth();

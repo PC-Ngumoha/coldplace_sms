@@ -17,7 +17,6 @@ class CorsMiddleware implements MiddlewareInterface
     public function process(ServerRequestInterface $request,
                             RequestHandlerInterface $handler): ResponseInterface
     {
-        // throw new \Exception('Not implemented');
         $origin = $request->getHeaderLine('Origin');
         $allowedHeaders = [
             'Content-Type',

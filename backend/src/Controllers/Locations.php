@@ -139,26 +139,4 @@ class Locations {
             'row_count' => $rows,
         ]);
     }
-
-    // public function delete(Request $req, Response $res, array $args): Response
-    // {
-    //     $locationId = (int) $args['id'];
-
-    //     $location = $this->repo->retrieveLocation($locationId);
-
-    //     if (!$location) {
-    //         return $this->json(['error' => 'Not found'], 404);
-    //     }
-
-    //     if ($location['is_central']) {
-    //         return $this->json(['error' => 'This operation is forbidden'], 403);
-    //     }
-
-    //     $rows = $this->repo->deleteLocation($locationId);
-
-    //     return $this->json([
-    //         'message' => 'Record deleted',
-    //         'row_count' => $rows,
-    //     ]);
-    // }
 }
