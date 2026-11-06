@@ -32,7 +32,10 @@ import {
 import { Link, Outlet, useLocation } from "react-router";
 import { useAuth } from "@/contexts/auth_context";
 import { type RoleName } from "@/lib/definitions";
-import { useState } from "react";
+import type { Location } from "@/types";
+import { locationApi } from "@/services/Locationapi";
+
+import { useEffect, useState } from "react";
 
 const navigation = [
   { label: "Dashboard", to: "/", icon: Grid2X2 },
@@ -45,16 +48,18 @@ const navigation = [
   { label: "Reports", to: "/reports", icon: ChartNoAxesColumn },
 ];
 
-const locations = [
-  { name: "Central", active: true },
-  { name: "Gwarimpa", active: false },
-  { name: "Mpape", active: false },
-];
+// const locations = [
+//   { name: "Central", active: true },
+//   { name: "Gwarimpa", active: false },
+//   { name: "Mpape", active: false },
+// ];
 
 export default function Home() {
   const location = useLocation();
   const { logout, user: currentUser } = useAuth();
   const [open, setOpen] = useState(false);
+  const [locations, setLocations] = useState<Location[]>();
+  const [selectedLocation, setSelectedLocation] = useState(0);
   const userRole = currentUser?.role as RoleName;
 
   const openSidebar = () => {
@@ -64,6 +69,16 @@ export default function Home() {
   const closeSidebar = () => {
     setOpen(false);
   };
+
+  useEffect(() => {
+    async function fetchLocations() {
+      const data = await locationApi.list();
+      setLocations(data);
+      setSelectedLocation(data.length > 0 ? data[0].id : 0); // select the first location you can find
+    }
+
+    fetchLocations();
+  }, []);
 
   return (
     <div className="flex h-screen bg-[#edf3f2] text-slate-800 relative">
@@ -134,21 +149,24 @@ export default function Home() {
             <p className="px-2 text-[11px] font-semibold tracking-[0.14em] text-slate-400 uppercase">
               Working location
             </p>
-            <div className="space-y-1.5">
-              {locations.map(({ name, active }) => (
-                <Button
-                  key={name}
-                  variant="ghost"
-                  className={`h-9 w-full justify-start rounded-lg px-3 text-[15px] font-normal ${
-                    active
-                      ? "border border-[#6ca2a8] bg-[#e7f3f4] text-slate-800"
-                      : "text-slate-600 hover:bg-slate-200/70"
-                  }`}
-                >
-                  {name}
-                </Button>
-              ))}
-            </div>
+            {locations && (
+              <div className="space-y-1.5">
+                {locations.map((location) => (
+                  <Button
+                    key={location.id}
+                    variant="ghost"
+                    className={`h-9 w-full justify-start rounded-lg px-3 text-[15px] font-normal ${
+                      selectedLocation === location.id
+                        ? "border border-[#6ca2a8] bg-[#e7f3f4] text-slate-800"
+                        : "text-slate-600 hover:bg-slate-200/70"
+                    }`}
+                    onClick={() => setSelectedLocation(location.id)}
+                  >
+                    {location.name}
+                  </Button>
+                ))}
+              </div>
+            )}
           </div>
         </div>
       </aside>
