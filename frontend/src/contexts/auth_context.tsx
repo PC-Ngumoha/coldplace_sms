@@ -15,7 +15,6 @@ import {
   registerOnForcedLogoutHandler,
   setAccessToken,
 } from "../api/client";
-// import { tokenStorage } from "../api/TokenStorage";
 import { sessionHint } from "@/api/Sessionhint";
 import type { AuthStatus, LoginCredentials, User } from "../types";
 
@@ -105,7 +104,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const { access_token: accessToken } = await authApi.login(credentials);
 
       setAccessToken(accessToken);
-      // tokenStorage.setRefreshToken(refreshToken);
 
       try {
         // Try to get the user profile.
@@ -114,7 +112,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setUser(me);
         setStatus("authenticated");
       } catch (err) {
-        // If the server already issued a cookie, ask it to clear that.
+        // Ask server to clear off previously issued cookies
         await authApi.logout().catch(() => {});
         dropLocalSession();
         throw err;
@@ -125,7 +123,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   // Logout
   const logout = useCallback(async () => {
-    // const refreshToken = tokenStorage.getRefreshToken();
     try {
       await authApi.logout();
     } catch {

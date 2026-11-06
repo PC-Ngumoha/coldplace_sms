@@ -20,7 +20,8 @@ class TokenService
             'iat' => $now,
             'exp' => $now + $this->accessTtl,
             'sub' => $user['id'],
-            'email' => $user['email']
+            'email' => $user['email'],
+            'role' => $user['role'],
         ], $this->secret, 'HS256');
     }
 

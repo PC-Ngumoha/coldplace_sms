@@ -5,9 +5,8 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
 
 use App\Constants\Roles;
-use App\Helpers\ResponseHelper;
 use App\Repositories\UserRepository;
-
+use App\Services\PermissionPolicy;
 
 class Users
 {
@@ -71,10 +70,12 @@ class Users
         $user = $this->repo->retrieveUser($userId);
 
         if (!$user) {
-            return $this->json(['error' => 'User not found'], 404);
+            return $this->json(['error' => 'Not found'], 404);
         }
 
         $payload = $this->filterOutput(source: $user, excluded: ['password_hash', 'location_id']);
+
+        $payload['permissions'] = PermissionPolicy::permissionsFor($user['role']);
 
         return $this->json($payload);
     }
@@ -82,7 +83,25 @@ class Users
     public function update(Request $req, Response $res, array $args): Response
     {
         $userId = (int) $args['id'];
+        $currentUserId = (int) $req->getAttribute('jwt')['sub'];
         $body = $req->getParsedBody() ?? [];
+
+        // Only root admin can edit root admin
+        if ($userId === self::ROOT_ADMIN && $currentUserId !== self::ROOT_ADMIN) {
+            return $this->json(['error' => 'Forbidden'], 403);
+        }
+
+        $user = $this->repo->retrieveUser($userId);
+
+        if (!$user) {
+            return $this->json(['error' => 'Not found'], 404);
+        }
+
+        // You can't edit other admin unless you're root admin
+        if ($currentUserId !== self::ROOT_ADMIN && $user['role'] === Roles::ADMIN) {
+            return $this->json(['error' => 'Forbidden'], 403);
+        }
+
 
         if (empty($body) || !$body['name'] || !$body['email'] || !$body['role']) {
             return $this->json(['error' => 'Missing parameter'], 400);
@@ -103,25 +122,67 @@ class Users
     }
 
     /**
-     * TODO: New password should have some criteria for validation.
+     * admin: change a given user's password
      */
     public function changePassword(Request $req, Response $res, array $args): Response
     {
         $userId = (int) $args['id'];
+        $currentUserId = (int) $req->getAttribute('jwt')['sub'];
         $data = $req->getParsedBody() ?? [];
 
         if (empty($data)) {
             return $this->json(['error' => 'Missing parameter'], 400);
         }
 
-        if ($userId === self::ROOT_ADMIN) {
-            return $this->json(['error' => 'This operation is forbidden'], 403);
+        // Can't change root admin or your own password
+        if ($userId === self::ROOT_ADMIN || $userId === $currentUserId) {
+            return $this->json(['error' => 'Forbidden'], 403);
         }
 
         $new = (string) $data['password'] ?? '';
 
         if ($new === '') {
             return $this->json(['error' => 'New password required', 400]);
+        }
+
+        $rows = $this->repo->updatePassword($userId, $new, true);
+
+        return $rows > 0 
+            ? $this->json([
+                'message' => 'Record updated',
+                'row_count' => $rows
+                ])
+            : $this->json(['error' => 'Not found'], 404);
+    }
+
+    /**
+     * all roles: change your password
+     */
+    public function changeMyPassword(Request $req, Response $res): Response
+    {
+        $userId = (int) $req->getAttribute('jwt')['sub'];
+        $data = $req->getParsedBody() ?? [];
+
+        if (empty($data)) {
+            return $this->json(['error' => 'Missing parameter'], 400);
+        }
+
+        // // Root admin shouldn't change it's password ever
+        // if ($userId === self::ROOT_ADMIN) {
+        //     return $this->json(['error' => 'Forbidden'], 403);
+        // }
+
+        $old = (string) $data['old_password'] ?? '';
+        $new = (string) $data['new_password'] ?? '';
+
+        if ($new === '') {
+            return $this->json(['error' => 'New password required', 400]);
+        }
+
+        $user = $this->repo->retrieveUser($userId);
+
+        if (!password_verify($old, $user['password_hash'])) {
+            return $this->json(['error' => 'Incorrect password'], 401);
         }
 
         $rows = $this->repo->updatePassword($userId, $new);
@@ -136,20 +197,24 @@ class Users
 
     public function deactivate(Request $req, Response $res, array $args): Response {
         $userId = (int) $args['id'];
-        $owner = (int) $req->getAttribute('jwt')['sub'];
+        $currentUserId = (int) $req->getAttribute('jwt')['sub'];
         $rows = 0;
 
 
         // You can't deactivate the Root Admin or your own account
-        if ($userId === self::ROOT_ADMIN || $userId === $owner) {
-            return $this->json(['error' => 'This operation is forbidden.'],
-            403);
+        if ($userId === self::ROOT_ADMIN || $userId === $currentUserId) {
+            return $this->json(['error' => 'Forbidden'], 403);
         }
 
         $user = $this->repo->retrieveUser($userId);
 
         if (!$user) {
             return $this->json(['error' => 'Not found'], 404);
+        }
+
+        // You can't deactivate another admin user unless you're the root admin
+        if ($currentUserId !== self::ROOT_ADMIN && $user['role'] === Roles::ADMIN) {
+            return $this->json(['error' => 'Forbidden'], 403);
         }
 
         if ($user['status'] === self::ACTIVE) {
@@ -164,12 +229,12 @@ class Users
 
     public function activate(Request $req, Response $res, array $args): Response {
         $userId = (int) $args['id'];
-        $owner = (int) $req->getAttribute('jwt')['sub'];
+        $currentUserId = (int) $req->getAttribute('jwt')['sub'];
         $rows = 0;
 
-        // You can't activate the Root Admin or your own account
-        if ($userId === self::ROOT_ADMIN || $userId === $owner) {
-            return $this->json(['error' => 'This operation is forbidden.'],
+        // You can't activate the Root Admin or your own accountThis operation is forbidden.
+        if ($userId === self::ROOT_ADMIN || $userId === $currentUserId) {
+            return $this->json(['error' => 'Forbidden'],
             403);
         }
 
@@ -177,6 +242,11 @@ class Users
 
         if (!$user) {
             return $this->json(['error' => 'Not found'], 404);
+        }
+
+        // You can't activate another admin user unless you're the root admin
+        if ($currentUserId !== self::ROOT_ADMIN && $user['role'] === Roles::ADMIN) {
+            return $this->json(['error' => 'Forbidden'], 403);
         }
 
         if ($user['status'] === self::INACTIVE) {
@@ -189,23 +259,23 @@ class Users
         ]);
     }
 
-    public function delete(Request $req, Response $res, array $args): Response
-    {
-        $userId = (int) $args['id'];
-        $owner = (int) $req->getAttribute('jwt')['sub'];
+    // public function delete(Request $req, Response $res, array $args): Response
+    // {
+    //     $userId = (int) $args['id'];
+    //     $owner = (int) $req->getAttribute('jwt')['sub'];
 
-        if ($userId === self::ROOT_ADMIN || $userId === $owner) {
-            return $this->json(['error' => 'This operation is forbidden'], 403);
-        }
+    //     if ($userId === self::ROOT_ADMIN || $userId === $owner) {
+    //         return $this->json(['error' => 'This operation is forbidden'], 403);
+    //     }
 
-        $rows = $this->repo->deleteUser($userId);
+    //     $rows = $this->repo->deleteUser($userId);
 
-        return $rows > 0
-            ? $this->json([
-                'message' => 'Record deleted',
-                'row_count' => $rows
-            ])
-            : $this->json(['error' => 'Not found'], 404);
-    }
+    //     return $rows > 0
+    //         ? $this->json([
+    //             'message' => 'Record deleted',
+    //             'row_count' => $rows
+    //         ])
+    //         : $this->json(['error' => 'Not found'], 404);
+    // }
 
 }

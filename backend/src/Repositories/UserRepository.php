@@ -73,10 +73,14 @@ class UserRepository
         return $stmt->rowCount();
     }
 
-    public function updatePassword(int $userId, string $newPassword): int {
-        $sql = 'UPDATE users SET password_hash = ? WHERE id = ?';
+    public function updatePassword(int $userId, string $newPassword, bool $mustChangePassword = false): int {
+        $sql = 'UPDATE users SET password_hash = ?, must_change_password = ? WHERE id = ?';
         $stmt = $this->conn->prepare($sql);
-        $stmt->execute([ $newPassword, $userId ]);
+        $stmt->execute([ 
+            password_hash($newPassword, PASSWORD_DEFAULT),
+            (int) $mustChangePassword,
+            $userId 
+        ]);
 
         return $stmt->rowCount();
     }

@@ -6,6 +6,7 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
 
 use App\Repositories\LocationRepository;
+use App\Constants\Roles;
 
 class Locations {
     use \App\Helpers\ResponseHelper;
@@ -15,16 +16,37 @@ class Locations {
 
     public function __construct(private LocationRepository $repo) {}
 
+    /**
+     * Outlet: Only see their own location
+     * All other roles: See all locations available on the system.
+     */
     public function list(Request $req, Response $res): Response
     {
-        $locations = $this->repo->showAllLocations();
-        
+        $decoded = $req->getAttribute('jwt');
+
+        if ($decoded['role'] !== Roles::OUTLET) {
+            $locations = $this->repo->showAllLocations();
+        } else {
+            $userId = (int) $decoded['sub'];
+            $locations = $this->repo->showAllLocations($userId);
+        }
+
         return $this->json($locations);
     }
 
     public function retrieve(Request $req, Response $res, array $args): Response
     {
         $locationId = (int) $args['id'];
+        $decoded = $req->getAttribute('jwt');
+
+        // For outlet users: Ensure that the location is theirs.
+        if ($decoded['role'] === Roles::OUTLET) {
+            $userId = (int) $decoded['sub'];
+            $ownLocation = $this->repo->showAllLocations($userId)[0];   // Always returns one location
+            if ($ownLocation['id'] !== $locationId) {
+                return $this->json(['error' => 'Forbidden'], 403);
+            }
+        }
 
         $location = $this->repo->retrieveLocation($locationId);
 
@@ -118,25 +140,25 @@ class Locations {
         ]);
     }
 
-    public function delete(Request $req, Response $res, array $args): Response
-    {
-        $locationId = (int) $args['id'];
+    // public function delete(Request $req, Response $res, array $args): Response
+    // {
+    //     $locationId = (int) $args['id'];
 
-        $location = $this->repo->retrieveLocation($locationId);
+    //     $location = $this->repo->retrieveLocation($locationId);
 
-        if (!$location) {
-            return $this->json(['error' => 'Not found'], 404);
-        }
+    //     if (!$location) {
+    //         return $this->json(['error' => 'Not found'], 404);
+    //     }
 
-        if ($location['is_central']) {
-            return $this->json(['error' => 'This operation is forbidden'], 403);
-        }
+    //     if ($location['is_central']) {
+    //         return $this->json(['error' => 'This operation is forbidden'], 403);
+    //     }
 
-        $rows = $this->repo->deleteLocation($locationId);
+    //     $rows = $this->repo->deleteLocation($locationId);
 
-        return $this->json([
-            'message' => 'Record deleted',
-            'row_count' => $rows,
-        ]);
-    }
+    //     return $this->json([
+    //         'message' => 'Record deleted',
+    //         'row_count' => $rows,
+    //     ]);
+    // }
 }

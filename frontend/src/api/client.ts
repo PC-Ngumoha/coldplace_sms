@@ -3,7 +3,6 @@ import axios, {
   isAxiosError,
   type InternalAxiosRequestConfig,
 } from "axios";
-// import { tokenStorage } from "./TokenStorage";
 import { type LoginResponse } from "@/types";
 import { AUTH_PATHS } from "@/lib/endpoints";
 
@@ -48,7 +47,7 @@ const bareApi = axios.create({
   },
 });
 
-/**----- Refresh: Single flight per tab, serialized across tabs */
+/**----- Refresh: Single flight per tab, serialized across tabs -----*/
 const LOCK_NAME = "auth-refresh";
 
 async function requestNewAccessToken(): Promise<string> {
@@ -57,7 +56,7 @@ async function requestNewAccessToken(): Promise<string> {
   return res.data.access_token;
 }
 
-// locked into refreshing one tab at a time, other tabs queue & run in turn
+// refresh requests processed per tab with other tabs queuing and taking their turn.
 function withCrossTabLock<T>(fn: () => Promise<T>): Promise<T> {
   if (typeof navigator !== "undefined" && "locks" in navigator) {
     return navigator.locks.request(LOCK_NAME, fn);

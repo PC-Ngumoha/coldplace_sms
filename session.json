@@ -1,0 +1,36 @@
+{
+    "__meta__": {
+        "about": "HTTPie session file",
+        "help": "https://httpie.io/docs#sessions",
+        "httpie": "3.2.4"
+    },
+    "auth": {
+        "password": null,
+        "type": null,
+        "username": null
+    },
+    "cookies": [
+        {
+            "domain": "localhost.local",
+            "expires": 1795268987,
+            "name": "refresh_token",
+            "path": "/api/auth",
+            "secure": false,
+            "value": "a9471c14dd3956f37bf6d899552c6fce7d8cd443a6027bc6734112a0524463d3"
+        }
+    ],
+    "headers": [
+        {
+            "name": "Accept",
+            "value": "application/json, */*;q=0.5"
+        },
+        {
+            "name": "X-Requested-With",
+            "value": "axios"
+        },
+        {
+            "name": "Authorization",
+            "value": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE3OTM5NzI5ODcsImV4cCI6MTc5Mzk3Mzg4Nywic3ViIjozLCJlbWFpbCI6ImFuaXRhQGNvbGRwbGFjZS5jb20iLCJyb2xlIjoiY2VudHJhbCJ9.pv2GTZYENwHvZZwX35gySgUqbDRnFZNShb-fdt64iO8"
+        }
+    ]
+}
