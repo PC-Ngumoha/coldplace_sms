@@ -76,7 +76,7 @@ class Users
             return $this->json(['error' => 'Not found'], 404);
         }
 
-        $payload = $this->filterOutput(source: $user, excluded: ['password_hash', 'location_id']);
+        $payload = $this->filterOutput(source: $user, excluded: ['password_hash']);
 
         $payload['permissions'] = PermissionPolicy::permissionsFor($user['role']);
 

@@ -10,7 +10,7 @@ export function Can({
   children,
 }: {
   permission: string;
-  fallback: ReactNode | null;
+  fallback?: ReactNode | null;
   children: ReactNode;
 }) {
   const { can } = usePermissions();

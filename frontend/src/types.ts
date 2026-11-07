@@ -9,6 +9,7 @@ export interface User {
   role: RoleName;
   status: "active" | "inactive";
   permissions: string[];
+  location_id: number | null;
 }
 
 export interface UpdatePassword {
