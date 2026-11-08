@@ -13,6 +13,7 @@ import Home from "./Home";
 import ManageUsers from "./segments/ManageUsers";
 import ManageLocations from "./segments/ManageLocations";
 import AdminChangePassword from "./segments/AdminChangePassword";
+import UserChangePassword from "./segments/UserChangePassword";
 
 export {
   Home,
@@ -30,4 +31,5 @@ export {
   ManageUsers,
   ManageLocations,
   AdminChangePassword,
+  UserChangePassword,
 };

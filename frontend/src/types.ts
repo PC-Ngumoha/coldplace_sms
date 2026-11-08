@@ -13,7 +13,9 @@ export interface User {
 }
 
 export interface UpdatePassword {
-  password: string;
+  password?: string;
+  old_password?: string;
+  new_password?: string;
 }
 
 export interface CreateUser {

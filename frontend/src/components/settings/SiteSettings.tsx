@@ -12,11 +12,13 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { userApi } from "@/services/Userapi";
 import { locationApi } from "@/services/Locationapi";
 import { showSuccess, showError } from "@/services/toasts";
+import { useAuth } from "@/contexts/auth_context";
 import type { User, Location } from "@/types";
 import { isAxiosError } from "axios";
 import { useNavigate, useLocation } from "react-router";
 
 export default function SiteSettings() {
+  const { user: currentUser } = useAuth();
   const [users, setUsers] = useState<User[]>([]);
   const [locations, setLocations] = useState<Location[]>([]);
   const [tab, setTab] = useState<"users & roles" | "locations">(
@@ -27,8 +29,14 @@ export default function SiteSettings() {
   const location = useLocation();
 
   async function fetchUsers() {
-    const result = await userApi.list();
-    setUsers(result);
+    const availableUsers = await userApi.list();
+
+    // Filter out current user from list of users
+    const displayedUsers = availableUsers.filter(
+      (user) => user.id !== currentUser?.id,
+    );
+
+    setUsers(displayedUsers);
   }
 
   async function fetchLocations() {

@@ -12,8 +12,11 @@ import { useAuth } from "@/contexts/auth_context";
 import type { Location } from "@/types";
 import { useEffect, useState } from "react";
 import { locationApi } from "@/services/Locationapi";
+import { useLocation, useNavigate } from "react-router";
 
 export default function ProfileSettings() {
+  const location = useLocation();
+  const navigate = useNavigate();
   const [locations, setLocations] = useState<Location[]>([]);
   const { user } = useAuth();
 
@@ -30,6 +33,12 @@ export default function ProfileSettings() {
     (location) => location.id === user?.location_id,
   );
   const assignedLocation = foundLocation ? foundLocation.name : "_________";
+
+  const openChangePasswordForm = () => {
+    navigate("/edit/users/me/changePassword", {
+      state: { background: location },
+    });
+  };
 
   return (
     <div className="mb-6 flex w-full items-center justify-center">
@@ -72,6 +81,7 @@ export default function ProfileSettings() {
               bg-[linear-gradient(180deg,#176675_0%,#104f5b_100%)] px-4 py-3 text-sm font-bold text-white
               shadow-[0_4px_8px_rgba(14,95,84,0.22)] transition hover:brightness-105 sm:w-auto sm:px-5 sm:py-3.5 lg:min-w-52.5"
               type="button"
+              onClick={openChangePasswordForm}
             >
               <KeyIcon />
               Change Password

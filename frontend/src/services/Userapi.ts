@@ -37,6 +37,11 @@ export const userApi = {
       .patch<ProcessResponse>(`${USER_PATHS.create}/${id}/changePassword`, data)
       .then((r) => r.data),
 
+  changeMyPassword: (data: UpdatePassword) =>
+    api
+      .patch<ProcessResponse>(USER_PATHS.changePassword, data)
+      .then((r) => r.data),
+
   delete: (id: number) =>
     api
       .delete<ProcessResponse>(`${USER_PATHS.create}/${id}`)

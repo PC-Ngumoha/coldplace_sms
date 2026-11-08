@@ -8,6 +8,7 @@ export const AUTH_PATHS = {
 export const USER_PATHS = {
   list: "/api/users",
   create: "/api/users",
+  changePassword: "/api/me/changePassword",
 };
 
 export const LOCATION_PATHS = {
