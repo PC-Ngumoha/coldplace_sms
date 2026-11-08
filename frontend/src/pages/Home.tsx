@@ -74,20 +74,7 @@ export default function Home() {
     fetchLocations();
   }, []);
 
-  const CHANGE_PASSWORD_PATH = "/edit/users/me/changePassword";
-  // Check if current user is still using admin issued password.
-  // FIXME: Including dependencies causes recursive useEffect calls
-  useEffect(() => {
-    if (
-      currentUser?.must_change_password &&
-      location.pathname !== CHANGE_PASSWORD_PATH
-    ) {
-      navigate(CHANGE_PASSWORD_PATH, {
-        state: { background: location, mustChangePassword: true },
-        replace: true,
-      });
-    }
-  }, []);
+  const gotoSettingsPage = () => navigate("/settings");
 
   return (
     <div className="flex h-screen bg-[#edf3f2] text-slate-800 relative">
@@ -244,9 +231,12 @@ export default function Home() {
                   </DropdownMenuGroup>
                   <DropdownMenuSeparator />
                   <DropdownMenuGroup>
-                    <DropdownMenuItem className="my-1">
+                    <DropdownMenuItem
+                      className="my-1"
+                      onClick={gotoSettingsPage}
+                    >
                       <Settings />
-                      <Link to="/settings">Settings</Link>
+                      Settings
                     </DropdownMenuItem>
                     <DropdownMenuItem
                       onClick={() => {
@@ -265,7 +255,9 @@ export default function Home() {
         </header>
 
         <main className="h-screen overflow-auto p-2">
-          <Outlet />
+          {/* Hide all background UI behind modal if user is still using admin issued password
+          until they change it. */}
+          {currentUser?.must_change_password ? null : <Outlet />}
         </main>
 
         <Toaster />

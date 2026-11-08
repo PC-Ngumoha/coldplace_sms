@@ -1,4 +1,4 @@
-import { Routes, Route } from "react-router";
+import { Routes, Route, useNavigate, useLocation } from "react-router";
 import ProtectedRoute from "./components/routes/ProtectedRoute";
 import GuestRoute from "./components/routes/GuestRoute";
 import {
@@ -19,12 +19,30 @@ import {
   AdminChangePassword,
   UserChangePassword,
 } from "@/pages";
-import { useLocation } from "react-router";
+import { useAuth } from "@/contexts/auth_context";
+import { useEffect } from "react";
 
 export default function App() {
+  const { user: currentUser } = useAuth();
   const location = useLocation();
+  const navigate = useNavigate();
   // Keep track of previous page when opening modal route
   const background = location.state?.background;
+  const mustChange = currentUser?.must_change_password;
+
+  // Detect if a user is still using an admin issued password
+  const CHANGE_PASSWORD_PATH = "/edit/users/me/changePassword";
+  useEffect(() => {
+    if (mustChange && location.pathname !== CHANGE_PASSWORD_PATH) {
+      navigate(CHANGE_PASSWORD_PATH, {
+        state: {
+          background: location,
+          mustChangePassword: true,
+        },
+        replace: true,
+      });
+    }
+  }, [mustChange, location, navigate]);
 
   return (
     <>

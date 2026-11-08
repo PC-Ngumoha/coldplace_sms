@@ -1,11 +1,13 @@
 import { userApi } from "@/services/Userapi";
 import { showSuccess } from "@/services/toasts";
+import { useAuth } from "@/contexts/auth_context";
 import { useState, type SubmitEvent } from "react";
 import { useLocation, useNavigate } from "react-router";
 import { isAxiosError } from "axios";
 import { X, Eye, EyeOff } from "lucide-react";
 
 export default function UserChangePassword() {
+  const { restoreSession } = useAuth();
   const [field, setField] = useState({
     old_password: "",
     new_password: "",
@@ -14,11 +16,11 @@ export default function UserChangePassword() {
   const [error, setError] = useState("");
   const location = useLocation();
   const navigate = useNavigate();
-
-  const mustChangePassword = location.state?.mustChangePassword ?? false;
   const background = location.state?.background ?? "/";
+  const mustChangePassword = location.state?.mustChangePassword ?? false;
 
   const goBack = () => {
+    console.log("background: ", background);
     navigate(background);
   };
 
@@ -46,6 +48,7 @@ export default function UserChangePassword() {
 
     try {
       await userApi.changeMyPassword(field);
+      await restoreSession(); // Refresh browser session: so update reflects
       showSuccess("Password updated successfully");
       setError("");
       goBack();
