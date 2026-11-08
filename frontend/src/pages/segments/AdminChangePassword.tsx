@@ -1,23 +1,24 @@
 import { userApi } from "@/services/Userapi";
 import { showSuccess } from "@/services/toasts";
 import { useState, type SubmitEvent } from "react";
-import { useNavigate, useParams } from "react-router";
+import { useLocation, useNavigate, useParams } from "react-router";
 import { isAxiosError } from "axios";
 import { X, Eye, EyeOff } from "lucide-react";
-
-// import ChangePasswordForm from "@/components/forms/ChangePasswordForm";
 
 export default function AdminChangePassword() {
   const [password, setPassword] = useState("");
   const [isVisible, setIsVisible] = useState(false);
   const [error, setError] = useState("");
+  const location = useLocation();
+
+  const background = location.state?.background ?? "/";
 
   const navigate = useNavigate();
   const { id } = useParams();
   const userId = parseInt(id as string);
 
   const goBack = () => {
-    navigate(-1);
+    navigate(background);
   };
 
   const handleSubmit = async (event: SubmitEvent<HTMLFormElement>) => {

@@ -4,7 +4,7 @@ export interface User {
   id: number;
   email: string;
   is_primary_handler: number;
-  must_change_password: 1;
+  must_change_password: number;
   name: string;
   role: RoleName;
   status: "active" | "inactive";

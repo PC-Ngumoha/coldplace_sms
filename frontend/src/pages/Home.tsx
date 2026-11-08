@@ -9,7 +9,7 @@ import {
   DropdownMenuGroup,
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
-import { ROLES } from "@/lib/definitions";
+import { ROLES, type RoleName } from "@/lib/definitions";
 import { clsx } from "cn";
 
 import {
@@ -29,9 +29,8 @@ import {
   Sidebar,
   SidebarClose,
 } from "lucide-react";
-import { Link, Outlet, useLocation } from "react-router";
+import { Link, Outlet, useLocation, useNavigate } from "react-router";
 import { useAuth } from "@/contexts/auth_context";
-import { type RoleName } from "@/lib/definitions";
 import type { Location } from "@/types";
 import { locationApi } from "@/services/Locationapi";
 
@@ -50,6 +49,7 @@ const navigation = [
 
 export default function Home() {
   const location = useLocation();
+  const navigate = useNavigate();
   const { logout, user: currentUser } = useAuth();
   const [open, setOpen] = useState(false);
   const [locations, setLocations] = useState<Location[]>();
@@ -72,6 +72,21 @@ export default function Home() {
     }
 
     fetchLocations();
+  }, []);
+
+  const CHANGE_PASSWORD_PATH = "/edit/users/me/changePassword";
+  // Check if current user is still using admin issued password.
+  // FIXME: Including dependencies causes recursive useEffect calls
+  useEffect(() => {
+    if (
+      currentUser?.must_change_password &&
+      location.pathname !== CHANGE_PASSWORD_PATH
+    ) {
+      navigate(CHANGE_PASSWORD_PATH, {
+        state: { background: location, mustChangePassword: true },
+        replace: true,
+      });
+    }
   }, []);
 
   return (
