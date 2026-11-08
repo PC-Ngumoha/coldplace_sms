@@ -1,4 +1,4 @@
-import { useMemo, useState, useEffect } from "react";
+import { useMemo, useState, useEffect, useCallback } from "react";
 import { UserPlus, MapPinPlus, Search, EllipsisVertical } from "lucide-react";
 import {
   DropdownMenu,
@@ -28,7 +28,7 @@ export default function SiteSettings() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  async function fetchUsers() {
+  const fetchUsers = useCallback(async () => {
     const availableUsers = await userApi.list();
 
     // Filter out current user from list of users
@@ -37,12 +37,12 @@ export default function SiteSettings() {
     );
 
     setUsers(displayedUsers);
-  }
+  }, [currentUser?.id]);
 
-  async function fetchLocations() {
+  const fetchLocations = useCallback(async () => {
     const result = await locationApi.list();
     setLocations(result);
-  }
+  }, []);
 
   useEffect(() => {
     async function fetchData() {
@@ -51,7 +51,7 @@ export default function SiteSettings() {
     }
 
     fetchData();
-  }, [location]);
+  }, [location, fetchUsers, fetchLocations]);
 
   const openAddUserForm = () => {
     navigate("/add/users", {
@@ -172,7 +172,7 @@ export default function SiteSettings() {
         <div className="mt-3 overflow-visible rounded-lg border border-slate-200/80 bg-white shadow-sm">
           <TabsContent value="users & roles">
             <div className="overflow-x-auto rounded-lg">
-              <table className="w-full min-w-[680px] table-fixed text-left">
+              <table className="w-full min-w-170 table-fixed text-left">
                 <thead className="text-xs font-semibold uppercase tracking-wide text-slate-500">
                   <tr>
                     <th className="px-4 py-3.5 sm:px-5">Name</th>
@@ -296,7 +296,7 @@ export default function SiteSettings() {
           </TabsContent>
           <TabsContent value="locations">
             <div className="overflow-x-auto rounded-lg">
-              <table className="w-full min-w-[520px] table-fixed text-left">
+              <table className="w-full min-w-130 table-fixed text-left">
                 <thead className="text-[9px] font-semibold uppercase tracking-wide text-slate-500">
                   <tr>
                     <th className="px-5 py-3.5">Location</th>
