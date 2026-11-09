@@ -3,7 +3,7 @@ USE coldplace;
 
 
 CREATE TABLE IF NOT EXISTS users (
-    id                      INT PRIMARY KEY AUTO_INCREMENT,
+    id                      INT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
     name                    VARCHAR(255) NOT NULL,
     email                   VARCHAR(255) NOT NULL UNIQUE,
     password_hash           VARCHAR(255), -- Prevents truncation of the hash
@@ -20,7 +20,7 @@ CREATE TABLE IF NOT EXISTS users (
 
 -- Refresh tokens
 CREATE TABLE IF NOT EXISTS refresh_tokens (
-    id                      INT PRIMARY KEY AUTO_INCREMENT,
+    id                      INT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
     user_id                 INT NOT NULL,
     token_hash              CHAR(64) NOT NULL,
     expires_at              BIGINT NOT NULL,

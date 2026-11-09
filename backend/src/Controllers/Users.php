@@ -5,24 +5,25 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
 
 use App\Constants\Roles;
+use App\Constants\User;
+use App\Exceptions\AppException;
 use App\Repositories\UserRepository;
 use App\Services\PermissionPolicy;
+use App\Services\UserService;
 
 class Users
 {
     use \App\Helpers\ResponseHelper;
 
-    public const ACTIVE = 'active';
-    public const INACTIVE = 'inactive';
-    public const ROOT_ADMIN = 1;
+    
 
-    public function __construct(private UserRepository $repo) {}
+    public function __construct(private UserRepository $repo, private UserService $service) {}
 
     public function list(Request $req, Response $res): Response
     {
-        $users = $this->repo->showAllUsers();
+        $users = $this->service->list();
 
-        $payload = $this->filterOutput(source: $users, excluded: ['password_hash', 'location_id']);
+        $payload = $this->filterOutput(source: $users, excluded: ['password_hash']);
 
         return $this->json($payload);
     }
@@ -30,36 +31,27 @@ class Users
     public function retrieve(Request $req, Response $res, array $args): Response {
         $userId = (int) $args['id'];
 
-        $user = $this->repo->retrieveUser($userId);
-
-        if (!$user) {
-            return $this->json(['error' => 'Not found'], 404);
+        try {
+            $user = $this->service->retrieve($userId);
+        } catch (AppException $err) {
+            return $this->json(['error' => $err->getMessage()], $err->getStatus());
         }
 
-        $payload = $this->filterOutput(source: $user, excluded: ['password_hash']);
-        return $this->json($payload);
+        unset($user['password_hash']);
+
+        return $this->json($user);
     }
 
     public function create(Request $req, Response $res): Response
     {
         $body = $req->getParsedBody() ?? [];
-
-        if (empty($body) || !$body['name'] || !$body['email'] || !$body['password'] || !$body['role']) {
-            return $this->json(['error' => 'Missing parameter'], 400);
+        
+        try {
+            $rows = $this->service->create($body);
+        } catch (AppException $err) {
+            return $this->json(['error' => $err->getMessage()], $err->getStatus());
         }
 
-        // Verify user's assigned role.
-        if (!in_array($body['role'], Roles::ALL, true)) {
-            return $this->json(['error' => 'Unsupported role'], 400);
-        }
-
-        // Verify email address contains @coldplace in it's name
-        $emailPattern = "/^[a-zA-Z0-9._%+-]+@coldplace\.[a-zA-Z0-9.-]+$/";
-        if (!preg_match($emailPattern, $body['email'])) {
-            return $this->json(['error' => 'Unsupported email pattern'], 400);
-        }
-
-        $rows = $this->repo->addUser($body);
         return $this->json([
             'message' => 'Record created',
             'row_count' => $rows,
@@ -85,34 +77,11 @@ class Users
         $currentUserId = (int) $req->getAttribute('jwt')['sub'];
         $body = $req->getParsedBody() ?? [];
 
-        // Only root admin can edit root admin
-        if ($userId === self::ROOT_ADMIN && $currentUserId !== self::ROOT_ADMIN) {
-            return $this->json(['error' => 'Forbidden'], 403);
+        try {
+            $rows = $this->service->update($userId, $currentUserId, $body);
+        } catch (AppException $err) {
+            return $this->json(['error' => $err->getMessage()], $err->getStatus());
         }
-
-        $user = $this->repo->retrieveUser($userId);
-
-        if (!$user) {
-            return $this->json(['error' => 'Not found'], 404);
-        }
-
-        // You can't edit other admin unless you're root admin
-        if ($currentUserId !== self::ROOT_ADMIN && $user['role'] === Roles::ADMIN) {
-            return $this->json(['error' => 'Forbidden'], 403);
-        }
-
-
-        if (empty($body) || !$body['name'] || !$body['email'] || !$body['role']) {
-            return $this->json(['error' => 'Missing parameter'], 400);
-        }
-
-        // Verify email address contains @coldplace in it's name
-        $emailPattern = "/^[a-zA-Z0-9._%+-]+@coldplace\.[a-zA-Z0-9.-]+$/";
-        if (!preg_match($emailPattern, $body['email'])) {
-            return $this->json(['error' => 'Unsupported email pattern'], 400);
-        }
-
-        $rows = $this->repo->updateUser($userId, $body);
 
         return $this->json([
             'message' => 'Record updated',
@@ -129,23 +98,12 @@ class Users
         $currentUserId = (int) $req->getAttribute('jwt')['sub'];
         $data = $req->getParsedBody() ?? [];
 
-        if (empty($data)) {
-            return $this->json(['error' => 'Missing parameter'], 400);
+        try {
+            $rows = $this->service->changeOtherPassword($userId, $currentUserId, $data);
+        } catch (AppException $err) {
+            return $this->json(['error' => $err->getMessage()], $err->getStatus());
         }
-
-        // Can't change root admin or your own password
-        if ($userId === self::ROOT_ADMIN || $userId === $currentUserId) {
-            return $this->json(['error' => 'Forbidden'], 403);
-        }
-
-        $new = (string) $data['password'] ?? '';
-
-        if ($new === '') {
-            return $this->json(['error' => 'New password required', 400]);
-        }
-
-        $rows = $this->repo->updatePassword($userId, $new, true);
-
+        
         return $rows > 0 
             ? $this->json([
                 'message' => 'Record updated',
@@ -162,24 +120,11 @@ class Users
         $userId = (int) $req->getAttribute('jwt')['sub'];
         $data = $req->getParsedBody() ?? [];
 
-        if (empty($data)) {
-            return $this->json(['error' => 'Missing parameter'], 400);
+        try {
+            $rows = $this->service->changeMyPassword($userId, $data);
+        } catch (AppException $err) {
+            return $this->json(['error' => $err->getMessage()], $err->getStatus());
         }
-
-        $old = (string) $data['old_password'] ?? '';
-        $new = (string) $data['new_password'] ?? '';
-
-        if ($new === '') {
-            return $this->json(['error' => 'New password required', 400]);
-        }
-
-        $user = $this->repo->retrieveUser($userId);
-
-        if (!password_verify($old, $user['password_hash'])) {
-            return $this->json(['error' => 'Incorrect password'], 401);
-        }
-
-        $rows = $this->repo->updatePassword($userId, $new);
 
         return $rows > 0 
             ? $this->json([
@@ -192,27 +137,11 @@ class Users
     public function deactivate(Request $req, Response $res, array $args): Response {
         $userId = (int) $args['id'];
         $currentUserId = (int) $req->getAttribute('jwt')['sub'];
-        $rows = 0;
 
-
-        // You can't deactivate the Root Admin or your own account
-        if ($userId === self::ROOT_ADMIN || $userId === $currentUserId) {
-            return $this->json(['error' => 'Forbidden'], 403);
-        }
-
-        $user = $this->repo->retrieveUser($userId);
-
-        if (!$user) {
-            return $this->json(['error' => 'Not found'], 404);
-        }
-
-        // You can't deactivate another admin user unless you're the root admin
-        if ($currentUserId !== self::ROOT_ADMIN && $user['role'] === Roles::ADMIN) {
-            return $this->json(['error' => 'Forbidden'], 403);
-        }
-
-        if ($user['status'] === self::ACTIVE) {
-            $rows = $this->repo->setStatus($userId, self::INACTIVE);
+        try {
+            $rows = $this->service->deactivate($userId, $currentUserId);
+        } catch (AppException $err) {
+            return $this->json(['error' => $err->getMessage()], $err->getStatus());
         }
 
         return $this->json([
@@ -224,27 +153,11 @@ class Users
     public function activate(Request $req, Response $res, array $args): Response {
         $userId = (int) $args['id'];
         $currentUserId = (int) $req->getAttribute('jwt')['sub'];
-        $rows = 0;
-
-        // You can't activate the Root Admin or your own accountThis operation is forbidden.
-        if ($userId === self::ROOT_ADMIN || $userId === $currentUserId) {
-            return $this->json(['error' => 'Forbidden'],
-            403);
-        }
-
-        $user = $this->repo->retrieveUser($userId);
-
-        if (!$user) {
-            return $this->json(['error' => 'Not found'], 404);
-        }
-
-        // You can't activate another admin user unless you're the root admin
-        if ($currentUserId !== self::ROOT_ADMIN && $user['role'] === Roles::ADMIN) {
-            return $this->json(['error' => 'Forbidden'], 403);
-        }
-
-        if ($user['status'] === self::INACTIVE) {
-            $rows = $this->repo->setStatus($userId, self::ACTIVE);
+        
+        try {
+            $rows = $this->service->activate($userId, $currentUserId);
+        } catch (AppException $err) {
+            return $this->json(['error' => $err->getMessage()], $err->getStatus());
         }
 
         return $this->json([

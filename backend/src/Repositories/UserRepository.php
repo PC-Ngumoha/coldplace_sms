@@ -16,7 +16,7 @@ class UserRepository
     public function addUser(array $data): int {
         $name = $data['name'];
         $email = $data['email'];
-        $password = trim($data['password']);
+        $password = $data['password'];
         $assignedRole = $data['role'];
         $locationId = (int) $data['location_id'];
 

@@ -12,6 +12,7 @@ use Firebase\JWT\JWT;
 use Firebase\JWT\Key;
 
 use App\Repositories\UserRepository;
+use App\Constants\User;
 
 class JwtAuthMiddleware implements MiddlewareInterface
 {   
@@ -49,7 +50,7 @@ class JwtAuthMiddleware implements MiddlewareInterface
         }
 
         // Refuse access attempts from deactivated users
-        if ($user['status'] === \App\Controllers\Users::INACTIVE) {
+        if ($user['status'] === User::INACTIVE) {
             return $this->json(['error' => 'Your account has been deactivated'], 401);
         }
 

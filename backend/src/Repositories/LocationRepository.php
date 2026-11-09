@@ -15,22 +15,19 @@ class LocationRepository
     }
 
 
-    public function showAllLocations(?int $userId = null): array
+    public function showAllLocations(?int $locationId = null): array
     {
-        if (!$userId) {
+        if (!$locationId) {
             $sql = 'SELECT * FROM locations';
-
             return $this->conn->query($sql)->fetchAll();
         } else {
-            // Special case for outlet role: Get the location based on the userId
-            $sql = 'SELECT loc.* FROM users usr
-                    JOIN locations loc ON loc.id = usr.location_id
-                    WHERE usr.id = ?';
-
+            $sql = 'SELECT * FROM locations WHERE id = ?';
             $stmt = $this->conn->prepare($sql);
-            $stmt->execute([$userId]);
+            $stmt->execute([ $locationId ]);
+
             return $stmt->fetchAll();
         }
+        
     }
 
     public function retrieveLocation(int $locationId): array | bool

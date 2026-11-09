@@ -5,16 +5,13 @@ namespace App\Controllers;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
 
-use App\Repositories\LocationRepository;
-use App\Constants\Roles;
+use App\Exceptions\AppException;
+use App\Services\LocationService;
 
 class Locations {
     use \App\Helpers\ResponseHelper;
 
-    public const ACTIVE = 'active';
-    public const INACTIVE = 'inactive';
-
-    public function __construct(private LocationRepository $repo) {}
+    public function __construct(private LocationService $service) {}
 
     /**
      * Outlet: Only see their own location
@@ -22,14 +19,9 @@ class Locations {
      */
     public function list(Request $req, Response $res): Response
     {
-        $decoded = $req->getAttribute('jwt');
+        $currentUser = $req->getAttribute('user');
 
-        if ($decoded['role'] !== Roles::OUTLET) {
-            $locations = $this->repo->showAllLocations();
-        } else {
-            $userId = (int) $decoded['sub'];
-            $locations = $this->repo->showAllLocations($userId);
-        }
+        $locations = $this->service->list($currentUser);
 
         return $this->json($locations);
     }
@@ -37,21 +29,12 @@ class Locations {
     public function retrieve(Request $req, Response $res, array $args): Response
     {
         $locationId = (int) $args['id'];
-        $decoded = $req->getAttribute('jwt');
+        $currentUser = $req->getAttribute('user');
 
-        // For outlet users: Ensure that the location is theirs.
-        if ($decoded['role'] === Roles::OUTLET) {
-            $userId = (int) $decoded['sub'];
-            $ownLocation = $this->repo->showAllLocations($userId)[0];   // Always returns one location
-            if ($ownLocation['id'] !== $locationId) {
-                return $this->json(['error' => 'Forbidden'], 403);
-            }
-        }
-
-        $location = $this->repo->retrieveLocation($locationId);
-
-        if (!$location) {
-            return $this->json(['error' => 'Not Found'], 404);
+        try {
+            $location = $this->service->retrieve($currentUser, $locationId);
+        } catch (AppException $err) {
+            return $this->json(['error' => $err->getMessage()], $err->getStatus());
         }
 
         return $this->json($location);
@@ -61,11 +44,11 @@ class Locations {
     {
         $body = $req->getParsedBody() ?? [];
 
-        if (empty($body) || !$body['name']) {
-            return $this->json(['error' => 'Missing parameters'], 400);
+        try {
+            $rows = $this->service->create($body);
+        } catch (AppException $err) {
+            return $this->json(['error' => $err->getMessage()], $err->getStatus());
         }
-
-        $rows = $this->repo->createLocation($body);
 
         return $this->json([
             'message' => 'Record created',
@@ -78,11 +61,11 @@ class Locations {
         $locationId = (int) $args['id'];
         $body = $req->getParsedBody() ?? [];
 
-        if (empty($body) || !$body['name']) {
-            return $this->json(['error' => 'Missing parameters'], 400);
+        try {
+            $rows = $this->service->update($locationId, $body);
+        } catch (AppException $err) {
+            return $this->json(['error' => $err->getMessage()], $err->getStatus());
         }
-
-        $rows = $this->repo->updateLocation($locationId, $body);
 
         return $this->json([
             'message' => 'Record updated',
@@ -93,20 +76,11 @@ class Locations {
     public function deactivate(Request $req, Response $res, array $args): Response
     {
         $locationId = (int) $args['id'];
-        $rows = 0;
 
-        $location = $this->repo->retrieveLocation($locationId);
-
-        if (!$location) {
-            return $this->json(['error' => 'Not found'], 404);
-        }
-
-        if ($location['is_central']) {
-            return $this->json(['error' => 'This operation is forbidden'], 403);
-        }
-
-        if ($location['status'] === self::ACTIVE) {
-            $rows = $this->repo->setStatus($locationId, self::INACTIVE);
+        try {
+            $rows = $this->service->deactivate($locationId);
+        } catch (AppException $err) {
+            return $this->json(['error' => $err->getMessage()], $err->getStatus());
         }
 
         return $this->json([
@@ -118,20 +92,11 @@ class Locations {
     public function activate(Request $req, Response $res, array $args): Response
     {
         $locationId = (int) $args['id'];
-        $rows = 0;
-
-        $location = $this->repo->retrieveLocation($locationId);
-
-        if (!$location) {
-            return $this->json(['error' => 'Not found'], 404);
-        }
-
-        if ($location['is_central']) {
-            return $this->json(['error' => 'This operation is forbidden'], 403);
-        }
-
-        if ($location['status'] === self::INACTIVE) {
-            $rows = $this->repo->setStatus($locationId, self::ACTIVE);
+        
+        try {
+            $rows = $this->service->activate($locationId);
+        } catch (AppException $err) {
+            return $this->json(['error' => $err->getMessage()], $err->getStatus());
         }
 
         return $this->json([

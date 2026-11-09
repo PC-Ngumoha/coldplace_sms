@@ -3,7 +3,7 @@ USE coldplace;
 
 -- Create table to be compatible on MYSQL 5.7, 8.0 & MariaDB
 CREATE TABLE IF NOT EXISTS locations (
-    id                      INT PRIMARY KEY AUTO_INCREMENT,
+    id                      INT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
     name                    VARCHAR(255) UNIQUE NOT NULL,
     is_central              BOOLEAN NOT NULL DEFAULT false,
     address                 VARCHAR(1000),
