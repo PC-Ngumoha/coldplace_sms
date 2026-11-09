@@ -34,7 +34,8 @@ class UserService
 
     public function create(array $data): int
     {
-        if (empty($data) || !$data['name'] || !$data['email'] || !$data['password'] || !$data['role']) {
+        if (empty($data) || empty($data['name']) || empty($data['email'])
+                || empty($data['password']) || empty($data['role'])) {
             throw new AppException('Missing parameter', 400);
         }
 
@@ -70,7 +71,7 @@ class UserService
         }
 
 
-        if (empty($data) || !$data['name'] || !$data['email'] || !$data['role']) {
+        if (empty($data) || empty($data['name']) || empty($data['email']) || empty($data['role'])) {
             throw new AppException('Missing parameter', 400);
         }
 
@@ -84,7 +85,7 @@ class UserService
 
     public function changeOtherPassword(int $userId, int $currentUserId, array $data): int
     {
-        if (empty($data) || !$data['password']) {
+        if (empty($data) || empty($data['password'])) {
             throw new AppException('Missing parameter', 400);
         }
 
@@ -93,7 +94,7 @@ class UserService
             throw new AppException('Forbidden', 403);
         }
 
-        $new = (string) $data['password'] ?? '';
+        $new = (string) ($data['password'] ?? '');
 
         if ($new === '') {
             throw new AppException('New password required', 400);
@@ -105,7 +106,7 @@ class UserService
 
     public function changeMyPassword(int $currentUserId, array $data): int 
     {
-        if (empty($data) || !$data['old_password'] || !$data['new_password']) {
+        if (empty($data) || empty($data['old_password']) || empty($data['new_password'])) {
             // return $this->json(['error' => 'Missing parameter'], 400);
             throw new AppException('Missing parameter', 400);
         }

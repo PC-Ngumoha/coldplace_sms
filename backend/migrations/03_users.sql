@@ -8,7 +8,7 @@ CREATE TABLE IF NOT EXISTS users (
     email                   VARCHAR(255) NOT NULL UNIQUE,
     password_hash           VARCHAR(255), -- Prevents truncation of the hash
     role                    VARCHAR(60) NOT NULL,
-    location_id             INT,
+    location_id             INT UNSIGNED NULL,
     is_primary_handler      BOOLEAN NOT NULL DEFAULT false,
     must_change_password    BOOLEAN NOT NULL DEFAULT true,
     status                  VARCHAR(60) NOT NULL DEFAULT 'active',
@@ -21,7 +21,7 @@ CREATE TABLE IF NOT EXISTS users (
 -- Refresh tokens
 CREATE TABLE IF NOT EXISTS refresh_tokens (
     id                      INT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
-    user_id                 INT NOT NULL,
+    user_id                 INT UNSIGNED NOT NULL,
     token_hash              CHAR(64) NOT NULL,
     expires_at              BIGINT NOT NULL,
     revoked_at              BIGINT,

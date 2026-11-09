@@ -7,7 +7,9 @@ CREATE TABLE IF NOT EXISTS audit_logs(
     entity_id           INT UNSIGNED NULL,
     old_value           TEXT NULL,
     new_value           TEXT NULL,  -- Chose TEXT for compatibility across MySQL 5 & 8
-    reason              VARCHAR(1000) NULL
+    reason              VARCHAR(255) NULL,
+    ip_address          VARCHAR(60) NULL,
+    user_agent          VARCHAR(255) NULL,
     created_at          TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     INDEX idx_audit_created (created_at),
