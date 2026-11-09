@@ -18,13 +18,13 @@ export const ROLES = {
       "shadow-blue-100 has-data-checked:border-blue-800 has-data-checked:bg-blue-200",
   },
   central: {
-    display: "Central Handler",
+    display: "Central Staff",
     color: "bg-teal-100 text-teal-800",
     label:
       "shadow-teal-100 has-data-checked:border-teal-800 has-data-checked:bg-teal-200",
   },
   outlet: {
-    display: "Outlet Handler",
+    display: "Outlet Staff",
     color: "bg-amber-100 text-amber-800",
     label:
       "shadow-amber-100 has-data-checked:border-amber-800 has-data-checked:bg-amber-200",

@@ -11,11 +11,13 @@ use Psr\Http\Server\RequestHandlerInterface;
 use Firebase\JWT\JWT;
 use Firebase\JWT\Key;
 
+use App\Repositories\UserRepository;
+
 class JwtAuthMiddleware implements MiddlewareInterface
 {   
     use \App\Helpers\ResponseHelper;
 
-    public function __construct(private string $secret) {}
+    public function __construct(private string $secret, private UserRepository $repo) {}
 
     public function process(ServerRequestInterface $request,
                             RequestHandlerInterface $handler): ResponseInterface
@@ -35,7 +37,25 @@ class JwtAuthMiddleware implements MiddlewareInterface
         }
 
         // Making the decoded claims available to the protected routes
-        $request = $request->withAttribute('jwt', (array) $decoded);
+        $claims = (array) $decoded;
+        $request = $request->withAttribute('jwt', $claims);
+
+        // Fetching the current user from the database
+        $user = $this->repo->retrieveUser((int)($claims['sub'] ?? 0));
+
+        // The token is valid but the user no longer exists
+        if (!$user) {
+            return $this->json(['error' => 'Invalid token'], 401);
+        }
+
+        // Refuse access attempts from deactivated users
+        if ($user['status'] === \App\Controllers\Users::INACTIVE) {
+            return $this->json(['error' => 'Your account has been deactivated'], 401);
+        }
+
+        unset($user['password_hash']);
+
+        $request = $request->withAttribute('user', $user);
 
         return $handler->handle($request);
     }

@@ -20,7 +20,6 @@ export default function UserChangePassword() {
   const mustChangePassword = location.state?.mustChangePassword ?? false;
 
   const goBack = () => {
-    console.log("background: ", background);
     navigate(background);
   };
 

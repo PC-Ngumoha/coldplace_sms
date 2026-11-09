@@ -68,19 +68,15 @@ class Users
 
     public function me(Request $req, Response $res): Response
     {
-        $userId = (int) $req->getAttribute('jwt')['sub']; // get user id from JWT
+        $user = $req->getAttribute('user') ?? [];
 
-        $user = $this->repo->retrieveUser($userId);
-
-        if (!$user) {
+        if (empty($user)) {
             return $this->json(['error' => 'Not found'], 404);
         }
 
-        $payload = $this->filterOutput(source: $user, excluded: ['password_hash']);
+        $user['permissions'] = PermissionPolicy::permissionsFor($user['role']);
 
-        $payload['permissions'] = PermissionPolicy::permissionsFor($user['role']);
-
-        return $this->json($payload);
+        return $this->json($user);
     }
 
     public function update(Request $req, Response $res, array $args): Response

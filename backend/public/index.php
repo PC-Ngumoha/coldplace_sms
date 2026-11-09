@@ -12,6 +12,9 @@ use DI\ContainerBuilder;
 use App\Middleware\AddJsonToResponse;
 use App\Middleware\CorsMiddleware;
 use App\Middleware\CsrfGuardMiddleware;
+use App\Middleware\JwtAuthMiddleware;
+
+use App\Repositories\UserRepository;
 
 $dotenv = Dotenv\Dotenv::createImmutable(APP_ROOT);
 $dotenv->load();
@@ -34,7 +37,8 @@ $app->add(new AddJsonToResponse);
 $app->add(new CorsMiddleware($allowedOrigins));
 
 $csrf = new CsrfGuardMiddleware($allowedOrigins);
+$jwtAuth = new JwtAuthMiddleware($_ENV['JWT_SECRET'], $container->get(UserRepository::class));
 
-(require APP_ROOT . '/public/routes.php')($app, $csrf);
+(require APP_ROOT . '/public/routes.php')($app, $jwtAuth, $csrf);
 
 $app->run();

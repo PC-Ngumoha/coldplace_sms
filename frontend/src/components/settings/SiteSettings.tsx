@@ -14,6 +14,7 @@ import { locationApi } from "@/services/Locationapi";
 import { showSuccess, showError } from "@/services/toasts";
 import { useAuth } from "@/contexts/auth_context";
 import type { User, Location } from "@/types";
+import { ROLES } from "@/lib/definitions";
 import { isAxiosError } from "axios";
 import { useNavigate, useLocation } from "react-router";
 
@@ -192,11 +193,15 @@ export default function SiteSettings() {
                         {user.email}
                       </td>
                       <td className="whitespace-nowrap px-4 py-3.5 text-slate-600 sm:px-5">
-                        {user.role}
+                        <span
+                          className={`inline-block px-2 py-1 rounded-md font-semibold ${ROLES[user.role].color}`}
+                        >
+                          {ROLES[user.role].display}
+                        </span>
                       </td>
                       <td className="px-4 py-3.5 sm:px-5">
                         <span
-                          className={`inline-flex rounded-md border px-1.5 py-0.5 text-[9px] 
+                          className={`inline-flex rounded-md border px-1.5 py-0.5 text-[10px]
                               font-semibold uppercase ${
                                 user.status.toLowerCase() === "active"
                                   ? "border-teal-200 bg-teal-50 text-teal-700"
