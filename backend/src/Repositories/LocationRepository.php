@@ -40,6 +40,16 @@ class LocationRepository
         return $stmt->fetch();
     }
 
+    public function retrieveLocationForUpdate(int $locationId): array | bool
+    {
+        $sql = 'SELECT * FROM locations WHERE id = ? FOR UPDATE';
+
+        $stmt = $this->conn->prepare($sql);
+        $stmt->execute([$locationId]);
+
+        return $stmt->fetch();
+    }
+
     public function createLocation(array $data): int
     {
         $sql = 'INSERT INTO locations (name, address) VALUES (? , ?)';
@@ -49,7 +59,7 @@ class LocationRepository
             $data['address']
         ]);
 
-        return $stmt->rowCount();
+        return $this->conn->lastInsertId();
     }
 
     public function updateLocation(int $locationId, array $data): int

@@ -7,6 +7,7 @@ use Psr\Http\Message\ResponseInterface as Response;
 
 use App\Exceptions\AppException;
 use App\Services\LocationService;
+use App\Helpers\Actor;
 
 class Locations {
     use \App\Helpers\ResponseHelper;
@@ -45,14 +46,14 @@ class Locations {
         $body = $req->getParsedBody() ?? [];
 
         try {
-            $rows = $this->service->create($body);
+            $id = $this->service->create(Actor::fromRequest($req), $body);
         } catch (AppException $err) {
             return $this->json(['error' => $err->getMessage()], $err->getStatus());
         }
 
         return $this->json([
             'message' => 'Record created',
-            'row_count' => $rows,
+            'last_insert_id' => $id,
         ], 201);
     }
 
@@ -62,7 +63,7 @@ class Locations {
         $body = $req->getParsedBody() ?? [];
 
         try {
-            $rows = $this->service->update($locationId, $body);
+            $rows = $this->service->update(Actor::fromRequest($req), $locationId, $body);
         } catch (AppException $err) {
             return $this->json(['error' => $err->getMessage()], $err->getStatus());
         }
@@ -78,7 +79,7 @@ class Locations {
         $locationId = (int) $args['id'];
 
         try {
-            $rows = $this->service->deactivate($locationId);
+            $rows = $this->service->deactivate(Actor::fromRequest($req), $locationId);
         } catch (AppException $err) {
             return $this->json(['error' => $err->getMessage()], $err->getStatus());
         }
@@ -94,7 +95,7 @@ class Locations {
         $locationId = (int) $args['id'];
         
         try {
-            $rows = $this->service->activate($locationId);
+            $rows = $this->service->activate(Actor::fromRequest($req), $locationId);
         } catch (AppException $err) {
             return $this->json(['error' => $err->getMessage()], $err->getStatus());
         }

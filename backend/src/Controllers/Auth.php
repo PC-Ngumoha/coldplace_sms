@@ -8,6 +8,7 @@ use Psr\Http\Message\ResponseInterface as Response;
 use App\Services\RefreshCookie;
 use App\Services\AuthService;
 use App\Exceptions\AppException;
+use App\Helpers\Actor;
 
 class Auth
 {
@@ -24,7 +25,7 @@ class Auth
         $result = null;
 
         try {
-            $result = $this->service->login($email, $password);
+            $result = $this->service->login(Actor::fromRequest($req), $email, $password);
         } catch (AppException $err) {
             if ($err->clearCookie()) {
                 return $this->cookie->clear(
@@ -50,7 +51,7 @@ class Auth
         $result = null;
 
         try {
-            $result = $this->service->refresh($raw);
+            $result = $this->service->refresh(Actor::fromRequest($req), $raw);
         } catch (AppException $err) {
             if ($err->clearCookie()) {
                 return $this->cookie->clear(
@@ -74,7 +75,7 @@ class Auth
     public function logout(Request $req, Response $res): Response
     {
         $raw = $this->cookie->read($req);
-        $this->service->logout($raw);
+        $this->service->logout(Actor::fromRequest($req), $raw);
 
         return $this->cookie->clear($this->json(['message' => 'Logged out']));
     }

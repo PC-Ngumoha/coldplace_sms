@@ -65,4 +65,5 @@ export interface ProcessResponse {
   error?: string;
   message?: string;
   row_count?: number;
+  last_insert_id?: number;
 }
