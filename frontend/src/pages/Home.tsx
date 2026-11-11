@@ -9,6 +9,7 @@ import {
   DropdownMenuGroup,
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
+import { Can } from "@/components/permissions";
 import { ROLES, type RoleName } from "@/lib/definitions";
 import { clsx } from "cn";
 
@@ -39,15 +40,50 @@ import { locationApi } from "@/services/Locationapi";
 import { useEffect, useState } from "react";
 
 const navigation = [
-  { label: "Dashboard", to: "/", icon: Grid2X2 },
-  { label: "Products", to: "/products", icon: Package },
-  { label: "Receiving", to: "/receiving", icon: Truck },
-  { label: "Transfers", to: "/transfers", icon: ArrowRight },
-  { label: "Sales", to: "/sales", icon: ShoppingCart },
-  { label: "Damage & loss", to: "/damage", icon: TriangleAlert },
-  { label: "Pricing", to: "/pricing", icon: Tag },
-  { label: "Reports", to: "/reports", icon: ChartNoAxesColumn },
-  { label: "Audit Logs", to: "/logs", icon: ListClock },
+  { label: "Dashboard", to: "/", icon: Grid2X2, permission: "users:profile" },
+  {
+    label: "Products",
+    to: "/products",
+    icon: Package,
+    permission: "users:profile",
+  },
+  {
+    label: "Receiving",
+    to: "/receiving",
+    icon: Truck,
+    permission: "users:profile",
+  },
+  {
+    label: "Transfers",
+    to: "/transfers",
+    icon: ArrowRight,
+    permission: "users:profile",
+  },
+  {
+    label: "Sales",
+    to: "/sales",
+    icon: ShoppingCart,
+    permission: "users:profile",
+  },
+  {
+    label: "Damage & loss",
+    to: "/damage",
+    icon: TriangleAlert,
+    permission: "users:profile",
+  },
+  { label: "Pricing", to: "/pricing", icon: Tag, permission: "users:profile" },
+  {
+    label: "Reports",
+    to: "/reports",
+    icon: ChartNoAxesColumn,
+    permission: "users:profile",
+  },
+  {
+    label: "Audit Logs",
+    to: "/logs",
+    icon: ListClock,
+    permission: "audit:view",
+  },
 ];
 
 export default function Home() {
@@ -122,22 +158,23 @@ export default function Home() {
               </div>
 
               <nav className="space-y-1.5">
-                {navigation.map(({ label, to, icon: Icon }) => {
+                {navigation.map(({ label, to, icon: Icon, permission }) => {
                   const active = location.pathname === to;
 
                   return (
-                    <Link
-                      key={label}
-                      to={to}
-                      className={`flex h-11 items-center gap-3 rounded-xl px-3 text-[14px] font-medium transition-colors ${
-                        active
-                          ? "bg-darker-teal-blue text-white shadow-sm"
-                          : "text-slate-600 hover:bg-slate-200/70 hover:text-slate-800"
-                      }`}
-                    >
-                      <Icon className="size-4.5" />
-                      <span>{label}</span>
-                    </Link>
+                    <Can key={label} permission={permission}>
+                      <Link
+                        to={to}
+                        className={`flex h-11 items-center gap-3 rounded-xl px-3 text-[14px] font-medium transition-colors ${
+                          active
+                            ? "bg-darker-teal-blue text-white shadow-sm"
+                            : "text-slate-600 hover:bg-slate-200/70 hover:text-slate-800"
+                        }`}
+                      >
+                        <Icon className="size-4.5" />
+                        <span>{label}</span>
+                      </Link>
+                    </Can>
                   );
                 })}
               </nav>

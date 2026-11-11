@@ -21,6 +21,7 @@ import {
   UserChangePassword,
 } from "@/pages";
 import { useAuth } from "@/contexts/auth_context";
+import { RequirePermission } from "@/components/permissions";
 import { useEffect } from "react";
 
 export default function App() {
@@ -63,7 +64,14 @@ export default function App() {
             <Route path="/pricing" element={<Pricing />} />
             <Route path="/reports" element={<Reports />} />
             <Route path="/settings" element={<Settings />} />
-            <Route path="/logs" element={<AuditLogs />} />
+            <Route
+              path="/logs"
+              element={
+                <RequirePermission permission="audit:view">
+                  <AuditLogs />
+                </RequirePermission>
+              }
+            />
           </Route>
         </Route>
 
