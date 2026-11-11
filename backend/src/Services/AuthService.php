@@ -45,10 +45,7 @@ class AuthService
             throw new AppException('Your account has been deactivated', 401);
         }
 
-        $tokens =  [
-            'refresh_token' => $this->tokens->createRefreshToken($user['id']),
-            'access_token' => $this->tokens->createAccessToken($user)
-        ];
+        $tokens =  $this->tokens->issueFor($user);
 
         $this->safeLog($actor->withUserId((int) $user['id']), AuditAction::LOGIN, (int) $user['id']);
 
@@ -73,7 +70,7 @@ class AuthService
 
         if (!$user || $user['status'] === User::INACTIVE) {
             // Revoke all tokens linked to this user.
-            $this->tokens->revokeAll((int) $result['user_id']);
+            $this->tokens->revokeAllForUser((int) $result['user_id']);
             $this->safeLog(
                 $actor->withUserId((int) $result['user_id']),
                 AuditAction::REFRESH_FAILED,

@@ -11,6 +11,8 @@ final class AuditAction
     public const USER_CREATED = 'user.created';
     public const USER_UPDATED = 'user.updated';
     public const USER_PASSWORD_CHANGED = 'user.password_changed';
+    public const USER_PASSWORD_CHANGE_FAILED = 'user.password_change_failed';
+    public const USER_PASSWORD_RESET = 'user.password_reset';
     public const USER_DEACTIVATED = 'user.deactivated';
     public const USER_ACTIVATED = 'user.activated';
 

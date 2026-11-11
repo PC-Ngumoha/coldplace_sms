@@ -14,29 +14,21 @@ class UserRepository
     }
 
     public function addUser(array $data): int {
-        $name = $data['name'];
-        $email = $data['email'];
-        $password = $data['password'];
-        $assignedRole = $data['role'];
-        $locationId = (int) $data['location_id'];
 
         $sql = 'INSERT INTO users(name, email, password_hash, role, location_id)
-            VALUES (:name, :email, :password_hash, :role, :location_id)';
+            VALUES (?, ?, ?, ?, ?)';
 
         $stmt = $this->conn->prepare($sql);
-        $stmt->bindValue(':name', $name);
-        $stmt->bindValue(':email', $email);
-        $stmt->bindValue(':password_hash', password_hash($password, PASSWORD_DEFAULT));
-        $stmt->bindValue(':role', $assignedRole);
-        if ($locationId) {
-            $stmt->bindValue(':location_id', $locationId, PDO::PARAM_INT);
-        } else {
-            $stmt->bindValue(':location_id', null, PDO::PARAM_NULL);
-        }
 
-        $stmt->execute();
+        $stmt->execute([
+            $data['name'],
+            $data['email'],
+            password_hash($data['password'], PASSWORD_DEFAULT),
+            $data['role'],
+            $data['location_id']
+        ]);
 
-        return $stmt->rowCount();
+        return $this->conn->lastInsertId();
     }
 
     public function showAllUsers(): array {
@@ -47,6 +39,14 @@ class UserRepository
 
     public function retrieveUser(int $userId): array | bool {
         $sql = 'SELECT * FROM users WHERE id = ?';
+        $stmt = $this->conn->prepare($sql);
+        $stmt->execute([$userId]);
+
+        return $stmt->fetch();
+    }
+
+    public function retrieveUserForUpdate(int $userId): array | bool {
+        $sql = 'SELECT * FROM users WHERE id = ? FOR UPDATE';
         $stmt = $this->conn->prepare($sql);
         $stmt->execute([$userId]);
 
@@ -82,10 +82,10 @@ class UserRepository
         return $stmt->rowCount();
     }
 
-    public function setStatus(int $userId, string $status): int {
-        $sql = 'UPDATE users SET status = ? WHERE id = ?';
+    public function setStatus(int $userId, string $newStatus, string $oldStatus): int {
+        $sql = 'UPDATE users SET status = ? WHERE id = ? AND status = ?';
         $stmt = $this->conn->prepare($sql);
-        $stmt->execute([ $status, $userId ]);
+        $stmt->execute([ $newStatus, $userId, $oldStatus ]);
 
         return $stmt->rowCount();
     }

@@ -21,8 +21,8 @@ if ((int) $pdo->query('SELECT COUNT(*) FROM users')->fetchColumn() > 0) {
     exit('There are already users. Nothing to do\n');
 }
 
-$domain = $_ENV['DOMAIN_NAME'] ?? 'coldplace.com';
-$adminEmail = "rootadmin@{$domain}";
+$domain = $_ENV['ORG_NAME'] ?? 'coldplace';
+$adminEmail = "rootadmin@{$domain}.com";
 
 $pdo->prepare('INSERT INTO users (name, email, password_hash, role, must_change_password)
                 VALUES (?, ?, ?, ?, 0)')

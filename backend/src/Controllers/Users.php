@@ -4,12 +4,11 @@ namespace App\Controllers;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
 
-use App\Constants\Roles;
-use App\Constants\User;
 use App\Exceptions\AppException;
-use App\Repositories\UserRepository;
 use App\Services\PermissionPolicy;
 use App\Services\UserService;
+use App\Helpers\Actor;
+use App\Services\RefreshCookie;
 
 class Users
 {
@@ -17,7 +16,9 @@ class Users
 
     
 
-    public function __construct(private UserRepository $repo, private UserService $service) {}
+    public function __construct(private UserService $service,
+                                private RefreshCookie $cookie)
+    {}
 
     public function list(Request $req, Response $res): Response
     {
@@ -47,7 +48,7 @@ class Users
         $body = $req->getParsedBody() ?? [];
         
         try {
-            $rows = $this->service->create($body);
+            $rows = $this->service->create(Actor::fromRequest($req), $body);
         } catch (AppException $err) {
             return $this->json(['error' => $err->getMessage()], $err->getStatus());
         }
@@ -74,11 +75,10 @@ class Users
     public function update(Request $req, Response $res, array $args): Response
     {
         $userId = (int) $args['id'];
-        $currentUserId = (int) $req->getAttribute('jwt')['sub'];
         $body = $req->getParsedBody() ?? [];
 
         try {
-            $rows = $this->service->update($userId, $currentUserId, $body);
+            $rows = $this->service->update(Actor::fromRequest($req), $userId, $body);
         } catch (AppException $err) {
             return $this->json(['error' => $err->getMessage()], $err->getStatus());
         }
@@ -95,51 +95,50 @@ class Users
     public function changePassword(Request $req, Response $res, array $args): Response
     {
         $userId = (int) $args['id'];
-        $currentUserId = (int) $req->getAttribute('jwt')['sub'];
         $data = $req->getParsedBody() ?? [];
 
         try {
-            $rows = $this->service->changeOtherPassword($userId, $currentUserId, $data);
+            $rows = $this->service->changeOtherPassword(Actor::fromRequest($req), $userId, $data);
         } catch (AppException $err) {
             return $this->json(['error' => $err->getMessage()], $err->getStatus());
         }
         
-        return $rows > 0 
-            ? $this->json([
-                'message' => 'Record updated',
-                'row_count' => $rows
-                ])
-            : $this->json(['error' => 'Not found'], 404);
+        return $this->json([
+            'message' => 'Record updated',
+            'row_count' => $rows
+        ]);
     }
 
     /**
      * all roles: change your password
+     * 
+     * Changing your own password should cause your session to be renewed
+     * while locking out any other user that had your password
      */
     public function changeMyPassword(Request $req, Response $res): Response
     {
-        $userId = (int) $req->getAttribute('jwt')['sub'];
         $data = $req->getParsedBody() ?? [];
 
         try {
-            $rows = $this->service->changeMyPassword($userId, $data);
+            $tokens = $this->service->changeMyPassword(Actor::fromRequest($req), $data);
         } catch (AppException $err) {
             return $this->json(['error' => $err->getMessage()], $err->getStatus());
         }
 
-        return $rows > 0 
-            ? $this->json([
-                'message' => 'Record updated',
-                'row_count' => $rows
-                ])
-            : $this->json(['error' => 'Not found'], 404);
+        $res = $this->json([
+            'access_token'      => $tokens['access_token'],
+            'token_type'        => 'Bearer',
+            'expires_in'        => (int) $_ENV['JWT_TTL'],
+        ]);
+
+        return $this->cookie->set($res, $tokens['refresh_token']);
     }
 
     public function deactivate(Request $req, Response $res, array $args): Response {
         $userId = (int) $args['id'];
-        $currentUserId = (int) $req->getAttribute('jwt')['sub'];
 
         try {
-            $rows = $this->service->deactivate($userId, $currentUserId);
+            $rows = $this->service->deactivate(Actor::fromRequest($req), $userId);
         } catch (AppException $err) {
             return $this->json(['error' => $err->getMessage()], $err->getStatus());
         }
@@ -152,10 +151,9 @@ class Users
 
     public function activate(Request $req, Response $res, array $args): Response {
         $userId = (int) $args['id'];
-        $currentUserId = (int) $req->getAttribute('jwt')['sub'];
         
         try {
-            $rows = $this->service->activate($userId, $currentUserId);
+            $rows = $this->service->activate(Actor::fromRequest($req), $userId);
         } catch (AppException $err) {
             return $this->json(['error' => $err->getMessage()], $err->getStatus());
         }

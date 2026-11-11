@@ -1,4 +1,7 @@
 -- Sets up the audit_log table that stores a record of all actions taken on the app.
+USE coldplace;
+
+
 CREATE TABLE IF NOT EXISTS audit_logs(
     id                  BIGINT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
     user_id             INT UNSIGNED NULL,

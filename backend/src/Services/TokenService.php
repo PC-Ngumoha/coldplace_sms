@@ -42,6 +42,14 @@ class TokenService
         return $raw;
     }
 
+    public function issueFor(array $user): array
+    {
+        return [
+            'access_token'      => $this->createAccessToken($user),
+            'refresh_token'     => $this->createRefreshToken((int) $user['id'])
+        ];
+    }
+
     /**
      * Validates refresh token and returns:
      * ['user_id'=> string, 'refresh_token' => string]
@@ -62,7 +70,7 @@ class TokenService
             }
 
             if ($row['revoked_at'] !== null) {          // Token Reuse detected
-                $this->revokeAll($row['user_id']);      // Revoke all tokens associated with this user.
+                $this->revokeAllForUser($row['user_id']);      // Revoke all tokens associated with this user.
                 $this->conn->commit();
                 return ['status' => RefreshOutcome::REVOKED, 'user_id' => $row['user_id']];
             }
@@ -141,7 +149,7 @@ class TokenService
     /** Revoke every refresh token belonging to a user to protect
      * against malicious access attempts
      */
-    public function revokeAll(int $userId): void
+    public function revokeAllForUser(int $userId): void
     {
         $this->conn->prepare(
             'UPDATE refresh_tokens SET revoked_at = ? WHERE user_id = ? AND revoked_at IS NULL'

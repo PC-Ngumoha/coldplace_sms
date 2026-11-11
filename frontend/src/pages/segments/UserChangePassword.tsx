@@ -30,17 +30,17 @@ export default function UserChangePassword() {
   const handleSubmit = async (event: SubmitEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    if (!field.old_password.trim()) {
+    if (!field.old_password) {
       setError("Please enter your current password.");
       return;
     }
 
-    if (!field.new_password.trim()) {
+    if (!field.new_password) {
       setError("Please enter a new password.");
       return;
     }
 
-    if (field.old_password.trim() === field.new_password.trim()) {
+    if (field.old_password === field.new_password) {
       setError("New password must not match current password");
       return;
     }
