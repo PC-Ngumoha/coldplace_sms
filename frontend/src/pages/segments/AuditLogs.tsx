@@ -47,7 +47,7 @@ export default function AuditLogs() {
   };
 
   return (
-    <main className="min-h-screen bg-[#f3f6f7] px-3 py-5 text-slate-800">
+    <main className=" bg-[#f3f6f7] px-3 py-5 text-slate-800">
       <div className="mx-auto max-w-[1500px]">
         <header className="mb-4 flex items-start justify-between gap-3">
           <div>
@@ -161,7 +161,7 @@ function AuditRow({
   return (
     <>
       <tr
-        className={`${row.id === selected ? "bg-slate-100/90" : "bg-white"} text-[10px]`}
+        className={`${row.id === selected ? "bg-slate-100/90" : "bg-white"} text-[12px]`}
         onClick={() => onSelect(row.id)}
       >
         <td className="whitespace-nowrap px-3 py-3 font-medium text-slate-600">
