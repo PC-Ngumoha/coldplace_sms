@@ -192,7 +192,7 @@ function AuditRow({
         <td className="px-3 py-3">
           <span className={badge}>{row.entity}</span>
         </td>
-        <td className="px-3 py-3 font-medium">{row.id}</td>
+        <td className="px-3 py-3 font-medium">{row.entity_id}</td>
         <td className="px-2 py-3">
           <Value value={oldKeyCount as string} />
         </td>
@@ -296,7 +296,7 @@ function MobileRow({
         <p className="mt-0.5 text-[10px] text-slate-400">{row.reason}</p>
         <div className="mt-2 flex flex-wrap items-center gap-2">
           <span className={badge}>{row.entity}</span>
-          <span className="text-[10px] text-slate-500">ID {row.id}</span>
+          <span className="text-[10px] text-slate-500">ID {row.entity_id}</span>
           <Value value={oldKeyCount as string} />
           <span className="text-slate-300">→</span>
           <Value value={newKeyCount as string} />
