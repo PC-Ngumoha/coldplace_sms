@@ -2,6 +2,8 @@
 
 use Slim\App as SlimApp;
 use Slim\Routing\RouteCollectorProxy;
+use Psr\Http\Message\ServerRequestInterface as Request;
+use Psr\Http\Message\ResponseInterface as Response;
 
 use App\Constants\Permissions;
 use App\Middleware\JwtAuthMiddleware;
@@ -12,6 +14,11 @@ use App\Middleware\MustChangePassword;
 
 
 return function (SlimApp $app, JwtAuthMiddleware $jwtAuth, CsrfGuardMiddleware $csrf) {
+    $app->get('/testing', function (Request $req, Response $res) {
+        $res->getBody()->write(json_encode(['message' => 'Health check: Pass']));
+        return $res;
+    });
+
     // ---- PROTECTED ROUTES ----
     $app->group('/api', function (RouteCollectorProxy $group) {
 

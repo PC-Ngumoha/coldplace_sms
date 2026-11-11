@@ -1,75 +1,49 @@
-# React + TypeScript + Vite
+# Frontend Getting Started
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## Overview
 
-Currently, two official plugins are available:
+- What this frontend does
+- Main features and user flows
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Prerequisites
 
-## React Compiler
+- Runtime: Node.js (v22.23.1), npm (v10.9.8)
+- Environment variables:
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+  | Variable       | Required | Description / development guidance   |
+  | -------------- | -------- | ------------------------------------ |
+  | `VITE_API_URL` | Yes      | The URL where the backend is located |
 
-## Expanding the ESLint configuration
+### Setup
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+1. Clone the repository and open the `frontend` directory.
+2. Install dependencies:
+   ```
+   npm install
+   ```
+3. Configure environment variables in a `.env` file.
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+### Run Locally
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+- Start the development server.
+  ```
+  npm run dev
+  ```
+- Open `http://localhost:5173` in a browser.
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+## Working with the Code
 
-```
+| Path               | Responsibility                                         |
+| ------------------ | ------------------------------------------------------ |
+| `src/main.tsx`     | Entry point                                            |
+| `src/App.tsx`      | Route definitions                                      |
+| `src/api/*`        | General config for axios API client                    |
+| `src/components/*` | UI components                                          |
+| `src/hooks/*`      | User-defined hooks                                     |
+| `src/contexts/*`   | React Contexts for global state management             |
+| `src/pages/*`      | Pages / routes on the website                          |
+| `src/services/*`   | Helpers for interacting with the API                   |
+| `src/lib/*`        | Helpful definitions and constants used at other points |
+| `src/types.ts`     | Type definitions                                       |
 
-You can also install [eslint-plugin-react-x](https://npmx.dev/package/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://npmx.dev/package/eslint-plugin-react-dom) for React-specific lint rules:
-
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-
-```
+That's it.
