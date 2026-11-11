@@ -8,6 +8,7 @@ import Reports from "./segments/Reports";
 import Damages from "./segments/Damages";
 import Settings from "./segments/Settings";
 import Login from "./routes/Login";
+import AuditLogs from "./segments/AuditLogs";
 import NotFound from "./routes/NotFound";
 import Home from "./Home";
 import ManageUsers from "./segments/ManageUsers";
@@ -27,6 +28,7 @@ export {
   Damages,
   Settings,
   Login,
+  AuditLogs,
   NotFound,
   ManageUsers,
   ManageLocations,

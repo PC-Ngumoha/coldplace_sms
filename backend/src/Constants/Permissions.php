@@ -20,6 +20,8 @@ class Permissions
     public const USERS_CHANGE_PASSWORD_OWN = 'users:change_password:own';
     public const USERS_PROFILE = 'users:profile';
 
+    public const AUDIT_VIEW = 'audit:view';
+
     public const ALL = [
         self::LOCATIONS_LIST,
         self::LOCATIONS_RETRIEVE,
@@ -37,5 +39,7 @@ class Permissions
         self::USERS_ACTIVATE,
         self::USERS_DEACTIVATE,
         self::USERS_PROFILE,
+
+        self::AUDIT_VIEW,
     ];
 }

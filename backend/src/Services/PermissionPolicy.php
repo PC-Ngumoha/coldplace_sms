@@ -16,14 +16,18 @@ final class PermissionPolicy
             Permissions::LOCATIONS_LIST,
             Permissions::LOCATIONS_RETRIEVE,
             Permissions::USERS_CHANGE_PASSWORD_OWN,
-            Permissions::USERS_PROFILE
+            Permissions::USERS_PROFILE,
+            Permissions::AUDIT_VIEW,
+            Permissions::USERS_LIST,
         ],
 
         Roles::MANAGER => [
             Permissions::LOCATIONS_LIST,
             Permissions::LOCATIONS_RETRIEVE,
             Permissions::USERS_CHANGE_PASSWORD_OWN,
-            Permissions::USERS_PROFILE
+            Permissions::USERS_PROFILE,
+            Permissions::AUDIT_VIEW,
+            Permissions::USERS_LIST,
         ],
 
         Roles::CENTRAL => [

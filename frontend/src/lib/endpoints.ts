@@ -15,3 +15,7 @@ export const LOCATION_PATHS = {
   list: "/api/locations",
   create: "/api/locations",
 };
+
+export const LOG_PATHS = {
+  list: "/api/audit/logs",
+};

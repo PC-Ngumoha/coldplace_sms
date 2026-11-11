@@ -26,6 +26,8 @@ import {
   Truck,
   UserRound,
   LogOut,
+  // SquareTerminal,
+  ListClock,
   Sidebar,
   SidebarClose,
 } from "lucide-react";
@@ -45,6 +47,7 @@ const navigation = [
   { label: "Damage & loss", to: "/damage", icon: TriangleAlert },
   { label: "Pricing", to: "/pricing", icon: Tag },
   { label: "Reports", to: "/reports", icon: ChartNoAxesColumn },
+  { label: "Audit Logs", to: "/logs", icon: ListClock },
 ];
 
 export default function Home() {

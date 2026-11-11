@@ -67,3 +67,17 @@ export interface ProcessResponse {
   row_count?: number;
   last_insert_id?: number;
 }
+
+export interface Log {
+  id: number;
+  user_id: number;
+  action: string;
+  entity: string;
+  entity_id: number;
+  old_value: string;
+  new_value: string;
+  reason: string;
+  ip_address: string;
+  user_agent: string;
+  created_at: string;
+}

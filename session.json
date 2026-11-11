@@ -9,7 +9,16 @@
         "type": null,
         "username": null
     },
-    "cookies": [],
+    "cookies": [
+        {
+            "domain": "localhost.local",
+            "expires": 1795690501,
+            "name": "refresh_token",
+            "path": "/api/auth",
+            "secure": false,
+            "value": "89cea8fc1a54ce7d44154b610734329b535ad471231f5ef0d6793209140d0502"
+        }
+    ],
     "headers": [
         {
             "name": "Accept",
@@ -18,6 +27,10 @@
         {
             "name": "X-Requested-With",
             "value": "axios"
+        },
+        {
+            "name": "Authorization",
+            "value": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE3OTQzOTQ1MDEsImV4cCI6MTc5NDM5NTQwMSwic3ViIjoyLCJlbWFpbCI6ImFuaXRhQGNvbGRwbGFjZS5jb20iLCJyb2xlIjoibWFuYWdlciJ9.9cBZlwIfmPAdDJrlVdAbL6pI4hx6spnjQoiN9snXS4k"
         }
     ]
 }

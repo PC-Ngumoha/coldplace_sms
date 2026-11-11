@@ -91,6 +91,12 @@ return function (SlimApp $app, JwtAuthMiddleware $jwtAuth, CsrfGuardMiddleware $
             ->patch('/me/changePassword', App\Controllers\Users::class . ':changeMyPassword')
             ->add(new RequirePermission(Permissions::USERS_CHANGE_PASSWORD_OWN));
 
+
+        // ------ AUDIT LOGS ------
+        $group
+            ->get('/audit/logs', App\Controllers\Logs::class . ':list')
+            ->add(new RequirePermission(Permissions::AUDIT_VIEW));
+
     })->add($jwtAuth);
 
     // ---- AUTHENTICATION ROUTES ----

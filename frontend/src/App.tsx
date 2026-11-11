@@ -4,6 +4,7 @@ import GuestRoute from "./components/routes/GuestRoute";
 import {
   Home,
   Login,
+  AuditLogs,
   Dashboard,
   NotFound,
   Products,
@@ -62,6 +63,7 @@ export default function App() {
             <Route path="/pricing" element={<Pricing />} />
             <Route path="/reports" element={<Reports />} />
             <Route path="/settings" element={<Settings />} />
+            <Route path="/logs" element={<AuditLogs />} />
           </Route>
         </Route>
 
