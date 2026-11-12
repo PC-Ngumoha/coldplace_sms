@@ -10,7 +10,7 @@ const badge =
   "rounded-full border border-slate-200 bg-white px-2 py-0.5 text-[10px] font-medium text-slate-600";
 
 export default function AuditLogs() {
-  const LOGS_PER_PAGE = 10;
+  const LOGS_PER_PAGE = 15;
   const [logs, setLogs] = useState<Log[]>([]);
   const [users, setUsers] = useState<User[]>([]);
   const [selectedLog, setSelectedLog] = useState<number>();
@@ -52,7 +52,7 @@ export default function AuditLogs() {
         <header className="mb-4 flex items-start justify-between gap-3">
           <div>
             <h1 className="text-2xl font-semibold tracking-tight text-slate-900">
-              Audit log
+              Audit logs
             </h1>
             <p className="mt-1 text-xs text-slate-400">
               Every recorded action across all locations · newest first · times
@@ -161,7 +161,7 @@ function AuditRow({
   return (
     <>
       <tr
-        className={`${row.id === selected ? "bg-slate-100/90" : "bg-white"} text-[12px]`}
+        className={`${row.id === selected ? "bg-slate-100/90" : "bg-white"} text-[12px] hover:bg-slate-100/90`}
         onClick={() => onSelect(row.id)}
       >
         <td className="whitespace-nowrap px-3 py-3 font-medium text-slate-600">
@@ -268,7 +268,12 @@ function MobileRow({
   const { os, browser } = parseUserAgent(row.user_agent);
 
   return (
-    <article className={clsx("p-3", row.id === selected && "bg-slate-100/90")}>
+    <article
+      className={clsx(
+        "p-3 hover:bg-slate-100/90",
+        row.id === selected && "bg-slate-100/90",
+      )}
+    >
       <div
         className="flex items-start justify-between gap-3"
         onClick={() => onSelect(row.id)}

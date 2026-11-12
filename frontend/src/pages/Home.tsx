@@ -22,7 +22,7 @@ import {
   ShoppingCart,
   Settings,
   Tag,
-  Thermometer,
+  // Thermometer,
   TriangleAlert,
   Truck,
   UserRound,
@@ -120,7 +120,7 @@ export default function Home() {
       {/* Sidebar */}
       <aside
         className={clsx(
-          "w-full h-full md:w-fit bg-slate-950/50 fixed md:relative z-20",
+          "w-full h-full md:w-fit bg-slate-950/50 md:relative z-20",
           open ? "flex" : "hidden md:flex",
         )}
         onClick={() => {
@@ -129,31 +129,26 @@ export default function Home() {
       >
         <div
           className="h-full w-65 flex shrink-0 flex-col justify-between border-r,
-          border-[#c9c6d8] bg-[#f7f7fa] px-4 py-4 shadow-[inset_-1px_0_0_rgba(115,120,149,0.18)]"
+          border-[#c9c6d8] bg-[#f7f7fa] px-4 py-4 shadow-[inset_-1px_0_0_rgba(115,120,149,0.18)]
+          overflow-y-auto"
           onClick={(evt) => {
             evt.stopPropagation();
           }}
         >
           <div>
-            <div className="md:hidden flex justify-end">
-              <button onClick={closeSidebar}>
-                <SidebarClose />
-              </button>
-            </div>
             <div>
-              <div className="mb-6 flex items-center gap-3 px-2 pt-1">
-                <div className="flex size-10 items-center justify-center rounded-lg bg-darker-teal-blue text-white shadow-sm">
-                  <Thermometer className="size-5" />
+              <div className="mb-6 flex items-center justify-between gap-3 px-2 pt-1">
+                <div className="flex-2 h-20 w-auto">
+                  <img
+                    src="/coldplace_logo.svg"
+                    alt="Cold place logo"
+                    className="w-full h-auto object-contain"
+                  />
                 </div>
-                <div className="min-w-0">
-                  <div className="text-[17px] font-semibold tracking-tight text-slate-800">
-                    The Cold Place
-                  </div>
-                  <div className="text-[12px] leading-4 text-slate-500">
-                    Cold room storage
-                    <br />
-                    management
-                  </div>
+                <div className="md:hidden flex-1 flex justify-end items-center">
+                  <button onClick={closeSidebar}>
+                    <SidebarClose />
+                  </button>
                 </div>
               </div>
 
@@ -167,7 +162,7 @@ export default function Home() {
                         to={to}
                         className={`flex h-11 items-center gap-3 rounded-xl px-3 text-[14px] font-medium transition-colors ${
                           active
-                            ? "bg-darker-teal-blue text-white shadow-sm"
+                            ? "bg-teal-blue text-white shadow-sm"
                             : "text-slate-600 hover:bg-slate-200/70 hover:text-slate-800"
                         }`}
                       >

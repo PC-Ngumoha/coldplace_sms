@@ -66,7 +66,7 @@ export default function ProfileSettings() {
 
           <div
             className="flex w-full min-w-0 flex-1 flex-col items-center gap-4
-          sm:flex-row sm:items-center sm:justify-between sm:gap-6"
+          lg:flex-row sm:justify-between lg:gap-6"
           >
             <div className="flex min-w-0 max-w-full flex-col justify-center">
               <h2 className="m-0 wrap-break-word text-xl font-semibold tracking-tight text-[#1e2b29] sm:text-2xl">
