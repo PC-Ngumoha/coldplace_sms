@@ -255,81 +255,84 @@ export default function SiteSettings() {
                             {user.status}
                           </span>
                         </td>
-                        <td className="relative px-3 py-2 text-center">
-                          <DropdownMenu>
-                            <DropdownMenuTrigger
-                              render={
-                                <button className="rounded p-1 text-slate-600 hover:bg-slate-100">
-                                  <EllipsisVertical size={16} />
-                                </button>
-                              }
-                            />
-                            <DropdownMenuContent className="w-50">
-                              <DropdownMenuGroup>
-                                <DropdownMenuItem
-                                  onClick={() => openEditUserForm(user.id)}
-                                >
-                                  Edit
-                                </DropdownMenuItem>
-                              </DropdownMenuGroup>
-                              <DropdownMenuSeparator />
-                              <DropdownMenuGroup>
-                                <DropdownMenuItem
-                                  onClick={() =>
-                                    openChangePasswordForm(user.id)
-                                  }
-                                >
-                                  Change Password
-                                </DropdownMenuItem>
-                              </DropdownMenuGroup>
-                              <DropdownMenuSeparator />
-                              <DropdownMenuGroup>
-                                {user.status.toLocaleLowerCase() ===
-                                "active" ? (
+                        {/* Ensure root admin can't be modified */}
+                        {user.id !== 1 && (
+                          <td className="relative px-3 py-2 text-center">
+                            <DropdownMenu>
+                              <DropdownMenuTrigger
+                                render={
+                                  <button className="rounded p-1 text-slate-600 hover:bg-slate-100">
+                                    <EllipsisVertical size={16} />
+                                  </button>
+                                }
+                              />
+                              <DropdownMenuContent className="w-50">
+                                <DropdownMenuGroup>
                                   <DropdownMenuItem
-                                    onClick={async () => {
-                                      try {
-                                        await userApi.deactivate(user.id);
-                                        showSuccess(
-                                          "User deactivated successfully",
-                                        );
-                                        await fetchUsers();
-                                      } catch (err) {
-                                        showError(
-                                          isAxiosError(err)
-                                            ? err.response?.data.error
-                                            : "Oops! please try again later",
-                                        );
-                                      }
-                                    }}
+                                    onClick={() => openEditUserForm(user.id)}
                                   >
-                                    Deactivate
+                                    Edit
                                   </DropdownMenuItem>
-                                ) : (
+                                </DropdownMenuGroup>
+                                <DropdownMenuSeparator />
+                                <DropdownMenuGroup>
                                   <DropdownMenuItem
-                                    onClick={async () => {
-                                      try {
-                                        await userApi.activate(user.id);
-                                        showSuccess(
-                                          "User activated successfully",
-                                        );
-                                        await fetchUsers();
-                                      } catch (err) {
-                                        showError(
-                                          isAxiosError(err)
-                                            ? err.response?.data.error
-                                            : "Oops! please try again later",
-                                        );
-                                      }
-                                    }}
+                                    onClick={() =>
+                                      openChangePasswordForm(user.id)
+                                    }
                                   >
-                                    Activate
+                                    Change Password
                                   </DropdownMenuItem>
-                                )}
-                              </DropdownMenuGroup>
-                            </DropdownMenuContent>
-                          </DropdownMenu>
-                        </td>
+                                </DropdownMenuGroup>
+                                <DropdownMenuSeparator />
+                                <DropdownMenuGroup>
+                                  {user.status.toLocaleLowerCase() ===
+                                  "active" ? (
+                                    <DropdownMenuItem
+                                      onClick={async () => {
+                                        try {
+                                          await userApi.deactivate(user.id);
+                                          showSuccess(
+                                            "User deactivated successfully",
+                                          );
+                                          await fetchUsers();
+                                        } catch (err) {
+                                          showError(
+                                            isAxiosError(err)
+                                              ? err.response?.data.error
+                                              : "Oops! please try again later",
+                                          );
+                                        }
+                                      }}
+                                    >
+                                      Deactivate
+                                    </DropdownMenuItem>
+                                  ) : (
+                                    <DropdownMenuItem
+                                      onClick={async () => {
+                                        try {
+                                          await userApi.activate(user.id);
+                                          showSuccess(
+                                            "User activated successfully",
+                                          );
+                                          await fetchUsers();
+                                        } catch (err) {
+                                          showError(
+                                            isAxiosError(err)
+                                              ? err.response?.data.error
+                                              : "Oops! please try again later",
+                                          );
+                                        }
+                                      }}
+                                    >
+                                      Activate
+                                    </DropdownMenuItem>
+                                  )}
+                                </DropdownMenuGroup>
+                              </DropdownMenuContent>
+                            </DropdownMenu>
+                          </td>
+                        )}
                       </tr>
                     ))}
                     {filteredUsers.length === 0 && (

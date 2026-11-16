@@ -3,7 +3,7 @@ import Pricing from "./segments/Pricing";
 import Sales from "./segments/Sales";
 import Transfers from "./segments/Transfers";
 import Products from "./segments/Products";
-import Receiving from "./segments/Receiving";
+import Received from "./segments/Received";
 import Reports from "./segments/Reports";
 import Damages from "./segments/Damages";
 import Settings from "./segments/Settings";
@@ -23,7 +23,7 @@ export {
   Sales,
   Transfers,
   Products,
-  Receiving,
+  Received,
   Reports,
   Damages,
   Settings,

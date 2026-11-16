@@ -48,8 +48,8 @@ const navigation = [
     permission: "users:profile",
   },
   {
-    label: "Receiving",
-    to: "/receiving",
+    label: "Received",
+    to: "/received",
     icon: Truck,
     permission: "users:profile",
   },

@@ -2,7 +2,7 @@ import { Plus, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 
-export default function Receiving() {
+export default function Received() {
   const [isOpen, setIsOpen] = useState(false);
   const [lines, setLines] = useState([1]); // TODO: Find a better way to represent product lines.
 
@@ -115,7 +115,7 @@ export default function Receiving() {
                       </select>
                     </label>
                     <label className="flex flex-col text-xs font-medium text-slate-600">
-                      Accepted qty
+                      Received qty
                       <input
                         className="mt-1 rounded-md border border-slate-200 bg-white px-3 py-2 text-sm"
                         type="number"
@@ -140,7 +140,7 @@ export default function Receiving() {
                       </select>
                     </label>
                     <label className="flex flex-col text-xs font-medium text-slate-600">
-                      Transit-damaged qty
+                      Damaged qty
                       <input
                         className="mt-1 rounded-md border border-slate-200 bg-white px-3 py-2 text-sm"
                         type="number"

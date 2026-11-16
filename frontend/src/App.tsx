@@ -8,7 +8,7 @@ import {
   Dashboard,
   NotFound,
   Products,
-  Receiving,
+  Received,
   Transfers,
   Sales,
   Damages,
@@ -57,7 +57,7 @@ export default function App() {
           <Route element={<Home />}>
             <Route path="/" element={<Dashboard />} />
             <Route path="/products" element={<Products />} />
-            <Route path="/receiving" element={<Receiving />} />
+            <Route path="/received" element={<Received />} />
             <Route path="/transfers" element={<Transfers />} />
             <Route path="/sales" element={<Sales />} />
             <Route path="/damage" element={<Damages />} />

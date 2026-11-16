@@ -53,7 +53,7 @@ export default function AuditLogs() {
   };
 
   const nextPage = () => {
-    if (page < pages) {
+    if (page + 1 < pages) {
       setPage((page) => page + 1);
     }
   };
@@ -86,7 +86,7 @@ export default function AuditLogs() {
             <>
               {/* DESKTOP & TABLET */}
               <div className="hidden overflow-x-auto md:block">
-                <table className="w-full min-w-325 table-fixed border-collapse text-left">
+                <table className="w-full min-w-400 table-fixed border-collapse text-left">
                   <thead className="text-[11px] uppercase tracking-wide text-slate-400">
                     <tr className="border-b border-slate-100">
                       <th className="px-3 py-3 font-medium">Time</th>
@@ -206,7 +206,7 @@ function AuditRow({
                 <div className="font-medium text-slate-700">
                   {user?.name ?? "User name"}
                 </div>
-                <div className="text-[9px] text-slate-400">
+                <div className="text-[10px] text-slate-400">
                   {user?.role ?? "User role"}
                 </div>
               </div>
@@ -214,7 +214,9 @@ function AuditRow({
           )}
         </td>
         <td className="min-w-[220px] px-3 py-3">
-          <div className="font-medium text-slate-700">• {row.action}</div>
+          <div className="font-medium text-slate-700 text-wrap">
+            • {row.action}
+          </div>
           <div className="mt-0.5 text-[9px] text-slate-400">{row.reason}</div>
         </td>
         <td className="px-3 py-3">
