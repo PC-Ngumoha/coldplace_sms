@@ -1,9 +1,11 @@
 import type { Log, User } from "@/types";
 import { logsApi } from "@/services/Logsapi";
 import { userApi } from "@/services/Userapi";
+import { showError } from "@/services/toasts";
 import { parseUserAgent } from "@/lib/utils";
+import Loading from "@/components/Loading";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { clsx } from "cn";
 
 const badge =
@@ -11,6 +13,7 @@ const badge =
 
 export default function AuditLogs() {
   const LOGS_PER_PAGE = 15;
+  const [loading, setLoading] = useState(false);
   const [logs, setLogs] = useState<Log[]>([]);
   const [users, setUsers] = useState<User[]>([]);
   const [selectedLog, setSelectedLog] = useState<number>();
@@ -19,12 +22,29 @@ export default function AuditLogs() {
   const end = page * LOGS_PER_PAGE + LOGS_PER_PAGE;
   const pages = Math.ceil(logs.length / LOGS_PER_PAGE);
 
+  const fetchLogs = useCallback(async () => {
+    const allLogs = await logsApi.list();
+    setLogs(allLogs);
+  }, []);
+
+  const fetchUsers = useCallback(async () => {
+    const availableUsers = await userApi.list();
+    setUsers(availableUsers);
+  }, []);
+
   useEffect(() => {
     async function fetchData() {
-      const logs = await logsApi.list();
-      const users = await userApi.list();
-      setLogs(logs);
-      setUsers(users);
+      setLoading(true);
+      // TODO: Remove this from production code.
+      await new Promise((resolve) => setTimeout(resolve, 3000)); // 3s delay
+
+      try {
+        await Promise.all([fetchLogs(), fetchUsers()]);
+      } catch {
+        showError("Oops! please try again later.");
+      } finally {
+        setLoading(false);
+      }
     }
 
     fetchData();
@@ -62,76 +82,86 @@ export default function AuditLogs() {
         </header>
 
         <section className="overflow-hidden rounded-xl border border-slate-200/80 bg-white shadow-sm">
-          {/* DESKTOP & TABLET */}
-          <div className="hidden overflow-x-auto md:block">
-            <table className="w-full min-w-325 table-fixed border-collapse text-left">
-              <thead className="text-[11px] uppercase tracking-wide text-slate-400">
-                <tr className="border-b border-slate-100">
-                  <th className="px-3 py-3 font-medium">Time</th>
-                  <th className="px-3 py-3 font-medium">User</th>
-                  <th className="px-3 py-3 font-medium">Action &amp; reason</th>
-                  <th className="px-3 py-3 font-medium">Entity</th>
-                  <th className="px-3 py-3 font-medium">ID</th>
-                  <th className="px-3 py-3 font-medium">Old value</th>
-                  <th className="px-3 py-3 font-medium">New value</th>
-                  <th className="px-3 py-3 font-medium">IP address</th>
-                  <th className="px-3 py-3 font-medium">User agent</th>
-                </tr>
-              </thead>
-              <tbody>
+          {loading ? (
+            <Loading />
+          ) : (
+            <>
+              {/* DESKTOP & TABLET */}
+              <div className="hidden overflow-x-auto md:block">
+                <table className="w-full min-w-325 table-fixed border-collapse text-left">
+                  <thead className="text-[11px] uppercase tracking-wide text-slate-400">
+                    <tr className="border-b border-slate-100">
+                      <th className="px-3 py-3 font-medium">Time</th>
+                      <th className="px-3 py-3 font-medium">User</th>
+                      <th className="px-3 py-3 font-medium">
+                        Action &amp; reason
+                      </th>
+                      <th className="px-3 py-3 font-medium">Entity</th>
+                      <th className="px-3 py-3 font-medium">ID</th>
+                      <th className="px-3 py-3 font-medium">Old value</th>
+                      <th className="px-3 py-3 font-medium">New value</th>
+                      <th className="px-3 py-3 font-medium">IP address</th>
+                      <th className="px-3 py-3 font-medium">User agent</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {logs.slice(start, end).map((row) => (
+                      <AuditRow
+                        key={row.id}
+                        row={row}
+                        users={users}
+                        selected={selectedLog}
+                        onSelect={toggleLog}
+                        badge={badge}
+                      />
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+
+              {/* MOBILE VIEW */}
+              <div className="divide-y divide-slate-100 md:hidden">
                 {logs.slice(start, end).map((row) => (
-                  <AuditRow
+                  <MobileRow
                     key={row.id}
                     row={row}
                     users={users}
+                    badge={badge}
                     selected={selectedLog}
                     onSelect={toggleLog}
-                    badge={badge}
                   />
                 ))}
-              </tbody>
-            </table>
-          </div>
-
-          {/* MOBILE VIEW */}
-          <div className="divide-y divide-slate-100 md:hidden">
-            {logs.slice(start, end).map((row) => (
-              <MobileRow
-                key={row.id}
-                row={row}
-                users={users}
-                badge={badge}
-                selected={selectedLog}
-                onSelect={toggleLog}
-              />
-            ))}
-          </div>
-          <footer
-            className="flex flex-col gap-2 border-t border-slate-100 px-3 py-3 text-[10px] text-slate-400
+              </div>
+              <footer
+                className="flex flex-col gap-2 border-t border-slate-100 px-3 py-3 text-[10px] text-slate-400
             sm:flex-row sm:items-center sm:justify-between"
-          >
-            <span>
-              Showing {logs.slice(start, end).length} of {logs.length} events
-            </span>
-            <div className="flex items-center gap-2 self-end sm:self-auto">
-              <button
-                className="rounded border border-slate-200 px-2 py-1 text-slate-500 hover:bg-slate-50"
-                onClick={prevPage}
               >
-                <ChevronLeft size={12} />
-              </button>
-              <span>
-                Page <b className="font-medium text-slate-600">{page + 1}</b> of{" "}
-                {pages}
-              </span>
-              <button
-                className="rounded border border-slate-200 px-2 py-1 text-slate-500 hover:bg-slate-50"
-                onClick={nextPage}
-              >
-                <ChevronRight size={12} />
-              </button>
-            </div>
-          </footer>
+                <span>
+                  Showing {logs.slice(start, end).length} of {logs.length}{" "}
+                  events
+                </span>
+                <div className="flex items-center gap-2 self-end sm:self-auto">
+                  <button
+                    className="rounded border border-slate-200 px-2 py-1 text-slate-500 hover:bg-slate-50"
+                    onClick={prevPage}
+                  >
+                    <ChevronLeft size={12} />
+                  </button>
+                  <span>
+                    Page{" "}
+                    <b className="font-medium text-slate-600">{page + 1}</b> of{" "}
+                    {pages}
+                  </span>
+                  <button
+                    className="rounded border border-slate-200 px-2 py-1 text-slate-500 hover:bg-slate-50"
+                    onClick={nextPage}
+                  >
+                    <ChevronRight size={12} />
+                  </button>
+                </div>
+              </footer>
+            </>
+          )}
         </section>
       </div>
     </main>

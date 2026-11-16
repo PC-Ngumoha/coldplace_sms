@@ -9,6 +9,7 @@ import {
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import Loading from "@/components/Loading";
 import { userApi } from "@/services/Userapi";
 import { locationApi } from "@/services/Locationapi";
 import { showSuccess, showError } from "@/services/toasts";
@@ -20,6 +21,7 @@ import { useNavigate, useLocation } from "react-router";
 
 export default function SiteSettings() {
   const { user: currentUser } = useAuth();
+  const [loading, setLoading] = useState(false);
   const [users, setUsers] = useState<User[]>([]);
   const [locations, setLocations] = useState<Location[]>([]);
   const [tab, setTab] = useState<"users & roles" | "locations">(
@@ -47,11 +49,20 @@ export default function SiteSettings() {
 
   useEffect(() => {
     async function fetchData() {
-      fetchUsers();
-      fetchLocations();
+      setLoading(true);
+      // TODO: Remove this from production code.
+      await new Promise((resolve) => setTimeout(resolve, 3000)); // 3s delay
+
+      try {
+        await Promise.all([fetchUsers(), fetchLocations()]);
+      } catch {
+        showError("Oops! please try again later");
+      } finally {
+        setLoading(false);
+      }
     }
 
-    fetchData();
+    void fetchData();
   }, [location, fetchUsers, fetchLocations]);
 
   const openAddUserForm = () => {
@@ -170,251 +181,260 @@ export default function SiteSettings() {
             />
           </label>
         </div>
-        <div className="mt-3 overflow-visible rounded-lg border border-slate-200/80 bg-white shadow-sm">
-          <TabsContent value="users & roles">
-            <div className="overflow-x-auto rounded-lg">
-              <table className="w-full min-w-170 table-fixed text-left">
-                <thead className="text-xs font-semibold uppercase tracking-wide text-slate-500">
-                  <tr>
-                    <th className="px-4 py-3.5 sm:px-5">Name</th>
-                    <th className="px-4 py-3.5 sm:px-5">Email</th>
-                    <th className="px-4 py-3.5 sm:px-5">Role</th>
-                    <th className="px-4 py-3.5 sm:px-5">Status</th>
-                    <th className="w-12 px-3 py-3.5" aria-label="Actions" />
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-100 text-xs">
-                  {filteredUsers.map((user) => (
-                    <tr key={user.email} className="hover:bg-slate-50/70">
-                      <td className="whitespace-nowrap px-4 py-3.5 font-medium text-teal-950 sm:px-5">
-                        {user.name}
-                      </td>
-                      <td className="whitespace-nowrap px-4 py-3.5 text-slate-600 sm:px-5">
-                        {user.email}
-                      </td>
-                      <td className="whitespace-nowrap px-4 py-3.5 text-slate-600 sm:px-5">
-                        <span
-                          className={`inline-block px-2 py-1 rounded-md font-semibold ${ROLES[user.role].color}`}
-                        >
-                          {ROLES[user.role].display}
-                        </span>
-                      </td>
-                      <td className="px-4 py-3.5 sm:px-5">
-                        <span
-                          className={`inline-flex rounded-md border px-1.5 py-0.5 text-[10px]
+        {loading ? (
+          <Loading />
+        ) : (
+          <div className="mt-3 overflow-visible rounded-lg border border-slate-200/80 bg-white shadow-sm">
+            <TabsContent value="users & roles">
+              <div className="overflow-x-auto rounded-lg">
+                <table className="w-full min-w-170 table-fixed text-left">
+                  <thead className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+                    <tr>
+                      <th className="px-4 py-3.5 sm:px-5">Name</th>
+                      <th className="px-4 py-3.5 sm:px-5">Email</th>
+                      <th className="px-4 py-3.5 sm:px-5">Role</th>
+                      <th className="px-4 py-3.5 sm:px-5">Status</th>
+                      <th className="w-12 px-3 py-3.5" aria-label="Actions" />
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-100 text-xs">
+                    {filteredUsers.map((user) => (
+                      <tr key={user.email} className="hover:bg-slate-50/70">
+                        <td className="whitespace-nowrap px-4 py-3.5 font-medium text-teal-950 sm:px-5">
+                          {user.name}
+                        </td>
+                        <td className="whitespace-nowrap px-4 py-3.5 text-slate-600 sm:px-5">
+                          {user.email}
+                        </td>
+                        <td className="whitespace-nowrap px-4 py-3.5 text-slate-600 sm:px-5">
+                          <span
+                            className={`inline-block px-2 py-1 rounded-md font-semibold ${ROLES[user.role].color}`}
+                          >
+                            {ROLES[user.role].display}
+                          </span>
+                        </td>
+                        <td className="px-4 py-3.5 sm:px-5">
+                          <span
+                            className={`inline-flex rounded-md border px-1.5 py-0.5 text-[10px]
                               font-semibold uppercase ${
                                 user.status.toLowerCase() === "active"
                                   ? "border-teal-200 bg-teal-50 text-teal-700"
                                   : "border-slate-200 bg-slate-100 text-slate-600"
                               }`}
+                          >
+                            {user.status}
+                          </span>
+                        </td>
+                        <td className="relative px-3 py-2 text-center">
+                          <DropdownMenu>
+                            <DropdownMenuTrigger
+                              render={
+                                <button className="rounded p-1 text-slate-600 hover:bg-slate-100">
+                                  <EllipsisVertical size={16} />
+                                </button>
+                              }
+                            />
+                            <DropdownMenuContent className="w-50">
+                              <DropdownMenuGroup>
+                                <DropdownMenuItem
+                                  onClick={() => openEditUserForm(user.id)}
+                                >
+                                  Edit
+                                </DropdownMenuItem>
+                              </DropdownMenuGroup>
+                              <DropdownMenuSeparator />
+                              <DropdownMenuGroup>
+                                <DropdownMenuItem
+                                  onClick={() =>
+                                    openChangePasswordForm(user.id)
+                                  }
+                                >
+                                  Change Password
+                                </DropdownMenuItem>
+                              </DropdownMenuGroup>
+                              <DropdownMenuSeparator />
+                              <DropdownMenuGroup>
+                                {user.status.toLocaleLowerCase() ===
+                                "active" ? (
+                                  <DropdownMenuItem
+                                    onClick={async () => {
+                                      try {
+                                        await userApi.deactivate(user.id);
+                                        showSuccess(
+                                          "User deactivated successfully",
+                                        );
+                                        await fetchUsers();
+                                      } catch (err) {
+                                        showError(
+                                          isAxiosError(err)
+                                            ? err.response?.data.error
+                                            : "Oops! please try again later",
+                                        );
+                                      }
+                                    }}
+                                  >
+                                    Deactivate
+                                  </DropdownMenuItem>
+                                ) : (
+                                  <DropdownMenuItem
+                                    onClick={async () => {
+                                      try {
+                                        await userApi.activate(user.id);
+                                        showSuccess(
+                                          "User activated successfully",
+                                        );
+                                        await fetchUsers();
+                                      } catch (err) {
+                                        showError(
+                                          isAxiosError(err)
+                                            ? err.response?.data.error
+                                            : "Oops! please try again later",
+                                        );
+                                      }
+                                    }}
+                                  >
+                                    Activate
+                                  </DropdownMenuItem>
+                                )}
+                              </DropdownMenuGroup>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                        </td>
+                      </tr>
+                    ))}
+                    {filteredUsers.length === 0 && (
+                      <tr>
+                        <td
+                          colSpan={5}
+                          className="px-5 py-8 text-center text-xs text-slate-500"
                         >
-                          {user.status}
-                        </span>
-                      </td>
-                      <td className="relative px-3 py-2 text-center">
-                        <DropdownMenu>
-                          <DropdownMenuTrigger
-                            render={
-                              <button className="rounded p-1 text-slate-600 hover:bg-slate-100">
-                                <EllipsisVertical size={16} />
-                              </button>
-                            }
-                          />
-                          <DropdownMenuContent className="w-50">
-                            <DropdownMenuGroup>
-                              <DropdownMenuItem
-                                onClick={() => openEditUserForm(user.id)}
-                              >
-                                Edit
-                              </DropdownMenuItem>
-                            </DropdownMenuGroup>
-                            <DropdownMenuSeparator />
-                            <DropdownMenuGroup>
-                              <DropdownMenuItem
-                                onClick={() => openChangePasswordForm(user.id)}
-                              >
-                                Change Password
-                              </DropdownMenuItem>
-                            </DropdownMenuGroup>
-                            <DropdownMenuSeparator />
-                            <DropdownMenuGroup>
-                              {user.status.toLocaleLowerCase() === "active" ? (
-                                <DropdownMenuItem
-                                  onClick={async () => {
-                                    try {
-                                      await userApi.deactivate(user.id);
-                                      showSuccess(
-                                        "User deactivated successfully",
-                                      );
-                                      await fetchUsers();
-                                    } catch (err) {
-                                      showError(
-                                        isAxiosError(err)
-                                          ? err.response?.data.error
-                                          : "Oops! please try again later",
-                                      );
-                                    }
-                                  }}
-                                >
-                                  Deactivate
-                                </DropdownMenuItem>
-                              ) : (
-                                <DropdownMenuItem
-                                  onClick={async () => {
-                                    try {
-                                      await userApi.activate(user.id);
-                                      showSuccess(
-                                        "User activated successfully",
-                                      );
-                                      await fetchUsers();
-                                    } catch (err) {
-                                      showError(
-                                        isAxiosError(err)
-                                          ? err.response?.data.error
-                                          : "Oops! please try again later",
-                                      );
-                                    }
-                                  }}
-                                >
-                                  Activate
-                                </DropdownMenuItem>
-                              )}
-                            </DropdownMenuGroup>
-                          </DropdownMenuContent>
-                        </DropdownMenu>
-                      </td>
-                    </tr>
-                  ))}
-                  {filteredUsers.length === 0 && (
+                          No users found.
+                        </td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            </TabsContent>
+            <TabsContent value="locations">
+              <div className="overflow-x-auto rounded-lg">
+                <table className="w-full min-w-130 table-fixed text-left">
+                  <thead className="text-[9px] font-semibold uppercase tracking-wide text-slate-500">
                     <tr>
-                      <td
-                        colSpan={5}
-                        className="px-5 py-8 text-center text-xs text-slate-500"
-                      >
-                        No users found.
-                      </td>
+                      <th className="px-5 py-3.5">Location</th>
+                      <th className="px-5 py-3.5">Address</th>
+                      <th className="px-5 py-3.5">Status</th>
+                      <th className="w-12 px-3 py-3.5" aria-label="Actions" />
                     </tr>
-                  )}
-                </tbody>
-              </table>
-            </div>
-          </TabsContent>
-          <TabsContent value="locations">
-            <div className="overflow-x-auto rounded-lg">
-              <table className="w-full min-w-130 table-fixed text-left">
-                <thead className="text-[9px] font-semibold uppercase tracking-wide text-slate-500">
-                  <tr>
-                    <th className="px-5 py-3.5">Location</th>
-                    <th className="px-5 py-3.5">Address</th>
-                    <th className="px-5 py-3.5">Status</th>
-                    <th className="w-12 px-3 py-3.5" aria-label="Actions" />
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-100 text-[11px]">
-                  {filteredLocations.map((location) => (
-                    <tr key={location.name} className="hover:bg-slate-50/70">
-                      <td className="px-5 py-3.5 font-medium text-teal-950">
-                        {location.name}
-                      </td>
-                      <td className="px-5 py-3.5 text-slate-600 text-wrap">
-                        {location.address ?? "_______"}
-                      </td>
-                      <td className="px-5 py-3.5">
-                        <span
-                          className={`inline-flex rounded-md border px-1.5 py-0.5 text-[9px] font-semibold uppercase 
+                  </thead>
+                  <tbody className="divide-y divide-slate-100 text-[11px]">
+                    {filteredLocations.map((location) => (
+                      <tr key={location.name} className="hover:bg-slate-50/70">
+                        <td className="px-5 py-3.5 font-medium text-teal-950">
+                          {location.name}
+                        </td>
+                        <td className="px-5 py-3.5 text-slate-600 text-wrap">
+                          {location.address ?? "_______"}
+                        </td>
+                        <td className="px-5 py-3.5">
+                          <span
+                            className={`inline-flex rounded-md border px-1.5 py-0.5 text-[9px] font-semibold uppercase 
                               ${
                                 location.status === "active"
                                   ? "border-teal-200 bg-teal-50 text-teal-700"
                                   : "border-slate-200 bg-slate-100 text-slate-600"
                               }`}
+                          >
+                            {location.status}
+                          </span>
+                        </td>
+                        <td className="relative px-3 py-2 text-center">
+                          <DropdownMenu>
+                            <DropdownMenuTrigger
+                              render={
+                                <button className="rounded p-1 text-slate-600 hover:bg-slate-100">
+                                  <EllipsisVertical size={16} />
+                                </button>
+                              }
+                            />
+                            <DropdownMenuContent>
+                              <DropdownMenuGroup>
+                                <DropdownMenuItem
+                                  onClick={() =>
+                                    openEditLocationForm(location.id)
+                                  }
+                                >
+                                  Edit
+                                </DropdownMenuItem>
+                              </DropdownMenuGroup>
+                              <DropdownMenuSeparator />
+                              <DropdownMenuGroup>
+                                {location.status.toLocaleLowerCase() ===
+                                "active" ? (
+                                  <DropdownMenuItem
+                                    onClick={async () => {
+                                      try {
+                                        await locationApi.deactivate(
+                                          location.id,
+                                        );
+                                        showSuccess(
+                                          "Location deactivated successfully",
+                                        );
+                                        await fetchLocations();
+                                      } catch (err) {
+                                        showError(
+                                          isAxiosError(err)
+                                            ? err.response?.data.error
+                                            : "Oops! please try again later",
+                                        );
+                                      }
+                                    }}
+                                  >
+                                    Deactivate
+                                  </DropdownMenuItem>
+                                ) : (
+                                  <DropdownMenuItem
+                                    onClick={async () => {
+                                      try {
+                                        await locationApi.activate(location.id);
+                                        showSuccess(
+                                          "Location activated successfully",
+                                        );
+                                        await fetchLocations();
+                                      } catch (err) {
+                                        showError(
+                                          isAxiosError(err)
+                                            ? err.response?.data.error
+                                            : "Oops! please try again later",
+                                        );
+                                      }
+                                    }}
+                                  >
+                                    Activate
+                                  </DropdownMenuItem>
+                                )}
+                              </DropdownMenuGroup>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                        </td>
+                      </tr>
+                    ))}
+                    {filteredLocations.length === 0 && (
+                      <tr>
+                        <td
+                          colSpan={3}
+                          className="px-5 py-8 text-center text-xs text-slate-500"
                         >
-                          {location.status}
-                        </span>
-                      </td>
-                      <td className="relative px-3 py-2 text-center">
-                        <DropdownMenu>
-                          <DropdownMenuTrigger
-                            render={
-                              <button className="rounded p-1 text-slate-600 hover:bg-slate-100">
-                                <EllipsisVertical size={16} />
-                              </button>
-                            }
-                          />
-                          <DropdownMenuContent>
-                            <DropdownMenuGroup>
-                              <DropdownMenuItem
-                                onClick={() =>
-                                  openEditLocationForm(location.id)
-                                }
-                              >
-                                Edit
-                              </DropdownMenuItem>
-                            </DropdownMenuGroup>
-                            <DropdownMenuSeparator />
-                            <DropdownMenuGroup>
-                              {location.status.toLocaleLowerCase() ===
-                              "active" ? (
-                                <DropdownMenuItem
-                                  onClick={async () => {
-                                    try {
-                                      await locationApi.deactivate(location.id);
-                                      showSuccess(
-                                        "Location deactivated successfully",
-                                      );
-                                      await fetchLocations();
-                                    } catch (err) {
-                                      showError(
-                                        isAxiosError(err)
-                                          ? err.response?.data.error
-                                          : "Oops! please try again later",
-                                      );
-                                    }
-                                  }}
-                                >
-                                  Deactivate
-                                </DropdownMenuItem>
-                              ) : (
-                                <DropdownMenuItem
-                                  onClick={async () => {
-                                    try {
-                                      await locationApi.activate(location.id);
-                                      showSuccess(
-                                        "Location activated successfully",
-                                      );
-                                      await fetchLocations();
-                                    } catch (err) {
-                                      showError(
-                                        isAxiosError(err)
-                                          ? err.response?.data.error
-                                          : "Oops! please try again later",
-                                      );
-                                    }
-                                  }}
-                                >
-                                  Activate
-                                </DropdownMenuItem>
-                              )}
-                            </DropdownMenuGroup>
-                          </DropdownMenuContent>
-                        </DropdownMenu>
-                      </td>
-                    </tr>
-                  ))}
-                  {filteredLocations.length === 0 && (
-                    <tr>
-                      <td
-                        colSpan={3}
-                        className="px-5 py-8 text-center text-xs text-slate-500"
-                      >
-                        No locations found.
-                      </td>
-                    </tr>
-                  )}
-                </tbody>
-              </table>
-            </div>
-          </TabsContent>
-        </div>
+                          No locations found.
+                        </td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            </TabsContent>
+          </div>
+        )}
       </Tabs>
     </div>
   );
