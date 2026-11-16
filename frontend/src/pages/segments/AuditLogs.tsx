@@ -35,8 +35,6 @@ export default function AuditLogs() {
   useEffect(() => {
     async function fetchData() {
       setLoading(true);
-      // TODO: Remove this from production code.
-      await new Promise((resolve) => setTimeout(resolve, 3000)); // 3s delay
 
       try {
         await Promise.all([fetchLogs(), fetchUsers()]);
@@ -48,7 +46,7 @@ export default function AuditLogs() {
     }
 
     fetchData();
-  }, []);
+  }, [fetchUsers, fetchLogs]);
 
   const toggleLog = (id: number) => {
     setSelectedLog((prev) => (prev !== id ? id : undefined));

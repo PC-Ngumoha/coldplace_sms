@@ -28,6 +28,8 @@ export default function SiteSettings() {
     "users & roles",
   );
   const [query, setQuery] = useState("");
+  const [page, setPage] = useState(1);
+  const pageSize = 10;
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -50,8 +52,6 @@ export default function SiteSettings() {
   useEffect(() => {
     async function fetchData() {
       setLoading(true);
-      // TODO: Remove this from production code.
-      await new Promise((resolve) => setTimeout(resolve, 3000)); // 3s delay
 
       try {
         await Promise.all([fetchUsers(), fetchLocations()]);
@@ -113,6 +113,26 @@ export default function SiteSettings() {
       ),
     [query, locations],
   );
+  const activeItems =
+    tab === "users & roles" ? filteredUsers : filteredLocations;
+  const pageCount = Math.max(1, Math.ceil(activeItems.length / pageSize));
+  const currentPage = Math.min(page, pageCount);
+  const paginatedUsers = filteredUsers.slice(
+    (currentPage - 1) * pageSize,
+    currentPage * pageSize,
+  );
+  const paginatedLocations = filteredLocations.slice(
+    (currentPage - 1) * pageSize,
+    currentPage * pageSize,
+  );
+
+  useEffect(() => {
+    function resetPage() {
+      setPage(1);
+    }
+
+    resetPage();
+  }, [tab, query]);
 
   return (
     <div className="mx-auto max-w-7xl">
@@ -148,7 +168,14 @@ export default function SiteSettings() {
         </div>
       </header>
 
-      <Tabs value={tab} onValueChange={setTab} className="mt-5">
+      <Tabs
+        value={tab}
+        onValueChange={(value) => {
+          setTab(value as "users & roles" | "locations");
+          setPage(1);
+        }}
+        className="mt-5"
+      >
         <div className="flex flex-col-reverse gap-3 sm:flex-row sm:items-center sm:justify-between">
           <TabsList className="flex border-b border-slate-200 bg-white z-0 p-3">
             <TabsTrigger
@@ -174,7 +201,10 @@ export default function SiteSettings() {
             <Search size={18} />
             <input
               value={query}
-              onChange={(event) => setQuery(event.target.value)}
+              onChange={(event) => {
+                setQuery(event.target.value);
+                setPage(1);
+              }}
               placeholder="Search..."
               className="w-full bg-transparent text-xs text-slate-700 outline-none placeholder:text-slate-400"
               aria-label={`Search ${tab.toLowerCase()}`}
@@ -198,7 +228,7 @@ export default function SiteSettings() {
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-100 text-xs">
-                    {filteredUsers.map((user) => (
+                    {paginatedUsers.map((user) => (
                       <tr key={user.email} className="hover:bg-slate-50/70">
                         <td className="whitespace-nowrap px-4 py-3.5 font-medium text-teal-950 sm:px-5">
                           {user.name}
@@ -328,7 +358,7 @@ export default function SiteSettings() {
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-100 text-[11px]">
-                    {filteredLocations.map((location) => (
+                    {paginatedLocations.map((location) => (
                       <tr key={location.name} className="hover:bg-slate-50/70">
                         <td className="px-5 py-3.5 font-medium text-teal-950">
                           {location.name}
@@ -433,6 +463,34 @@ export default function SiteSettings() {
                 </table>
               </div>
             </TabsContent>
+            <div className="flex items-center justify-between border-t border-slate-100 px-4 py-3 text-xs text-slate-600">
+              <span>
+                {activeItems.length === 0
+                  ? "No results"
+                  : `Showing ${(currentPage - 1) * pageSize + 1}–${Math.min(currentPage * pageSize, activeItems.length)} of ${activeItems.length}`}
+              </span>
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => setPage(currentPage - 1)}
+                  disabled={currentPage === 1}
+                  className="rounded border border-slate-200 px-3 py-1.5 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  Previous
+                </button>
+                <span>
+                  Page {currentPage} of {pageCount}
+                </span>
+                <button
+                  type="button"
+                  onClick={() => setPage(currentPage + 1)}
+                  disabled={currentPage === pageCount}
+                  className="rounded border border-slate-200 px-3 py-1.5 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  Next
+                </button>
+              </div>
+            </div>
           </div>
         )}
       </Tabs>
