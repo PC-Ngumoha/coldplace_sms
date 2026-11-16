@@ -188,8 +188,8 @@ export default function EditUserForm({
             </RadioGroup>
           </label>
           {/* The "Assigned location" field should only appears for
-              Users with the Central, Outlet or Manager role. */}
-          {["central", "outlet", "manager"].includes(field.role) && (
+              Users with the Central or Outlet role. */}
+          {["central", "outlet"].includes(field.role) && (
             <label className="block text-xs font-medium text-slate-700">
               Assigned Location
               <select

@@ -370,7 +370,7 @@ class UserService
      */
     private function resolveLocationForRole(string $role, ?int $locationId): ?int
     {
-        $isHandler = in_array($role, [Roles::CENTRAL, Roles::OUTLET, Roles::MANAGER], true);
+        $isHandler = in_array($role, [Roles::CENTRAL, Roles::OUTLET], true);
 
         // Non-handlers never carry a location: ignore anything sent
         if (!$isHandler) {
@@ -379,7 +379,7 @@ class UserService
 
         // Handlers must have one (and 0 is not a valid id)
         if ($locationId === null || $locationId <= 0) {
-            throw new AppException('Handlers and managers must be assigned to a location', 400);
+            throw new AppException('Handlers must be assigned to a location', 400);
         }
 
         $location = $this->locations->retrieveLocation($locationId);
