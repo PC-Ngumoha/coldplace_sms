@@ -31,6 +31,7 @@ import {
   ListClock,
   Sidebar,
   SidebarClose,
+  ClipboardPenLine,
 } from "lucide-react";
 import { Link, Outlet, useLocation, useNavigate } from "react-router";
 import { useAuth } from "@/contexts/auth_context";
@@ -83,6 +84,12 @@ const navigation = [
     to: "/logs",
     icon: ListClock,
     permission: "audit:view",
+  },
+  {
+    label: "Adjustments",
+    to: "/adjustments",
+    icon: ClipboardPenLine,
+    permission: "users:profile",
   },
 ];
 

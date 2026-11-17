@@ -12,44 +12,15 @@ final class PermissionPolicy
     private const ROLES = [
         Roles::ADMIN => Permissions::ALL,
 
-        Roles::EXECUTIVE => [
-            Permissions::LOCATIONS_LIST,
-            Permissions::LOCATIONS_RETRIEVE,
-            Permissions::USERS_CHANGE_PASSWORD_OWN,
-            Permissions::USERS_PROFILE,
-            Permissions::AUDIT_VIEW,
-            Permissions::USERS_LIST,
-        ],
+        Roles::EXECUTIVE => Permissions::FOR_EXECUTIVE,
 
-        Roles::MANAGER => [
-            Permissions::LOCATIONS_LIST,
-            Permissions::LOCATIONS_RETRIEVE,
-            Permissions::USERS_CHANGE_PASSWORD_OWN,
-            Permissions::USERS_PROFILE,
-            Permissions::AUDIT_VIEW,
-            Permissions::USERS_LIST,
-        ],
+        Roles::MANAGER => Permissions::FOR_MANAGER,
 
-        Roles::CENTRAL => [
-            Permissions::LOCATIONS_LIST,
-            Permissions::LOCATIONS_RETRIEVE,
-            Permissions::USERS_CHANGE_PASSWORD_OWN,
-            Permissions::USERS_PROFILE
-        ],
+        Roles::CENTRAL => Permissions::FOR_CENTRAL,
 
-        Roles::OUTLET => [
-            Permissions::LOCATIONS_LIST,
-            Permissions::LOCATIONS_RETRIEVE,
-            Permissions::USERS_CHANGE_PASSWORD_OWN,
-            Permissions::USERS_PROFILE
-        ],
+        Roles::OUTLET => Permissions::FOR_OUTLET,
 
-        Roles::VIEWER => [
-            Permissions::LOCATIONS_LIST,
-            Permissions::LOCATIONS_RETRIEVE,
-            Permissions::USERS_CHANGE_PASSWORD_OWN,
-            Permissions::USERS_PROFILE
-        ],
+        Roles::VIEWER => Permissions::FOR_VIEWER,
     ];
 
     /** All permissions for a given role */

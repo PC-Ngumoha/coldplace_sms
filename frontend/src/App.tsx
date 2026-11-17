@@ -5,6 +5,7 @@ import {
   Home,
   Login,
   AuditLogs,
+  Adjustments,
   Dashboard,
   NotFound,
   Products,
@@ -72,6 +73,7 @@ export default function App() {
                 </RequirePermission>
               }
             />
+            <Route path="/adjustments" element={<Adjustments />} />
           </Route>
         </Route>
 
