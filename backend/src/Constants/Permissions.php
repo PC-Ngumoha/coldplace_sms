@@ -73,63 +73,120 @@ class Permissions
     public const FOR_EXECUTIVE = [
         self::LOCATIONS_LIST,
         self::LOCATIONS_RETRIEVE,
+
         self::USERS_CHANGE_PASSWORD_OWN,
         self::USERS_PROFILE,
-        self::AUDIT_VIEW,
         self::USERS_LIST,
+
+        self::AUDIT_VIEW,
+        
         self::CATEGORIES_LIST,
+
         self::UNITS_LIST,
+
         self::PRODUCTS_LIST,
+
+        self::RECEIPTS_LIST,
+
         self::INVENTORY_VIEW,
+
+        self::ADJUSTMENTS_LIST,
     ];
 
     public const FOR_MANAGER = [
         self::LOCATIONS_LIST,
         self::LOCATIONS_RETRIEVE,
+
         self::USERS_CHANGE_PASSWORD_OWN,
         self::USERS_PROFILE,
-        self::AUDIT_VIEW,
         self::USERS_LIST,
+
+        self::AUDIT_VIEW,
+
         self::CATEGORIES_LIST,
+
         self::UNITS_LIST,
+
         self::PRODUCTS_LIST,
         self::PRODUCTS_RETRIEVE,
+
+        self::RECEIPTS_LIST,
+
         self::INVENTORY_VIEW,
+
+        self::ADJUSTMENTS_LIST,
+        self::ADJUSTMENTS_CREATE,
+        self::ADJUSTMENTS_APPROVE,
+        self::ADJUSTMENTS_REJECT,
     ];
 
     public const FOR_CENTRAL = [
         self::LOCATIONS_LIST,
         self::LOCATIONS_RETRIEVE,
+
         self::USERS_CHANGE_PASSWORD_OWN,
         self::USERS_PROFILE,
-        self::CATEGORIES_LIST,
+
         self::UNITS_LIST,
+
+        self::CATEGORIES_LIST,
+
         self::PRODUCTS_LIST,
+
+        self::RECEIPTS_LIST,
+        self::RECEIPTS_CREATE,
+
         self::INVENTORY_VIEW,
+
         self::SUPPLIERS_LIST,
+        self::SUPPLIERS_CREATE,
+
+        self::ADJUSTMENTS_LIST,
+        self::ADJUSTMENTS_CREATE,
     ];
 
     public const FOR_OUTLET = [
         self::LOCATIONS_LIST,
         self::LOCATIONS_RETRIEVE,
+
         self::USERS_CHANGE_PASSWORD_OWN,
         self::USERS_PROFILE,
-        self::CATEGORIES_LIST,
+        
         self::UNITS_LIST,
+
+        self::CATEGORIES_LIST,
+
         self::PRODUCTS_LIST,
+
+        self::RECEIPTS_LIST,
+        self::RECEIPTS_CREATE,
+
         self::INVENTORY_VIEW,
+
         self::SUPPLIERS_LIST,
+        self::SUPPLIERS_CREATE,
+
+        self::ADJUSTMENTS_LIST,
+        self::ADJUSTMENTS_CREATE,
     ];
 
     public const FOR_VIEWER = [
         self::LOCATIONS_LIST,
         self::LOCATIONS_RETRIEVE,
+
         self::USERS_CHANGE_PASSWORD_OWN,
         self::USERS_PROFILE,
-        self::CATEGORIES_LIST,
         self::UNITS_LIST,
+
+        self::CATEGORIES_LIST,
+
         self::PRODUCTS_LIST,
+
+        self::RECEIPTS_LIST,
+
         self::INVENTORY_VIEW,
+
+        self::ADJUSTMENTS_LIST,
     ];
     
 
@@ -183,5 +240,10 @@ class Permissions
         self::RECEIPTS_CREATE,
 
         self::INVENTORY_VIEW,
+
+        self::ADJUSTMENTS_LIST,
+        self::ADJUSTMENTS_CREATE,
+        self::ADJUSTMENTS_REJECT,
+        self::ADJUSTMENTS_APPROVE,
     ];
 }
