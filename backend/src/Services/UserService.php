@@ -12,6 +12,7 @@ use App\Helpers\Actor;
 use App\Helpers\AuditLogger;
 use App\Helpers\TransactionManager;
 use App\Repositories\LocationRepository;
+use App\Policies\UserPolicy;
 
 class UserService
 {
@@ -100,12 +101,6 @@ class UserService
 
     public function update(Actor $actor, int $userId, array $data): int
     {
-        $isRoot = $actor->userId === User::ROOT_ADMIN;
-        // Only root admin can edit root admin
-        if ($userId === User::ROOT_ADMIN && !$isRoot) {
-            throw new AppException('Forbidden', 403);
-        }
-
         $name = trim((string) ($data['name'] ?? ''));
         $email = strtolower(trim((string) ($data['email'] ?? '')));
         $role = trim((string) ($data['role'] ?? ''));
@@ -115,21 +110,22 @@ class UserService
             throw new AppException('Missing parameter', 400);
         }
 
-        // Verify user's assigned role.
+        // Verify user's assigned role actually exists.
         if (!in_array($role, Roles::ALL, true)) {
             throw new AppException('Unsupported role', 400);
         }
 
-        // Verify email address contains @coldplace in it's name
+        // Verify email address contains org name
         if (!preg_match($this->emailPattern, $email)) {
             throw new AppException('Unsupported email pattern', 400);
         }
 
         $locationId = $this->resolveLocationForRole($role, $locationId);
+        $currentUser = $this->repo->retrieveUser($actor->userId);
 
         try {
             return $this->tx->run(function () use ($actor, $userId,
-                $name, $email, $role, $locationId, $isRoot) 
+                $name, $email, $role, $locationId, $currentUser) 
             {
                 $old = $this->repo->retrieveUserForUpdate($userId);
 
@@ -137,8 +133,8 @@ class UserService
                     throw new AppException('Not found', 404);
                 }
 
-                // You can't edit other admin unless you're root admin
-                if (!$isRoot && $old['role'] === Roles::ADMIN) {
+                // Permit if current user has modification rights on target user
+                if (!UserPolicy::canModify($currentUser, $old)) {
                     throw new AppException('Forbidden', 403);
                 }
 
@@ -183,7 +179,7 @@ class UserService
         }
     }
 
-    public function changeOtherPassword(Actor $actor, int $targetUserId, array $data): int
+    public function resetPassword(Actor $actor, int $targetUserId, array $data): int
     {
         $new = (string) ($data['password'] ?? '');
 
@@ -191,21 +187,16 @@ class UserService
             throw new AppException('Missing parameter', 400);
         }
 
-        // Can't change root admin or your own password like this.
-        if ($targetUserId === User::ROOT_ADMIN || $targetUserId === $actor->userId) {
-            throw new AppException('Forbidden', 403);
-        }
+        $currentUser = $this->repo->retrieveUser($actor->userId);
 
-        $isRoot = $actor->userId === User::ROOT_ADMIN;
-
-        return $this->tx->run(function () use ($actor, $new, $targetUserId, $isRoot) {
+        return $this->tx->run(function () use ($actor, $new, $targetUserId, $currentUser) {
             $target = $this->repo->retrieveUserForUpdate($targetUserId);
 
             if (!$target) {
                 throw new AppException('Not found', 404);
             }
 
-            if (!$isRoot && $target['role'] === Roles::ADMIN) {
+            if (!UserPolicy::canModify($currentUser, $target)) {
                 throw new AppException('Forbidden', 403);
             }
 
@@ -279,23 +270,17 @@ class UserService
     }
 
     public function deactivate(Actor $actor, int $targetUserId): int
-    {   
-        // You can't deactivate the Root Admin or your own account
-        if ($targetUserId === User::ROOT_ADMIN || $targetUserId === $actor->userId) {
-            throw new AppException('Forbidden', 403);
-        }
+    {
+        $currentUser = $this->repo->retrieveUser($actor->userId);
 
-        $isRoot = $actor->userId === User::ROOT_ADMIN;
-
-        return $this->tx->run(function () use ($actor, $targetUserId, $isRoot) {
+        return $this->tx->run(function () use ($actor, $targetUserId, $currentUser) {
             $targetUser = $this->repo->retrieveUserForUpdate($targetUserId);
 
             if (!$targetUser) {
                 throw new AppException('Not found', 404);
             }
 
-            // You can't deactivate another admin user unless you're the root admin
-            if (!$isRoot && $targetUser['role'] === Roles::ADMIN) {
+            if (!UserPolicy::canModify($currentUser, $targetUser)) {
                 throw new AppException('Forbidden', 403);
             }
 
@@ -325,22 +310,23 @@ class UserService
 
     public function activate(Actor $actor, int $targetUserId): int
     {   
-        // You can't deactivate the Root Admin or your own account
-        if ($targetUserId === User::ROOT_ADMIN || $targetUserId === $actor->userId) {
-            throw new AppException('Forbidden', 403);
-        }
+        // // You can't deactivate the Root Admin or your own account
+        // if ($targetUserId === User::ROOT_ADMIN || $targetUserId === $actor->userId) {
+        //     throw new AppException('Forbidden', 403);
+        // }
 
-        $isRoot = $actor->userId === User::ROOT_ADMIN;
+        // $isRoot = $actor->userId === User::ROOT_ADMIN;
 
-        return $this->tx->run(function () use ($actor, $targetUserId, $isRoot) {
+        $currentUser = $this->repo->retrieveUser($actor->userId);
+
+        return $this->tx->run(function () use ($actor, $targetUserId, $currentUser) {
             $targetUser = $this->repo->retrieveUserForUpdate($targetUserId);
 
             if (!$targetUser) {
                 throw new AppException('Not found', 404);
             }
 
-            // You can't deactivate another admin user unless you're the root admin
-            if (!$isRoot && $targetUser['role'] === Roles::ADMIN) {
+            if (!UserPolicy::canModify($currentUser, $targetUser)) {
                 throw new AppException('Forbidden', 403);
             }
 

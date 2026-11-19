@@ -5,7 +5,7 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
 
 use App\Exceptions\AppException;
-use App\Services\PermissionPolicy;
+use App\Policies\PermissionPolicy;
 use App\Services\UserService;
 use App\Helpers\Actor;
 use App\Services\RefreshCookie;
@@ -92,13 +92,13 @@ class Users
     /**
      * admin: change a given user's password
      */
-    public function changePassword(Request $req, Response $res, array $args): Response
+    public function resetPassword(Request $req, Response $res, array $args): Response
     {
         $userId = (int) $args['id'];
         $data = $req->getParsedBody() ?? [];
 
         try {
-            $rows = $this->service->changeOtherPassword(Actor::fromRequest($req), $userId, $data);
+            $rows = $this->service->resetPassword(Actor::fromRequest($req), $userId, $data);
         } catch (AppException $err) {
             return $this->json(['error' => $err->getMessage()], $err->getStatus());
         }
@@ -115,7 +115,7 @@ class Users
      * Changing your own password should cause your session to be renewed
      * while locking out any other user that had your password
      */
-    public function changeMyPassword(Request $req, Response $res): Response
+    public function changePassword(Request $req, Response $res): Response
     {
         $data = $req->getParsedBody() ?? [];
 

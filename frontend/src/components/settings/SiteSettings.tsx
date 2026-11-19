@@ -281,7 +281,7 @@ export default function SiteSettings() {
                                       openChangePasswordForm(user.id)
                                     }
                                   >
-                                    Change Password
+                                    Reset Password
                                   </DropdownMenuItem>
                                 </DropdownMenuGroup>
                                 <DropdownMenuSeparator />

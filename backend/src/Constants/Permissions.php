@@ -93,33 +93,6 @@ class Permissions
         self::ADJUSTMENTS_LIST,
     ];
 
-    public const FOR_MANAGER = [
-        self::LOCATIONS_LIST,
-        self::LOCATIONS_RETRIEVE,
-
-        self::USERS_CHANGE_PASSWORD_OWN,
-        self::USERS_PROFILE,
-        self::USERS_LIST,
-
-        self::AUDIT_VIEW,
-
-        self::CATEGORIES_LIST,
-
-        self::UNITS_LIST,
-
-        self::PRODUCTS_LIST,
-        self::PRODUCTS_RETRIEVE,
-
-        self::RECEIPTS_LIST,
-
-        self::INVENTORY_VIEW,
-
-        self::ADJUSTMENTS_LIST,
-        self::ADJUSTMENTS_CREATE,
-        self::ADJUSTMENTS_APPROVE,
-        self::ADJUSTMENTS_REJECT,
-    ];
-
     public const FOR_CENTRAL = [
         self::LOCATIONS_LIST,
         self::LOCATIONS_RETRIEVE,

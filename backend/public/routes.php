@@ -85,7 +85,7 @@ return function (SlimApp $app, JwtAuthMiddleware $jwtAuth, CsrfGuardMiddleware $
             ->add(new MustChangePassword);
 
         $group
-            ->patch('/users/{id:[0-9]+}/changePassword', App\Controllers\Users::class . ':changePassword')
+            ->patch('/users/{id:[0-9]+}/changePassword', App\Controllers\Users::class . ':resetPassword')
             ->add(new RequirePermission(Permissions::USERS_CHANGE_PASSWORD_ANY))
             ->add(new MustChangePassword);
 
@@ -95,7 +95,7 @@ return function (SlimApp $app, JwtAuthMiddleware $jwtAuth, CsrfGuardMiddleware $
             ->add(new RequirePermission(Permissions::USERS_PROFILE));
 
         $group
-            ->patch('/me/changePassword', App\Controllers\Users::class . ':changeMyPassword')
+            ->patch('/me/changePassword', App\Controllers\Users::class . ':changePassword')
             ->add(new RequirePermission(Permissions::USERS_CHANGE_PASSWORD_OWN));
 
 

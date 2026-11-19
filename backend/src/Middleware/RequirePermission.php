@@ -8,7 +8,7 @@ use Override;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 
-use App\Services\PermissionPolicy;
+use App\Policies\PermissionPolicy;
 
 class RequirePermission implements MiddlewareInterface
 {
