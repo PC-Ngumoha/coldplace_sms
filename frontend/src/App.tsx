@@ -20,6 +20,8 @@ import {
   ManageLocations,
   AdminChangePassword,
   UserChangePassword,
+  Suppliers,
+  Customers,
 } from "@/pages";
 import { useAuth } from "@/contexts/auth_context";
 import { RequirePermission } from "@/components/permissions";
@@ -74,6 +76,8 @@ export default function App() {
               }
             />
             <Route path="/adjustments" element={<Adjustments />} />
+            <Route path="/suppliers" element={<Suppliers />} />
+            <Route path="/customers" element={<Customers />} />
           </Route>
         </Route>
 

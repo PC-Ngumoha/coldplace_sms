@@ -19,6 +19,7 @@ import {
   ChevronDown,
   Grid2X2,
   Package,
+  Users,
   ShoppingCart,
   Settings,
   Tag,
@@ -89,6 +90,18 @@ const navigation = [
     label: "Adjustments",
     to: "/adjustments",
     icon: ClipboardPenLine,
+    permission: "users:profile",
+  },
+  {
+    label: "Suppliers",
+    to: "/suppliers",
+    icon: Package,
+    permission: "users:profile",
+  },
+  {
+    label: "Customers",
+    to: "/customers",
+    icon: Users,
     permission: "users:profile",
   },
 ];

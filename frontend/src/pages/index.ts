@@ -16,6 +16,8 @@ import ManageUsers from "./segments/ManageUsers";
 import ManageLocations from "./segments/ManageLocations";
 import AdminChangePassword from "./segments/AdminChangePassword";
 import UserChangePassword from "./segments/UserChangePassword";
+import Suppliers from "./segments/Suppliers";
+import Customers from "./segments/Customers";
 
 export {
   Home,
@@ -36,4 +38,6 @@ export {
   ManageLocations,
   AdminChangePassword,
   UserChangePassword,
+  Suppliers,
+  Customers,
 };
