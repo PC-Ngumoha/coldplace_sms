@@ -1,8 +1,17 @@
 import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuGroup,
+  DropdownMenuContent,
+  DropdownMenuItem,
+} from "@/components/ui/dropdown-menu";
 import type { Category } from "@/types";
 import { categoryApi } from "@/services/Categoryapi";
-import { Check, Plus, X } from "lucide-react";
-import { useEffect, useState, type SubmitEvent } from "react";
+import { showSuccess } from "@/services/toasts";
+import { Check, Plus, X, EllipsisVertical } from "lucide-react";
+import { useCallback, useEffect, useState, type SubmitEvent } from "react";
+import { isAxiosError } from "axios";
 
 export default function Products() {
   const products = [
@@ -41,6 +50,7 @@ export default function Products() {
   );
   const [categories, setCategories] = useState<Category[]>([]);
   const [categoryFields, setCategoryFields] = useState({ name: "" });
+  const [error, setError] = useState("");
 
   const toggleFormVisibility = () => setIsOpen((visible) => !visible);
 
@@ -48,19 +58,38 @@ export default function Products() {
     setCategoryFields((prev) => ({ ...prev, [field]: value }));
   };
 
-  const handleSubmitCategory = (evt: SubmitEvent<HTMLFormElement>) => {
+  const handleSubmitCategory = async (evt: SubmitEvent<HTMLFormElement>) => {
     evt.preventDefault();
+    setError("");
+    if (categoryFields.name.trim() === "") {
+      setError("Invalid parameters");
+      return;
+    }
     console.log(categoryFields);
+    try {
+      await categoryApi.create(categoryFields);
+      showSuccess("Category created successfully !!!");
+      await fetchCategories();
+      setIsOpen(false);
+    } catch (err) {
+      setError(
+        isAxiosError(err) ? err.response?.data?.error : "Operation failed",
+      );
+    }
   };
+
+  const fetchCategories = useCallback(async () => {
+    const allCategories = await categoryApi.list();
+    setCategories(allCategories);
+  }, []);
 
   useEffect(() => {
     async function fetchData() {
-      const data = await categoryApi.list();
-      setCategories(data);
+      await fetchCategories();
     }
 
     fetchData();
-  }, []);
+  }, [fetchCategories]);
 
   return (
     <main className="min-h-screen px-4 py-5 text-slate-900 sm:px-1 sm:py-4">
@@ -149,13 +178,9 @@ export default function Products() {
                 <select
                   id="product-category"
                   name="category"
-                  defaultValue="Chicken"
                   className="w-full rounded-lg border border-lightest-teal-blue bg-white px-2.5 py-2 text-sm outline-none
                    focus:border-teal-blue focus:ring-2 focus:ring-teal-blue/20"
                 >
-                  {/* <option>Chicken</option>
-                  <option>Fish</option>
-                  <option>Meat</option> */}
                   <option>Select a category</option>
                   {categories.length > 0 &&
                     categories.map((category) => (
@@ -223,6 +248,14 @@ export default function Products() {
             onSubmit={handleSubmitCategory}
             className="mb-4 rounded-2xl border border-lightest-teal-blue bg-white p-4 sm:p-5"
           >
+            {error && (
+              <div
+                role="alert"
+                className="mb-4 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700"
+              >
+                {error}
+              </div>
+            )}
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-5">
               <div>
                 <label
@@ -297,16 +330,16 @@ export default function Products() {
           className="overflow-x-auto rounded-2xl border border-lightest-teal-blue bg-white"
         >
           {activeTab === "categories" ? (
-            <div className="p-5">
-              <table className="w-full border-collapse text-sm table-fixed">
+            <div className="p-5 overflow-x-auto">
+              <table className="w-full min-w-[680px] border-collapse text-sm table-fixed">
                 <thead>
                   <tr
-                    className="h-10 border-b border-lightest-teal-blue text-left text-xs
-                    font-medium uppercase tracking-wide text-slate-500"
+                    className="h-10 border-b border-lightest-teal-blue text-left
+                    font-medium uppercase tracking-wide text-slate-500 text-[10px] lg:text-[13px]"
                   >
                     <th className="px-3">Name</th>
                     <th className="px-3">Status</th>
-                    <th className="px-3"></th>
+                    <th className="px-3" aria-label="Actions" colSpan={2} />
                   </tr>
                 </thead>
                 <tbody>
@@ -325,7 +358,7 @@ export default function Products() {
                     categories.map((category) => (
                       <tr
                         key={category.id}
-                        className="h-14 border-b border-lightest-teal-blue last:border-b-0"
+                        className="h-14 border-b border-lightest-teal-blue last:border-b-0 text-[10px] lg:text-[13px]"
                       >
                         <td className="px-3 font-medium">{category.name}</td>
                         <td className="px-3">
@@ -343,6 +376,22 @@ export default function Products() {
                           >
                             Deactivate
                           </button>
+                        </td>
+                        <td className="px-3 text-center">
+                          <DropdownMenu>
+                            <DropdownMenuTrigger
+                              render={
+                                <button className="rounded p-1 text-slate-600 hover:bg-slate-100">
+                                  <EllipsisVertical size={16} />
+                                </button>
+                              }
+                            />
+                            <DropdownMenuContent>
+                              <DropdownMenuGroup>
+                                <DropdownMenuItem>Edit</DropdownMenuItem>
+                              </DropdownMenuGroup>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
                         </td>
                       </tr>
                     ))
@@ -365,7 +414,11 @@ export default function Products() {
                       <th className="px-2 text-right lg:px-3">Carton = kg</th>
                       <th className="px-2 text-right lg:px-3">Min stock</th>
                       <th className="px-2 lg:px-3">Status</th>
-                      <th className="px-2 lg:px-3" aria-label="Actions" />
+                      <th
+                        className="px-2 lg:px-3"
+                        aria-label="Actions"
+                        colSpan={2}
+                      />
                     </tr>
                   </thead>
                   <tbody>
@@ -402,6 +455,22 @@ export default function Products() {
                           >
                             Deactivate
                           </button>
+                        </td>
+                        <td className="px-3 text-end">
+                          <DropdownMenu>
+                            <DropdownMenuTrigger
+                              render={
+                                <button className="rounded p-1 text-slate-600 hover:bg-slate-100">
+                                  <EllipsisVertical size={16} />
+                                </button>
+                              }
+                            />
+                            <DropdownMenuContent>
+                              <DropdownMenuGroup>
+                                <DropdownMenuItem>Edit</DropdownMenuItem>
+                              </DropdownMenuGroup>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
                         </td>
                       </tr>
                     ))}

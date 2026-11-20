@@ -62,7 +62,7 @@ export default function SiteSettings() {
       }
     }
 
-    void fetchData();
+    fetchData();
   }, [location, fetchUsers, fetchLocations]);
 
   const openAddUserForm = () => {
