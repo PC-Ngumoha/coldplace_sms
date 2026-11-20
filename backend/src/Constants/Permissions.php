@@ -68,6 +68,9 @@ class Permissions
     // Stock balances (inventory)
     public const INVENTORY_VIEW = 'inventory:view';
 
+    // Site Settings (Users, locations, units)
+    public const SETTINGS_VIEW = 'settings:view';
+
 
     // Mapping to specific roles & Admin
     public const FOR_EXECUTIVE = [
@@ -218,5 +221,7 @@ class Permissions
         self::ADJUSTMENTS_CREATE,
         self::ADJUSTMENTS_REJECT,
         self::ADJUSTMENTS_APPROVE,
+
+        self::SETTINGS_VIEW,
     ];
 }

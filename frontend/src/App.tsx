@@ -22,6 +22,7 @@ import {
   UserChangePassword,
   Suppliers,
   Customers,
+  UserProfile,
 } from "@/pages";
 import { useAuth } from "@/contexts/auth_context";
 import { RequirePermission } from "@/components/permissions";
@@ -66,7 +67,14 @@ export default function App() {
             <Route path="/damage" element={<Damages />} />
             <Route path="/pricing" element={<Pricing />} />
             <Route path="/reports" element={<Reports />} />
-            <Route path="/settings" element={<Settings />} />
+            <Route
+              path="/settings"
+              element={
+                <RequirePermission permission="settings:view">
+                  <Settings />
+                </RequirePermission>
+              }
+            />
             <Route
               path="/logs"
               element={
@@ -78,6 +86,7 @@ export default function App() {
             <Route path="/adjustments" element={<Adjustments />} />
             <Route path="/suppliers" element={<Suppliers />} />
             <Route path="/customers" element={<Customers />} />
+            <Route path="/me" element={<UserProfile />} />
           </Route>
         </Route>
 

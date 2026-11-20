@@ -18,6 +18,7 @@ import AdminChangePassword from "./segments/AdminChangePassword";
 import UserChangePassword from "./segments/UserChangePassword";
 import Suppliers from "./segments/Suppliers";
 import Customers from "./segments/Customers";
+import UserProfile from "./segments/UserProfile";
 
 export {
   Home,
@@ -40,4 +41,5 @@ export {
   UserChangePassword,
   Suppliers,
   Customers,
+  UserProfile,
 };

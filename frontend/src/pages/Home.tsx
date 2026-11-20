@@ -33,6 +33,7 @@ import {
   Sidebar,
   SidebarClose,
   ClipboardPenLine,
+  UserCircle2,
 } from "lucide-react";
 import { Link, Outlet, useLocation, useNavigate } from "react-router";
 import { useAuth } from "@/contexts/auth_context";
@@ -104,6 +105,12 @@ const navigation = [
     icon: Users,
     permission: "users:profile",
   },
+  {
+    label: "Settings",
+    to: "/settings",
+    icon: Settings,
+    permission: "settings:view",
+  },
 ];
 
 export default function Home() {
@@ -133,7 +140,7 @@ export default function Home() {
     fetchLocations();
   }, []);
 
-  const gotoSettingsPage = () => navigate("/settings");
+  const gotoProfilePage = () => navigate("/me");
 
   return (
     <div className="flex h-screen bg-[#edf3f2] text-slate-800 relative">
@@ -288,10 +295,10 @@ export default function Home() {
                   <DropdownMenuGroup>
                     <DropdownMenuItem
                       className="my-1"
-                      onClick={gotoSettingsPage}
+                      onClick={gotoProfilePage}
                     >
-                      <Settings />
-                      Settings
+                      <UserCircle2 />
+                      Profile
                     </DropdownMenuItem>
                     <DropdownMenuItem
                       onClick={() => {
