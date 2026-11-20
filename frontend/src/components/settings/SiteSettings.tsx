@@ -139,10 +139,10 @@ export default function SiteSettings() {
       <header className="flex flex-col gap-5 sm:flex-row sm:items-start sm:justify-between">
         <div>
           <h1 className="text-2xl font-semibold leading-7 text-teal-950">
-            Site Settings
+            Users & Locations
           </h1>
           <p className="mt-1 text-sm text-slate-400">
-            General site-wide settings & configurations
+            Configure details for the users and locations.
           </p>
         </div>
         <div className="flex gap-2 self-start">
