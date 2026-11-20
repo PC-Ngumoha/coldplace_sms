@@ -104,6 +104,32 @@ return function (SlimApp $app, JwtAuthMiddleware $jwtAuth, CsrfGuardMiddleware $
             ->get('/audit/logs', App\Controllers\Logs::class . ':list')
             ->add(new RequirePermission(Permissions::AUDIT_VIEW));
 
+
+        // ------ PRODUCT CATEGORIES ------
+        $group
+            ->get('/categories', App\Controllers\Locations::class . ':list')
+            ->add(new RequirePermission(Permissions::CATEGORIES_LIST));
+
+        $group
+            ->post('/categories', App\Controllers\Locations::class . ':create')
+            ->add(new RequirePermission(Permissions::CATEGORIES_CREATE))
+            ->add(new MustChangePassword);
+
+        $group
+            ->post('/categories/{id:[0-9]+}/deactivate', App\Controllers\Locations::class . ':deactivate')
+            ->add(new RequirePermission(Permissions::CATEGORIES_DEACTIVATE))
+            ->add(new MustChangePassword);
+
+        $group
+            ->post('/categories/{id:[0-9]+}/activate', App\Controllers\Locations::class . ':activate')
+            ->add(new RequirePermission(Permissions::CATEGORIES_ACTIVATE))
+            ->add(new MustChangePassword);
+
+        $group
+            ->patch('/categories/{id:[0-9]+}', App\Controllers\Locations::class . ':update')
+            ->add(new RequirePermission(Permissions::CATEGORIES_EDIT))
+            ->add(new MustChangePassword);
+
     })->add($jwtAuth);
 
     // ---- AUTHENTICATION ROUTES ----

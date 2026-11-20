@@ -34,6 +34,10 @@ export default function Products() {
     },
   ];
   const [isOpen, setIsOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState<"products" | "categories">(
+    "products",
+  );
+  const categories = [...new Set(products.map((product) => product.category))];
 
   const toggleFormVisibility = () => setIsOpen((visible) => !visible);
 
@@ -58,7 +62,11 @@ export default function Products() {
             {!isOpen ? (
               <>
                 <Plus size={18} />
-                <span>New product</span>
+                {activeTab === "products" ? (
+                  <span>New product</span>
+                ) : (
+                  <span>New Category</span>
+                )}
               </>
             ) : (
               <>
@@ -70,7 +78,7 @@ export default function Products() {
         </header>
 
         {/* Add Product form */}
-        {isOpen && (
+        {isOpen && activeTab === "products" && (
           <form
             onSubmit={(event) => event.preventDefault()}
             className="mb-4 rounded-2xl border border-lightest-teal-blue bg-white p-4 sm:p-5"
@@ -183,107 +191,226 @@ export default function Products() {
           </form>
         )}
 
+        {/* Add Category form */}
+        {isOpen && activeTab === "categories" && (
+          <form
+            onSubmit={(event) => event.preventDefault()}
+            className="mb-4 rounded-2xl border border-lightest-teal-blue bg-white p-4 sm:p-5"
+          >
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-5">
+              <div>
+                <label
+                  htmlFor="category-name"
+                  className="mb-1 block text-xs font-medium text-slate-600"
+                >
+                  Category name
+                </label>
+                <input
+                  id="category-name"
+                  name="name"
+                  type="text"
+                  placeholder="e.g. Chicken"
+                  required
+                  className="w-full rounded-lg border border-lightest-teal-blue px-2.5 py-2 text-sm outline-none
+                   placeholder:text-slate-400 focus:border-teal-blue focus:ring-2 focus:ring-teal-blue/20"
+                />
+              </div>
+            </div>
+            <Button
+              type="submit"
+              className="mt-4 inline-flex items-center gap-2 rounded-lg bg-teal-blue px-4 py-2 text-sm font-medium
+               text-white hover:bg-teal-900 focus:outline-none focus:ring-2 focus:ring-teal-700 focus:ring-offset-2"
+            >
+              <Check size={16} />
+              Save category
+            </Button>
+          </form>
+        )}
+
+        <div
+          className="mb-2 inline-flex rounded-lg border border-lightest-teal-blue bg-white p-1"
+          role="tablist"
+          aria-label="Product setup"
+        >
+          <button
+            type="button"
+            role="tab"
+            aria-selected={activeTab === "products"}
+            onClick={() => setActiveTab("products")}
+            className={`inline-flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium transition ${activeTab === "products" ? "bg-teal-blue text-white" : "text-slate-600 hover:bg-slate-50"}`}
+          >
+            Products{" "}
+            <span className="rounded bg-white/20 px-1.5 text-xs">
+              {products.length}
+            </span>
+          </button>
+          <button
+            type="button"
+            role="tab"
+            aria-selected={activeTab === "categories"}
+            onClick={() => setActiveTab("categories")}
+            className={`inline-flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium transition ${activeTab === "categories" ? "bg-teal-blue text-white" : "text-slate-600 hover:bg-slate-50"}`}
+          >
+            Categories{" "}
+            <span className="rounded bg-slate-100 px-1.5 text-xs">
+              {categories.length}
+            </span>
+          </button>
+        </div>
+
         <section
-          aria-label="Product list"
+          aria-label={
+            activeTab === "products" ? "Product list" : "Category list"
+          }
           className="overflow-x-auto rounded-2xl border border-lightest-teal-blue bg-white"
         >
-          <div className="hidden overflow-x-auto lg:block p-5">
-            <table className="w-full min-w-[680px] table-fixed border-collapse text-sm lg:min-w-[760px]">
-              <thead>
-                <tr
-                  className="h-10 border-b border-lightest-teal-blue text-left text-[10px] lg:text-[13px] font-medium uppercase 
-                tracking-wide text-slate-500"
-                >
-                  <th className="px-2 lg:px-3">Code</th>
-                  <th className="px-2 lg:px-3">Name</th>
-                  <th className="px-2 lg:px-3">Category</th>
-                  <th className="px-2 text-right lg:px-3">Carton = kg</th>
-                  <th className="px-2 text-right lg:px-3">Min stock</th>
-                  <th className="px-2 lg:px-3">Status</th>
-                  <th className="px-2 lg:px-3" aria-label="Actions" />
-                </tr>
-              </thead>
-              <tbody>
-                {products.map((product) => (
+          {activeTab === "categories" ? (
+            <div className="p-5">
+              <table className="w-full border-collapse text-sm table-fixed">
+                <thead>
                   <tr
-                    key={product.code}
-                    className="h-14 border-b border-lightest-teal-blue last:border-b-0 text-[10px] lg:text-[13px]"
+                    className="h-10 border-b border-lightest-teal-blue text-left text-xs
+                    font-medium uppercase tracking-wide text-slate-500"
                   >
-                    <td className="px-2 font-mono lg:px-3">{product.code}</td>
-                    <td className="px-2 font-medium lg:px-3">{product.name}</td>
-                    <td className="px-2 lg:px-3">{product.category}</td>
-                    <td className="px-2 text-right tabular-nums lg:px-3">
-                      {product.carton}
-                    </td>
-                    <td className="px-2 text-right tabular-nums lg:px-3">
-                      {product.minStock}
-                    </td>
-                    <td className="px-2 lg:px-3">
-                      <span
-                        className="inline-flex rounded-full border border-lighter-teal-blue bg-lighter-teal-blue px-2.5 py-1 text-xs 
+                    <th className="px-3">Name</th>
+                    <th className="px-3">Status</th>
+                    <th className="px-3"></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {categories.map((category) => (
+                    <tr
+                      key={category}
+                      className="h-14 border-b border-lightest-teal-blue last:border-b-0"
+                    >
+                      <td className="px-3 font-medium">{category}</td>
+                      <td className="px-3">
+                        <span
+                          className="inline-flex rounded-full border border-lighter-teal-blue bg-lighter-teal-blue
+                        px-2.5 py-1 text-xs font-medium leading-none text-emerald-700"
+                        >
+                          Active
+                        </span>
+                      </td>
+                      <td className="px-3">
+                        <button
+                          className="whitespace-nowrap rounded-lg border border-lighter-teal-blue px-3 py-2 font-medium text-slate-900 
+                        transition hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-teal-blue"
+                        >
+                          Deactivate
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          ) : (
+            <>
+              <div className="hidden overflow-x-auto lg:block p-5">
+                <table className="w-full min-w-[680px] table-fixed border-collapse text-sm lg:min-w-[760px]">
+                  <thead>
+                    <tr
+                      className="h-10 border-b border-lightest-teal-blue text-left text-[10px] lg:text-[13px] font-medium uppercase 
+                tracking-wide text-slate-500"
+                    >
+                      <th className="px-2 lg:px-3">Code</th>
+                      <th className="px-2 lg:px-3">Name</th>
+                      <th className="px-2 lg:px-3">Category</th>
+                      <th className="px-2 text-right lg:px-3">Carton = kg</th>
+                      <th className="px-2 text-right lg:px-3">Min stock</th>
+                      <th className="px-2 lg:px-3">Status</th>
+                      <th className="px-2 lg:px-3" aria-label="Actions" />
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {products.map((product) => (
+                      <tr
+                        key={product.code}
+                        className="h-14 border-b border-lightest-teal-blue last:border-b-0 text-[10px] lg:text-[13px]"
+                      >
+                        <td className="px-2 font-mono lg:px-3">
+                          {product.code}
+                        </td>
+                        <td className="px-2 font-medium lg:px-3">
+                          {product.name}
+                        </td>
+                        <td className="px-2 lg:px-3">{product.category}</td>
+                        <td className="px-2 text-right tabular-nums lg:px-3">
+                          {product.carton}
+                        </td>
+                        <td className="px-2 text-right tabular-nums lg:px-3">
+                          {product.minStock}
+                        </td>
+                        <td className="px-2 lg:px-3">
+                          <span
+                            className="inline-flex rounded-full border border-lighter-teal-blue bg-lighter-teal-blue px-2.5 py-1 text-xs 
                       font-medium leading-none text-emerald-700"
+                          >
+                            Active
+                          </span>
+                        </td>
+                        <td className="px-2 lg:px-3 wrap-break-word break-all">
+                          <button
+                            className="whitespace-nowrap rounded-lg border border-lighter-teal-blue px-3 py-2 font-medium text-slate-900 
+                        transition hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-teal-blue"
+                          >
+                            Deactivate
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+              {/* Mobile & Tablet view */}
+              <ul className="divide-y divide-lighter-teal-blue lg:hidden">
+                {products.map((product) => (
+                  <li key={product.code} className="p-4 sm:p-5">
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="min-w-0">
+                        <h2 className="wrap-break-word font-medium">
+                          {product.name}
+                        </h2>
+                        <p className="mt-1 font-mono text-xs text-slate-500">
+                          {product.code}
+                        </p>
+                      </div>
+                      <span
+                        className="inline-flex shrink-0 rounded-full border border-lighter-teal-blue bg-lightest-teal-blue px-2.5
+                    py-1 text-xs font-medium leading-none text-emerald-700"
                       >
                         Active
                       </span>
-                    </td>
-                    <td className="px-2 lg:px-3 wrap-break-word break-all">
-                      <Button
-                        variant="secondary"
-                        className="whitespace-nowrap rounded-lg border border-lightest-teal-blue px-3 py-2 font-medium text-slate-900 
-                        transition hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-teal-blue"
-                      >
-                        Deactivate
-                      </Button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-          {/* Mobile & Tablet view */}
-          <ul className="divide-y divide-lighter-teal-blue lg:hidden">
-            {products.map((product) => (
-              <li key={product.code} className="p-4 sm:p-5">
-                <div className="flex items-start justify-between gap-3">
-                  <div className="min-w-0">
-                    <h2 className="wrap-break-word font-medium">
-                      {product.name}
-                    </h2>
-                    <p className="mt-1 font-mono text-xs text-slate-500">
-                      {product.code}
-                    </p>
-                  </div>
-                  <span
-                    className="inline-flex shrink-0 rounded-full border border-lighter-teal-blue bg-lightest-teal-blue px-2.5
-                    py-1 text-xs font-medium leading-none text-emerald-700"
-                  >
-                    Active
-                  </span>
-                </div>
-                <dl className="mt-4 grid grid-cols-2 md:grid-cols-3 gap-x-4 gap-y-3 text-sm">
-                  <div>
-                    <dt className="text-xs text-slate-500">Category</dt>
-                    <dd className="mt-1">{product.category}</dd>
-                  </div>
-                  <div>
-                    <dt className="text-xs text-slate-500">Carton = kg</dt>
-                    <dd className="mt-1 tabular-nums">{product.carton}</dd>
-                  </div>
-                  <div>
-                    <dt className="text-xs text-slate-500">Min stock</dt>
-                    <dd className="mt-1 tabular-nums">{product.minStock}</dd>
-                  </div>
-                </dl>
-                <Button
-                  variant="secondary"
-                  className="mt-4 w-full rounded-lg border border-lighter-teal-blue px-3 py-2 font-medium text-slate-900 transition 
+                    </div>
+                    <dl className="mt-4 grid grid-cols-2 md:grid-cols-3 gap-x-4 gap-y-3 text-sm">
+                      <div>
+                        <dt className="text-xs text-slate-500">Category</dt>
+                        <dd className="mt-1">{product.category}</dd>
+                      </div>
+                      <div>
+                        <dt className="text-xs text-slate-500">Carton = kg</dt>
+                        <dd className="mt-1 tabular-nums">{product.carton}</dd>
+                      </div>
+                      <div>
+                        <dt className="text-xs text-slate-500">Min stock</dt>
+                        <dd className="mt-1 tabular-nums">
+                          {product.minStock}
+                        </dd>
+                      </div>
+                    </dl>
+                    <Button
+                      variant="secondary"
+                      className="mt-4 w-full rounded-lg border border-lighter-teal-blue px-3 py-2 font-medium text-slate-900 transition 
                   hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-teal-blue"
-                >
-                  Deactivate
-                </Button>
-              </li>
-            ))}
-          </ul>
+                    >
+                      Deactivate
+                    </Button>
+                  </li>
+                ))}
+              </ul>
+            </>
+          )}
         </section>
       </div>
     </main>
