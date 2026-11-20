@@ -107,26 +107,26 @@ return function (SlimApp $app, JwtAuthMiddleware $jwtAuth, CsrfGuardMiddleware $
 
         // ------ PRODUCT CATEGORIES ------
         $group
-            ->get('/categories', App\Controllers\Locations::class . ':list')
+            ->get('/categories', App\Controllers\Categories::class . ':list')
             ->add(new RequirePermission(Permissions::CATEGORIES_LIST));
 
         $group
-            ->post('/categories', App\Controllers\Locations::class . ':create')
+            ->post('/categories', App\Controllers\Categories::class . ':create')
             ->add(new RequirePermission(Permissions::CATEGORIES_CREATE))
             ->add(new MustChangePassword);
 
         $group
-            ->post('/categories/{id:[0-9]+}/deactivate', App\Controllers\Locations::class . ':deactivate')
+            ->post('/categories/{id:[0-9]+}/deactivate', App\Controllers\Categories::class . ':deactivate')
             ->add(new RequirePermission(Permissions::CATEGORIES_DEACTIVATE))
             ->add(new MustChangePassword);
 
         $group
-            ->post('/categories/{id:[0-9]+}/activate', App\Controllers\Locations::class . ':activate')
+            ->post('/categories/{id:[0-9]+}/activate', App\Controllers\Categories::class . ':activate')
             ->add(new RequirePermission(Permissions::CATEGORIES_ACTIVATE))
             ->add(new MustChangePassword);
 
         $group
-            ->patch('/categories/{id:[0-9]+}', App\Controllers\Locations::class . ':update')
+            ->patch('/categories/{id:[0-9]+}', App\Controllers\Categories::class . ':update')
             ->add(new RequirePermission(Permissions::CATEGORIES_EDIT))
             ->add(new MustChangePassword);
 

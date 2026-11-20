@@ -9,9 +9,9 @@ import { AUTH_PATHS } from "@/lib/endpoints";
 const BASE_URL = import.meta.env.VITE_API_URL ?? "http://localhost:8080";
 
 const NO_REFRESH_PATHS = [
-  AUTH_PATHS.login,
-  AUTH_PATHS.logout,
-  AUTH_PATHS.refresh,
+  AUTH_PATHS.login(),
+  AUTH_PATHS.logout(),
+  AUTH_PATHS.refresh(),
 ];
 
 let accessToken: string | null = null;
@@ -51,7 +51,7 @@ const bareApi = axios.create({
 const LOCK_NAME = "auth-refresh";
 
 async function requestNewAccessToken(): Promise<string> {
-  const res = await bareApi.post<LoginResponse>(AUTH_PATHS.refresh);
+  const res = await bareApi.post<LoginResponse>(AUTH_PATHS.refresh());
   setAccessToken(res.data.access_token);
   return res.data.access_token;
 }

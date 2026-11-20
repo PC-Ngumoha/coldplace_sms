@@ -61,6 +61,18 @@ export interface ModifyLocation {
   address: string | null;
 }
 
+export interface Category {
+  id: number;
+  name: string;
+  status: string;
+  created_by: number;
+  created_at: number;
+}
+
+export interface ModifyCategory {
+  name: string;
+}
+
 export interface ProcessResponse {
   error?: string;
   message?: string;
