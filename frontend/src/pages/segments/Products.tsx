@@ -12,6 +12,7 @@ import { showSuccess } from "@/services/toasts";
 import { Check, Plus, X, EllipsisVertical } from "lucide-react";
 import { useCallback, useEffect, useState, type SubmitEvent } from "react";
 import { isAxiosError } from "axios";
+import { clsx } from "cn";
 
 export default function Products() {
   const products = [
@@ -50,6 +51,7 @@ export default function Products() {
   );
   const [categories, setCategories] = useState<Category[]>([]);
   const [categoryFields, setCategoryFields] = useState({ name: "" });
+  const [selectedCategoryId, setSelectedCategoryId] = useState<number>(0);
   const [error, setError] = useState("");
 
   const toggleFormVisibility = () => setIsOpen((visible) => !visible);
@@ -58,7 +60,7 @@ export default function Products() {
     setCategoryFields((prev) => ({ ...prev, [field]: value }));
   };
 
-  const handleSubmitCategory = async (evt: SubmitEvent<HTMLFormElement>) => {
+  const handleCreateCategory = async (evt: SubmitEvent<HTMLFormElement>) => {
     evt.preventDefault();
     setError("");
     if (categoryFields.name.trim() === "") {
@@ -71,6 +73,51 @@ export default function Products() {
       showSuccess("Category created successfully !!!");
       await fetchCategories();
       setIsOpen(false);
+    } catch (err) {
+      setError(
+        isAxiosError(err) ? err.response?.data?.error : "Operation failed",
+      );
+    }
+  };
+
+  const handleUpdateCategory = async (evt: SubmitEvent<HTMLFormElement>) => {
+    evt.preventDefault();
+    setError("");
+    if (categoryFields.name.trim() === "") {
+      setError("Invalid parameters");
+      return;
+    }
+    console.log(categoryFields);
+    try {
+      await categoryApi.update(selectedCategoryId, categoryFields);
+      showSuccess("Category updated successfully !!!");
+      setSelectedCategoryId(0);
+      await fetchCategories();
+      setIsOpen(false);
+    } catch (err) {
+      setError(
+        isAxiosError(err) ? err.response?.data?.error : "Operation failed",
+      );
+    }
+  };
+
+  const handleDeactivateCategory = async (id: number) => {
+    try {
+      await categoryApi.deactivate(id);
+      showSuccess("Category deactivated successfully !!!");
+      await fetchCategories();
+    } catch (err) {
+      setError(
+        isAxiosError(err) ? err.response?.data?.error : "Operation failed",
+      );
+    }
+  };
+
+  const handleActivateCategory = async (id: number) => {
+    try {
+      await categoryApi.activate(id);
+      showSuccess("Category activated successfully !!!");
+      await fetchCategories();
     } catch (err) {
       setError(
         isAxiosError(err) ? err.response?.data?.error : "Operation failed",
@@ -183,9 +230,14 @@ export default function Products() {
                 >
                   <option>Select a category</option>
                   {categories.length > 0 &&
-                    categories.map((category) => (
-                      <option key={category.id}>{category.name}</option>
-                    ))}
+                    categories
+                      .filter(
+                        (category) =>
+                          category.status.toLocaleLowerCase() === "active",
+                      )
+                      .map((category) => (
+                        <option key={category.id}>{category.name}</option>
+                      ))}
                 </select>
               </div>
               <div>
@@ -245,7 +297,9 @@ export default function Products() {
         {/* Add Category form */}
         {isOpen && activeTab === "categories" && (
           <form
-            onSubmit={handleSubmitCategory}
+            onSubmit={
+              selectedCategoryId ? handleUpdateCategory : handleCreateCategory
+            }
             className="mb-4 rounded-2xl border border-lightest-teal-blue bg-white p-4 sm:p-5"
           >
             {error && (
@@ -285,7 +339,7 @@ export default function Products() {
                text-white hover:bg-teal-900 focus:outline-none focus:ring-2 focus:ring-teal-700 focus:ring-offset-2"
             >
               <Check size={16} />
-              Save category
+              {selectedCategoryId ? "Update Category" : "Save category"}
             </Button>
           </form>
         )}
@@ -363,19 +417,40 @@ export default function Products() {
                         <td className="px-3 font-medium">{category.name}</td>
                         <td className="px-3">
                           <span
-                            className="inline-flex rounded-full border border-lighter-teal-blue bg-lighter-teal-blue
-                        px-2.5 py-1 text-xs font-medium leading-none text-emerald-700"
+                            className={clsx(
+                              "inline-flex rounded-full border px-2.5 py-1 text-xs font-medium leading-none capitalize",
+                              category.status.toLocaleLowerCase() === "active"
+                                ? "text-teal-blue bg-lighter-teal-blue border-lighter-teal-blue"
+                                : "text-slate-700 bg-slate-200 border-slate-200",
+                            )}
                           >
-                            Active
+                            {category.status}
                           </span>
                         </td>
                         <td className="px-3">
-                          <button
-                            className="whitespace-nowrap rounded-lg border border-lighter-teal-blue px-3 py-2 font-medium text-slate-900 
-                        transition hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-teal-blue"
-                          >
-                            Deactivate
-                          </button>
+                          {category.status.toLocaleLowerCase() === "active" ? (
+                            <button
+                              className="whitespace-nowrap rounded-lg border border-lighter-teal-blue px-3 py-2 
+                              font-medium text-slate-900 transition hover:bg-slate-50 focus:outline-none focus:ring-2
+                              focus:ring-teal-blue"
+                              onClick={() =>
+                                handleDeactivateCategory(category.id)
+                              }
+                            >
+                              Deactivate
+                            </button>
+                          ) : (
+                            <button
+                              className="whitespace-nowrap rounded-lg border border-lighter-teal-blue px-3 py-2
+                              font-medium text-slate-900 transition hover:bg-slate-50 focus:outline-none focus:ring-2
+                              focus:ring-teal-blue"
+                              onClick={() =>
+                                handleActivateCategory(category.id)
+                              }
+                            >
+                              Activate
+                            </button>
+                          )}
                         </td>
                         <td className="px-3 text-center">
                           <DropdownMenu>
@@ -388,7 +463,15 @@ export default function Products() {
                             />
                             <DropdownMenuContent>
                               <DropdownMenuGroup>
-                                <DropdownMenuItem>Edit</DropdownMenuItem>
+                                <DropdownMenuItem
+                                  onClick={() => {
+                                    setSelectedCategoryId(category.id);
+                                    updateCategoryFields("name", category.name);
+                                    setIsOpen(true);
+                                  }}
+                                >
+                                  Edit
+                                </DropdownMenuItem>
                               </DropdownMenuGroup>
                             </DropdownMenuContent>
                           </DropdownMenu>
