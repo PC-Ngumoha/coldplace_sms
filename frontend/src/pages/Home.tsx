@@ -48,7 +48,7 @@ const navigation = [
     label: "Products",
     to: "/products",
     icon: Package,
-    permission: "users:profile",
+    permission: "products:list",
   },
   {
     label: "Received",

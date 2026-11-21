@@ -60,7 +60,14 @@ export default function App() {
         <Route element={<ProtectedRoute />}>
           <Route element={<Home />}>
             <Route path="/" element={<Dashboard />} />
-            <Route path="/products" element={<Products />} />
+            <Route
+              path="/products"
+              element={
+                <RequirePermission permission="products:list">
+                  <Products />
+                </RequirePermission>
+              }
+            />
             <Route path="/received" element={<Received />} />
             <Route path="/transfers" element={<Transfers />} />
             <Route path="/sales" element={<Sales />} />
