@@ -36,3 +36,12 @@ export const CATEGORY_PATHS = {
   activate: (id: number) => `/api/categories/${id}/activate`,
   deactivate: (id: number) => `/api/categories/${id}/deactivate`,
 };
+
+export const PRODUCT_PATHS = {
+  list: () => "/api/products",
+  retrieve: (id: number) => `/api/products/${id}`,
+  create: () => "/api/products",
+  activate: (id: number) => `/api/products/${id}/activate`,
+  deactivate: (id: number) => `/api/products/${id}/deactivate`,
+  update: (id: number) => `/api/products/${id}`,
+};

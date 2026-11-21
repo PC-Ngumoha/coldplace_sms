@@ -73,6 +73,36 @@ export interface ModifyCategory {
   name: string;
 }
 
+export interface ProductUnit {
+  unit_id: number;
+  code: string;
+  name: string;
+  kg_per_unit: string;
+}
+
+export interface Product {
+  id: number;
+  sku: string;
+  name: string;
+  category_id: number | null;
+  category_name: string | null;
+  description: string | null;
+  min_stock_kg: string;
+  status: "active" | "inactive";
+  units: ProductUnit[];
+}
+
+export interface CreateProduct {
+  sku: string;
+  name: string;
+  category_id: number | null;
+  description?: string;
+  min_stock_kg?: string;
+  kg_per_carton?: string;
+}
+
+export type UpdateProduct = Omit<CreateProduct, "sku">;
+
 export interface ProcessResponse {
   error?: string;
   message?: string;

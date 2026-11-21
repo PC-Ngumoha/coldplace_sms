@@ -48,14 +48,14 @@ class Users
         $body = $req->getParsedBody() ?? [];
         
         try {
-            $rows = $this->service->create(Actor::fromRequest($req), $body);
+            $id = $this->service->create(Actor::fromRequest($req), $body);
         } catch (AppException $err) {
             return $this->json(['error' => $err->getMessage()], $err->getStatus());
         }
 
         return $this->json([
             'message' => 'Record created',
-            'row_count' => $rows,
+            'last_insert_id' => $id,
         ], 201);
     }
 

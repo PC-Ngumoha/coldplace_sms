@@ -130,6 +130,37 @@ return function (SlimApp $app, JwtAuthMiddleware $jwtAuth, CsrfGuardMiddleware $
             ->add(new RequirePermission(Permissions::CATEGORIES_EDIT))
             ->add(new MustChangePassword);
 
+
+        // ------ PRODUCTS ------
+        $group
+            ->get('/products', App\Controllers\Products::class . ':list')
+            ->add(new RequirePermission(Permissions::PRODUCTS_LIST));
+
+        $group
+            ->get('/products/{id:[0-9]+}', App\Controllers\Products::class . ':retrieve')
+            ->add(new RequirePermission(Permissions::PRODUCTS_RETRIEVE))
+            ->add(new MustChangePassword);
+
+        $group
+            ->post('/products', App\Controllers\Products::class . ':create')
+            ->add(new RequirePermission(Permissions::PRODUCTS_CREATE))
+            ->add(new MustChangePassword);
+
+        $group
+            ->post('/products/{id:[0-9]+}/deactivate', App\Controllers\Products::class . ':deactivate')
+            ->add(new RequirePermission(Permissions::PRODUCTS_DEACTIVATE))
+            ->add(new MustChangePassword);
+
+        $group
+            ->post('/products/{id:[0-9]+}/activate', App\Controllers\Products::class . ':activate')
+            ->add(new RequirePermission(Permissions::PRODUCTS_ACTIVATE))
+            ->add(new MustChangePassword);
+
+        $group
+            ->patch('/products/{id:[0-9]+}', App\Controllers\Products::class . ':update')
+            ->add(new RequirePermission(Permissions::PRODUCTS_EDIT))
+            ->add(new MustChangePassword);
+
     })->add($jwtAuth);
 
     // ---- AUTHENTICATION ROUTES ----

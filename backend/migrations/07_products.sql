@@ -7,6 +7,7 @@ CREATE TABLE IF NOT EXISTS products (
     name                    VARCHAR(200) NOT NULL,
     category_id             INT UNSIGNED NULL,
     description             VARCHAR(1000) NULL,
+    min_stock_kg            DECIMAL(12,3) NOT NULL,
     status                  ENUM('active', 'inactive') NOT NULL DEFAULT 'active',
     created_by              INT UNSIGNED NOT NULL,
     created_at              TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
