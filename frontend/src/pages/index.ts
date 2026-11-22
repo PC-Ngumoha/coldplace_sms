@@ -14,6 +14,7 @@ import NotFound from "./routes/NotFound";
 import Home from "./Home";
 import ManageUsers from "./segments/ManageUsers";
 import ManageLocations from "./segments/ManageLocations";
+import ManageSuppliers from "./segments/ManageSuppliers";
 import AdminChangePassword from "./segments/AdminChangePassword";
 import UserChangePassword from "./segments/UserChangePassword";
 import Suppliers from "./segments/Suppliers";
@@ -37,6 +38,7 @@ export {
   NotFound,
   ManageUsers,
   ManageLocations,
+  ManageSuppliers,
   AdminChangePassword,
   UserChangePassword,
   Suppliers,

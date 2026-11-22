@@ -61,6 +61,24 @@ export interface ModifyLocation {
   address: string | null;
 }
 
+export interface Supplier {
+  id: number;
+  name: string;
+  contact: string | null;
+  notes: string | null;
+  outlet_allowed: boolean;
+  status: "active" | "inactive";
+  created_by: number;
+  created_at: number;
+}
+
+export interface ModifySupplier {
+  name: string;
+  contact: string | null;
+  notes: string | null;
+  outlet_allowed: boolean;
+}
+
 export interface Category {
   id: number;
   name: string;

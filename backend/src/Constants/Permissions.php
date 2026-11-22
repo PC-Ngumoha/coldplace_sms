@@ -48,6 +48,7 @@ class Permissions
     public const PRODUCTS_DEACTIVATE = 'products:deactivate';
 
     // Suppliers
+    public const SUPPLIERS_VIEW = 'suppliers:view';
     public const SUPPLIERS_LIST = 'suppliers:list';
     public const SUPPLIERS_RETRIEVE = 'suppliers:retrieve';
     public const SUPPLIERS_CREATE = 'suppliers:create';
@@ -93,6 +94,9 @@ class Permissions
         self::RECEIPTS_LIST,
 
         self::INVENTORY_VIEW,
+
+        self::SUPPLIERS_VIEW,
+        self::SUPPLIERS_LIST,
 
         self::ADJUSTMENTS_LIST,
     ];
@@ -204,6 +208,7 @@ class Permissions
         self::PRODUCTS_ACTIVATE,
         self::PRODUCTS_DEACTIVATE,
 
+        self::SUPPLIERS_VIEW,
         self::SUPPLIERS_LIST,
         self::SUPPLIERS_RETRIEVE,
         self::SUPPLIERS_CREATE,

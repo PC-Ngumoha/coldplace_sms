@@ -97,7 +97,7 @@ const navigation = [
     label: "Suppliers",
     to: "/suppliers",
     icon: Package,
-    permission: "users:profile",
+    permission: "suppliers:view",
   },
   {
     label: "Customers",
@@ -231,14 +231,19 @@ export default function Home() {
 
       <div className="flex min-w-0 flex-1 flex-col">
         {/* Navbar */}
-        <header className="flex h-18 shrink-0 items-center justify-end border-b border-[#d7dbe1] bg-[#f8f9fa] px-5">
-          <nav className="w-full flex justify-between md:justify-end">
-            <button className="md:hidden" onClick={openSidebar}>
-              <Sidebar />
+        <header className="flex min-h-18 shrink-0 items-center justify-end border-b border-[#d7dbe1] bg-[#f8f9fa] px-3 py-2 sm:px-5">
+          <nav className="flex w-full min-w-0 items-center justify-between md:justify-end">
+            <button
+              type="button"
+              aria-label="Open navigation menu"
+              className="shrink-0 rounded-md p-2 hover:bg-slate-100 md:hidden"
+              onClick={openSidebar}
+            >
+              <Sidebar className="size-5" />
             </button>
-            <div className="flex items-center gap-3">
+            <div className="flex min-w-0 items-center gap-2 sm:gap-3">
               <div
-                className="inline-flex items-center gap-2 rounded-md border border-slate-300 bg-white px-3 py-2 
+                className="inline-flex shrink-0 items-center gap-2 rounded-md border border-slate-300 bg-white px-2 py-2 sm:px-3 
                 text-sm font-medium text-slate-700 shadow-sm"
               >
                 <div
@@ -247,7 +252,9 @@ export default function Home() {
                 >
                   <UserRound className="size-3.5" />
                 </div>
-                {ROLES[userRole].display}
+                <span className="hidden sm:inline">
+                  {ROLES[userRole].display}
+                </span>
               </div>
 
               <DropdownMenu>
@@ -255,33 +262,35 @@ export default function Home() {
                   render={
                     <button
                       type="button"
-                      className="inline-flex items-center gap-2 rounded-md border border-slate-300 bg-white px-3 py-2
-                      text-sm font-medium text-slate-700 shadow-sm transition-colors hover:bg-slate-50"
+                      className="inline-flex max-w-[40vw] items-center gap-1.5 rounded-md border border-slate-300 bg-white px-2 py-2
+                      text-sm font-medium text-slate-700 shadow-sm transition-colors hover:bg-slate-50 sm:max-w-56 sm:gap-2 sm:px-3"
                     >
-                      {currentUser?.name ?? "User"}
-                      <ChevronDown className="size-4 text-slate-500" />
+                      <span className="truncate">
+                        {currentUser?.name ?? "User"}
+                      </span>
+                      <ChevronDown className="size-4 shrink-0 text-slate-500" />
                     </button>
                   }
                 />
-                <DropdownMenuContent className="w-75">
+                <DropdownMenuContent className="w-[min(18.75rem,calc(100vw-1.5rem))]">
                   <DropdownMenuGroup>
                     <DropdownMenuLabel>User Information</DropdownMenuLabel>
-                    <div className="mx-2 text-xs leading-4 flex flex-col justify-center">
-                      <p className="flex items-center gap-2  my-2">
+                    <div className="mx-2 flex flex-col justify-center text-xs leading-4">
+                      <p className="my-2 flex flex-wrap items-center gap-2">
                         Full Name:{" "}
                         <span className="tracking-wider font-semibold">
                           {currentUser?.name ?? "Random User"}
                         </span>
                       </p>
 
-                      <p className="flex items-center gap-2 text-xs leading-4 my-2">
+                      <p className="my-2 flex flex-wrap items-center gap-2 text-xs leading-4">
                         Email:{" "}
-                        <span className="tracking-wider">
+                        <span className="break-all tracking-wider">
                           {currentUser?.email ?? "user@coldplace.com"}
                         </span>
                       </p>
 
-                      <p className="flex items-center gap-2 text-xs leading-4 my-2">
+                      <p className="my-2 flex flex-wrap items-center gap-2 text-xs leading-4">
                         Role:{" "}
                         <span
                           className={`tracking-wider bg-lighter-teal-blue p-1 rounded-2xl ${ROLES[userRole].color}`}

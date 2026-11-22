@@ -18,6 +18,7 @@ import {
   Settings,
   ManageUsers,
   ManageLocations,
+  ManageSuppliers,
   AdminChangePassword,
   UserChangePassword,
   Suppliers,
@@ -91,7 +92,14 @@ export default function App() {
               }
             />
             <Route path="/adjustments" element={<Adjustments />} />
-            <Route path="/suppliers" element={<Suppliers />} />
+            <Route
+              path="/suppliers"
+              element={
+                <RequirePermission permission="suppliers:view">
+                  <Suppliers />
+                </RequirePermission>
+              }
+            />
             <Route path="/customers" element={<Customers />} />
             <Route path="/me" element={<UserProfile />} />
           </Route>
@@ -115,6 +123,8 @@ export default function App() {
           />
           <Route path="/add/locations" element={<ManageLocations />} />
           <Route path="/edit/locations/:id" element={<ManageLocations />} />
+          <Route path="/add/suppliers" element={<ManageSuppliers />} />
+          <Route path="/edit/suppliers/:id" element={<ManageSuppliers />} />
         </Routes>
       )}
     </>

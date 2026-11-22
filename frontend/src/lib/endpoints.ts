@@ -45,3 +45,12 @@ export const PRODUCT_PATHS = {
   deactivate: (id: number) => `/api/products/${id}/deactivate`,
   update: (id: number) => `/api/products/${id}`,
 };
+
+export const SUPPLIER_PATHS = {
+  list: () => "/api/suppliers",
+  retrieve: (id: number) => `/api/suppliers/${id}`,
+  create: () => "/api/suppliers",
+  activate: (id: number) => `/api/suppliers/${id}/activate`,
+  deactivate: (id: number) => `/api/suppliers/${id}/deactivate`,
+  update: (id: number) => `/api/suppliers/${id}`,
+};
