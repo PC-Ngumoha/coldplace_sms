@@ -28,7 +28,7 @@ class UserRepository
             $data['location_id']
         ]);
 
-        return $this->conn->lastInsertId();
+        return (int) $this->conn->lastInsertId();
     }
 
     public function showAllUsers(): array {

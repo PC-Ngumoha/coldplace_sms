@@ -47,7 +47,7 @@ class CategoryRepository
             $data['created_by']
         ]);
 
-        return $this->conn->lastInsertId();
+        return (int) $this->conn->lastInsertId();
     }
 
     public function updateCategory(int $id, array $data): int

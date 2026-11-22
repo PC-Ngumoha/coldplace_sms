@@ -54,7 +54,7 @@ final class AuditAction
     public const SUPPLIER_DEACTIVATED = 'supplier.deactivated';
     
     // Receipts (Receiving)
-    public const RECEIPT_RECORDED = 'receipt.recorded';
+    public const RECEIPT_CREATED = 'receipt.created';
 
     // Stock adjustments
     public const ADJUSTMENT_CREATED = 'adjustment.created';

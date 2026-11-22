@@ -59,7 +59,7 @@ class LocationRepository
             $data['address']
         ]);
 
-        return $this->conn->lastInsertId();
+        return (int) $this->conn->lastInsertId();
     }
 
     public function updateLocation(int $locationId, array $data): int

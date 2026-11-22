@@ -49,6 +49,7 @@ class Permissions
 
     // Suppliers
     public const SUPPLIERS_LIST = 'suppliers:list';
+    public const SUPPLIERS_RETRIEVE = 'suppliers:retrieve';
     public const SUPPLIERS_CREATE = 'suppliers:create';
     public const SUPPLIERS_EDIT = 'suppliers:edit';
     public const SUPPLIERS_ACTIVATE = 'suppliers:activate';
@@ -115,7 +116,6 @@ class Permissions
         self::INVENTORY_VIEW,
 
         self::SUPPLIERS_LIST,
-        self::SUPPLIERS_CREATE,
 
         self::ADJUSTMENTS_LIST,
         self::ADJUSTMENTS_CREATE,
@@ -140,7 +140,6 @@ class Permissions
         self::INVENTORY_VIEW,
 
         self::SUPPLIERS_LIST,
-        self::SUPPLIERS_CREATE,
 
         self::ADJUSTMENTS_LIST,
         self::ADJUSTMENTS_CREATE,
@@ -206,6 +205,7 @@ class Permissions
         self::PRODUCTS_DEACTIVATE,
 
         self::SUPPLIERS_LIST,
+        self::SUPPLIERS_RETRIEVE,
         self::SUPPLIERS_CREATE,
         self::SUPPLIERS_EDIT,
         self::SUPPLIERS_ACTIVATE,

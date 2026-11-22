@@ -161,6 +161,36 @@ return function (SlimApp $app, JwtAuthMiddleware $jwtAuth, CsrfGuardMiddleware $
             ->add(new RequirePermission(Permissions::PRODUCTS_EDIT))
             ->add(new MustChangePassword);
 
+        // ------ SUPPLIERS ------
+        $group
+            ->get('/suppliers', App\Controllers\Suppliers::class . ':list')
+            ->add(new RequirePermission(Permissions::SUPPLIERS_LIST));
+
+        $group
+            ->get('/suppliers/{id:[0-9]+}', App\Controllers\Suppliers::class . ':retrieve')
+            ->add(new RequirePermission(Permissions::SUPPLIERS_RETRIEVE))
+            ->add(new MustChangePassword);
+
+        $group
+            ->post('/suppliers', App\Controllers\Suppliers::class . ':create')
+            ->add(new RequirePermission(Permissions::SUPPLIERS_CREATE))
+            ->add(new MustChangePassword);
+
+        $group
+            ->post('/suppliers/{id:[0-9]+}/deactivate', App\Controllers\Suppliers::class . ':deactivate')
+            ->add(new RequirePermission(Permissions::SUPPLIERS_DEACTIVATE))
+            ->add(new MustChangePassword);
+
+        $group
+            ->post('/suppliers/{id:[0-9]+}/activate', App\Controllers\Suppliers::class . ':activate')
+            ->add(new RequirePermission(Permissions::SUPPLIERS_ACTIVATE))
+            ->add(new MustChangePassword);
+
+        $group
+            ->patch('/suppliers/{id:[0-9]+}', App\Controllers\Suppliers::class . ':update')
+            ->add(new RequirePermission(Permissions::SUPPLIERS_EDIT))
+            ->add(new MustChangePassword);
+
     })->add($jwtAuth);
 
     // ---- AUTHENTICATION ROUTES ----
