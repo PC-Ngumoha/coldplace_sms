@@ -4,6 +4,7 @@ import Sales from "./segments/Sales";
 import Transfers from "./segments/Transfers";
 import Products from "./segments/Products";
 import Received from "./segments/Received";
+import ReceivedLinesDetails from "./segments/ReceivedLinesDetails";
 import Reports from "./segments/Reports";
 import Damages from "./segments/Damages";
 import Settings from "./segments/Settings";
@@ -29,6 +30,7 @@ export {
   Transfers,
   Products,
   Received,
+  ReceivedLinesDetails,
   Reports,
   Damages,
   Settings,

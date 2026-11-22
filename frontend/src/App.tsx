@@ -10,6 +10,7 @@ import {
   NotFound,
   Products,
   Received,
+  ReceivedLinesDetails,
   Transfers,
   Sales,
   Damages,
@@ -125,6 +126,7 @@ export default function App() {
           <Route path="/edit/locations/:id" element={<ManageLocations />} />
           <Route path="/add/suppliers" element={<ManageSuppliers />} />
           <Route path="/edit/suppliers/:id" element={<ManageSuppliers />} />
+          <Route path="/received/details" element={<ReceivedLinesDetails />} />
         </Routes>
       )}
     </>
