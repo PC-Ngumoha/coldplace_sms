@@ -179,14 +179,14 @@ class SupplierService
      * Confirms a supplier may be used for a receipt at this kind of location.
      * Outlets may only use suppliers flagged outlet_allowed.
      */
-    public function assertUsableAt(int $supplierId, string $locationType): array
+    public function assertUsableAt(int $supplierId, array $location): array
     {
         $supplier = $this->repo->retrieve($supplierId);
 
         if (!$supplier || $supplier['status'] !== Supplier::ACTIVE) {
             throw new AppException('Supplier does not exist or is inactive', 400);
         }
-        if ($locationType === 'outlet' && !(bool) $supplier['outlet_allowed']) {
+        if (!$location['is_central'] && !(bool) $supplier['outlet_allowed']) {
             throw new AppException('This supplier is not available for outlets', 403);
         }
 

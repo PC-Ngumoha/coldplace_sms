@@ -191,6 +191,22 @@ return function (SlimApp $app, JwtAuthMiddleware $jwtAuth, CsrfGuardMiddleware $
             ->add(new RequirePermission(Permissions::SUPPLIERS_EDIT))
             ->add(new MustChangePassword);
 
+
+        // ------ RECEIPTS (RECEIVING) ------
+        $group
+            ->get('/received', App\Controllers\Receipts::class . ':list')
+            ->add(new RequirePermission(Permissions::RECEIPTS_LIST));
+
+        $group
+            ->get('/received/{id:[0-9]+}', App\Controllers\Receipts::class . ':retrieve')
+            ->add(new RequirePermission(Permissions::RECEIPTS_RETRIEVE))
+            ->add(new MustChangePassword);
+
+        $group
+            ->post('/received', App\Controllers\Receipts::class . ':create')
+            ->add(new RequirePermission(Permissions::RECEIPTS_CREATE))
+            ->add(new MustChangePassword);
+
     })->add($jwtAuth);
 
     // ---- AUTHENTICATION ROUTES ----

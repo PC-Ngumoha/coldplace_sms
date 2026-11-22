@@ -108,6 +108,7 @@ export interface ProcessResponse {
   message?: string;
   row_count?: number;
   last_insert_id?: number;
+  reference?: string;
 }
 
 export interface Log {
