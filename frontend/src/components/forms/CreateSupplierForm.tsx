@@ -26,7 +26,7 @@ export default function CreateSupplierForm({
     console.log(field);
     try {
       await supplierApi.create(field);
-      showSuccess("Location created successfully");
+      showSuccess("Supplier created successfully");
       onClose();
     } catch (err) {
       setError(

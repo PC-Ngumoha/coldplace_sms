@@ -129,6 +129,58 @@ export interface CreateProduct {
 
 export type UpdateProduct = Omit<CreateProduct, "sku">;
 
+export interface Received {
+  id: number;
+  reference: string;
+  supplier_id: number;
+  supplier_name: string;
+  location_id: number;
+  location_name: string;
+  receipt_date: string;
+  delivery_ref: string | null;
+  notes: string | null;
+  created_by_name: string;
+  created_at: number;
+  total_value: string;
+}
+
+export interface ReceivedLine {
+  id: number;
+  product_id: number;
+  sku: string;
+  product_name: string;
+  unit_id: number;
+  unit_code: string;
+  delivered_qty: string;
+  damaged_qty: string;
+  accepted_kg: string;
+  damaged_kg: string;
+  damage_reason: string | null;
+  unit_cost: string;
+  line_value: string;
+}
+
+export type ReceivedDetails = Received & {
+  lines: ReceivedLine[];
+};
+
+export interface CreateReceived {
+  supplier_id: number;
+  location_id: number;
+  delivery_ref?: string;
+  notes?: string;
+  lines: CreateReceivedLines[];
+}
+
+export interface CreateReceivedLines {
+  product_id: number;
+  unit_id: number;
+  delivered_qty: string;
+  damaged_qty?: string | null;
+  damage_reason?: string | null;
+  unit_cost: string;
+}
+
 export interface ProcessResponse {
   error?: string;
   message?: string;

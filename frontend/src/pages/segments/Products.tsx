@@ -7,6 +7,7 @@ import {
   DropdownMenuItem,
 } from "@/components/ui/dropdown-menu";
 import { Can } from "@/components/permissions";
+import Loading from "@/components/Loading";
 import type { Category, Product, CreateProduct } from "@/types";
 import { categoryApi } from "@/services/Categoryapi";
 import { productsApi } from "@/services/Productsapi";
@@ -35,6 +36,7 @@ export default function Products() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [categoryFields, setCategoryFields] = useState(initialCategoryFields);
   const [selectedCategoryId, setSelectedCategoryId] = useState<number>(0);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
   const toggleFormVisibility = () => setIsOpen((visible) => !visible);
@@ -213,10 +215,18 @@ export default function Products() {
 
   useEffect(() => {
     async function fetchData() {
+      setError("");
+      setLoading(true);
       try {
         await Promise.all([fetchCategories(), fetchProducts()]);
-      } catch {
-        setError("Oops! Unable to fetch data");
+      } catch (err) {
+        setError(
+          isAxiosError(err)
+            ? err.response?.data.error
+            : "Operation failed. Please try again later.",
+        );
+      } finally {
+        setLoading(false);
       }
     }
 
@@ -522,289 +532,293 @@ export default function Products() {
           </button>
         </div>
 
-        <section
-          aria-label={
-            activeTab === "products" ? "Product list" : "Category list"
-          }
-          className="overflow-x-auto rounded-2xl border border-lightest-teal-blue bg-white"
-        >
-          {activeTab === "categories" ? (
-            <div className="p-5 overflow-x-auto">
-              <table className="w-full min-w-[680px] border-collapse text-sm table-fixed">
-                <thead>
-                  <tr
-                    className="h-10 border-b border-lightest-teal-blue text-left
-                    font-medium uppercase tracking-wide text-slate-500 text-[10px] lg:text-[13px]"
-                  >
-                    <th className="px-3">Name</th>
-                    <th className="px-3">Status</th>
-                    <Can permission="categories:deactivate">
-                      <th className="px-3" aria-label="Actions" colSpan={2} />
-                    </Can>
-                  </tr>
-                </thead>
-                <tbody>
-                  {categories.length === 0 ? (
-                    <tr>
-                      <td colSpan={3} className="px-3 py-10 text-center">
-                        <p className="font-medium text-slate-900">
-                          No categories yet
-                        </p>
-                        <p className="mt-1 text-sm text-slate-500">
-                          Add a category using the button above.
-                        </p>
-                      </td>
-                    </tr>
-                  ) : (
-                    categories.map((category) => (
-                      <tr
-                        key={category.id}
-                        className="h-14 border-b border-lightest-teal-blue last:border-b-0 text-[10px] lg:text-[13px]"
-                      >
-                        <td className="px-3 font-medium">{category.name}</td>
-                        <td className="px-3">
-                          <span
-                            className={clsx(
-                              "inline-flex rounded-full border px-2.5 py-1 text-xs font-medium leading-none capitalize",
-                              category.status.toLocaleLowerCase() === "active"
-                                ? "text-teal-blue bg-lighter-teal-blue border-lighter-teal-blue"
-                                : "text-slate-700 bg-slate-200 border-slate-200",
-                            )}
-                          >
-                            {category.status}
-                          </span>
-                        </td>
-                        <Can permission="categories:deactivate">
-                          <td className="px-3">
-                            {category.status.toLocaleLowerCase() ===
-                            "active" ? (
-                              <button
-                                className="whitespace-nowrap rounded-lg border border-lighter-teal-blue px-3 py-2 
-                              font-medium text-slate-900 transition hover:bg-slate-50 focus:outline-none focus:ring-2
-                              focus:ring-teal-blue"
-                                onClick={() =>
-                                  handleDeactivateCategory(category.id)
-                                }
-                              >
-                                Deactivate
-                              </button>
-                            ) : (
-                              <button
-                                className="whitespace-nowrap rounded-lg border border-lighter-teal-blue px-3 py-2
-                              font-medium text-slate-900 transition hover:bg-slate-50 focus:outline-none focus:ring-2
-                              focus:ring-teal-blue"
-                                onClick={() =>
-                                  handleActivateCategory(category.id)
-                                }
-                              >
-                                Activate
-                              </button>
-                            )}
-                          </td>
-                        </Can>
-                        <Can permission="categories:edit">
-                          <td className="px-3 text-center">
-                            <DropdownMenu>
-                              <DropdownMenuTrigger
-                                render={
-                                  <button className="rounded p-1 text-slate-600 hover:bg-slate-100">
-                                    <EllipsisVertical size={16} />
-                                  </button>
-                                }
-                              />
-                              <DropdownMenuContent>
-                                <DropdownMenuGroup>
-                                  <DropdownMenuItem
-                                    onClick={() => {
-                                      setSelectedCategoryId(category.id);
-                                      updateCategoryFields(
-                                        "name",
-                                        category.name,
-                                      );
-                                      setIsOpen(true);
-                                    }}
-                                  >
-                                    Edit
-                                  </DropdownMenuItem>
-                                </DropdownMenuGroup>
-                              </DropdownMenuContent>
-                            </DropdownMenu>
-                          </td>
-                        </Can>
-                      </tr>
-                    ))
-                  )}
-                </tbody>
-              </table>
-            </div>
-          ) : (
-            <>
-              <div className="overflow-x-auto lg:block p-5">
-                <table className="w-full min-w-[900px] table-fixed border-collapse text-sm lg:min-w-[1200px]">
+        {loading ? (
+          <Loading />
+        ) : (
+          <section
+            aria-label={
+              activeTab === "products" ? "Product list" : "Category list"
+            }
+            className="overflow-x-auto rounded-2xl border border-lightest-teal-blue bg-white"
+          >
+            {activeTab === "categories" ? (
+              <div className="p-5 overflow-x-auto">
+                <table className="w-full min-w-[680px] border-collapse text-sm table-fixed">
                   <thead>
                     <tr
-                      className="h-10 border-b border-lightest-teal-blue text-left text-[10px] lg:text-[13px] font-medium uppercase 
-                tracking-wide text-slate-500"
+                      className="h-10 border-b border-lightest-teal-blue text-left
+                    font-medium uppercase tracking-wide text-slate-500 text-[10px] lg:text-[13px]"
                     >
-                      <th className="px-2 lg:px-3">Code</th>
-                      <th className="px-2 lg:px-3">Name</th>
-                      <th className="px-2 lg:px-3">Description</th>
-                      <th className="px-2 lg:px-3">Category</th>
-                      <th className="px-2 text-right lg:px-3">Carton = kg</th>
-                      <th className="px-2 text-right lg:px-3">Min stock</th>
-                      <th className="px-2 lg:px-3">Status</th>
-                      <Can permission="product:deactivate">
-                        <th
-                          className="px-2 lg:px-3"
-                          aria-label="Actions"
-                          colSpan={2}
-                        />
+                      <th className="px-3">Name</th>
+                      <th className="px-3">Status</th>
+                      <Can permission="categories:deactivate">
+                        <th className="px-3" aria-label="Actions" colSpan={2} />
                       </Can>
                     </tr>
                   </thead>
                   <tbody>
-                    {products.length === 0 ? (
+                    {categories.length === 0 ? (
                       <tr>
-                        <td colSpan={9} className="px-3 py-10 text-center">
+                        <td colSpan={3} className="px-3 py-10 text-center">
                           <p className="font-medium text-slate-900">
-                            No products yet
+                            No categories yet
                           </p>
                           <p className="mt-1 text-sm text-slate-500">
-                            Add a product using the button above.
+                            Add a category using the button above.
                           </p>
                         </td>
                       </tr>
                     ) : (
-                      products.map((product) => {
-                        const carton = product.units.find(
-                          (unit) => unit.code === "carton",
-                        );
-                        const kgPerCarton = carton ? carton.kg_per_unit : "";
-
-                        return (
-                          <tr
-                            key={product.id}
-                            className="h-14 border-b border-lightest-teal-blue last:border-b-0 text-[10px] lg:text-[13px]"
-                          >
-                            <td className="px-2 font-mono lg:px-3">
-                              {product.sku}
-                            </td>
-                            <td className="px-2 font-medium lg:px-3">
-                              {product.name}
-                            </td>
-                            <td className="px-2 lg:px-3 text-wrap">
-                              {product.description || "—--------"}
-                            </td>
-                            <td className="px-2 lg:px-3">
-                              {product?.category_name ?? "Uncategorized"}
-                            </td>
-                            <td className="px-2 text-right tabular-nums lg:px-3">
-                              {kgPerCarton}
-                            </td>
-                            <td className="px-2 text-right tabular-nums lg:px-3">
-                              {product.min_stock_kg}
-                            </td>
-                            <td className="px-2 lg:px-3">
-                              <span
-                                className={clsx(
-                                  "inline-flex rounded-full border px-2.5 py-1 text-xs font-medium leading-none capitalize",
-                                  product.status.toLocaleLowerCase() ===
-                                    "active"
-                                    ? "text-teal-blue bg-lighter-teal-blue border-lighter-teal-blue"
-                                    : "text-slate-700 bg-slate-200 border-slate-200",
-                                )}
-                              >
-                                {product.status}
-                              </span>
-                            </td>
-                            <Can permission="products:deactivate">
-                              <td className="px-2 lg:px-3 wrap-break-word break-all">
-                                {product.status.toLocaleLowerCase() ===
-                                "active" ? (
-                                  <button
-                                    className="whitespace-nowrap rounded-lg border border-lighter-teal-blue px-3 py-2 
+                      categories.map((category) => (
+                        <tr
+                          key={category.id}
+                          className="h-14 border-b border-lightest-teal-blue last:border-b-0 text-[10px] lg:text-[13px]"
+                        >
+                          <td className="px-3 font-medium">{category.name}</td>
+                          <td className="px-3">
+                            <span
+                              className={clsx(
+                                "inline-flex rounded-full border px-2.5 py-1 text-xs font-medium leading-none capitalize",
+                                category.status.toLocaleLowerCase() === "active"
+                                  ? "text-teal-blue bg-lighter-teal-blue border-lighter-teal-blue"
+                                  : "text-slate-700 bg-slate-200 border-slate-200",
+                              )}
+                            >
+                              {category.status}
+                            </span>
+                          </td>
+                          <Can permission="categories:deactivate">
+                            <td className="px-3">
+                              {category.status.toLocaleLowerCase() ===
+                              "active" ? (
+                                <button
+                                  className="whitespace-nowrap rounded-lg border border-lighter-teal-blue px-3 py-2 
                               font-medium text-slate-900 transition hover:bg-slate-50 focus:outline-none focus:ring-2
                               focus:ring-teal-blue"
-                                    onClick={() =>
-                                      handleDeactivateProduct(product.id)
-                                    }
-                                  >
-                                    Deactivate
-                                  </button>
-                                ) : (
-                                  <button
-                                    className="whitespace-nowrap rounded-lg border border-lighter-teal-blue px-3 py-2
+                                  onClick={() =>
+                                    handleDeactivateCategory(category.id)
+                                  }
+                                >
+                                  Deactivate
+                                </button>
+                              ) : (
+                                <button
+                                  className="whitespace-nowrap rounded-lg border border-lighter-teal-blue px-3 py-2
                               font-medium text-slate-900 transition hover:bg-slate-50 focus:outline-none focus:ring-2
                               focus:ring-teal-blue"
-                                    onClick={() =>
-                                      handleActivateProduct(product.id)
-                                    }
-                                  >
-                                    Activate
-                                  </button>
-                                )}
-                              </td>
-                            </Can>
-                            <Can permission="products:edit">
-                              <td className="px-3 text-end">
-                                <DropdownMenu>
-                                  <DropdownMenuTrigger
-                                    render={
-                                      <button className="rounded p-1 text-slate-600 hover:bg-slate-100">
-                                        <EllipsisVertical size={16} />
-                                      </button>
-                                    }
-                                  />
-                                  <DropdownMenuContent>
-                                    <DropdownMenuGroup>
-                                      <DropdownMenuItem
-                                        onClick={() => {
-                                          setSelectedProductId(product.id);
-                                          updateProductFields(
-                                            "name",
-                                            product.name,
-                                          );
-                                          updateProductFields(
-                                            "sku",
-                                            product.sku,
-                                          );
-                                          updateProductFields(
-                                            "category_id",
-                                            product.category_id,
-                                          );
-                                          updateProductFields(
-                                            "description",
-                                            product.description,
-                                          );
-                                          updateProductFields(
-                                            "min_stock_kg",
-                                            product.min_stock_kg,
-                                          );
-                                          if (carton)
-                                            updateProductFields(
-                                              "kg_per_carton",
-                                              kgPerCarton,
-                                            );
-                                          setIsOpen(true);
-                                        }}
-                                      >
-                                        Edit
-                                      </DropdownMenuItem>
-                                    </DropdownMenuGroup>
-                                  </DropdownMenuContent>
-                                </DropdownMenu>
-                              </td>
-                            </Can>
-                          </tr>
-                        );
-                      })
+                                  onClick={() =>
+                                    handleActivateCategory(category.id)
+                                  }
+                                >
+                                  Activate
+                                </button>
+                              )}
+                            </td>
+                          </Can>
+                          <Can permission="categories:edit">
+                            <td className="px-3 text-center">
+                              <DropdownMenu>
+                                <DropdownMenuTrigger
+                                  render={
+                                    <button className="rounded p-1 text-slate-600 hover:bg-slate-100">
+                                      <EllipsisVertical size={16} />
+                                    </button>
+                                  }
+                                />
+                                <DropdownMenuContent>
+                                  <DropdownMenuGroup>
+                                    <DropdownMenuItem
+                                      onClick={() => {
+                                        setSelectedCategoryId(category.id);
+                                        updateCategoryFields(
+                                          "name",
+                                          category.name,
+                                        );
+                                        setIsOpen(true);
+                                      }}
+                                    >
+                                      Edit
+                                    </DropdownMenuItem>
+                                  </DropdownMenuGroup>
+                                </DropdownMenuContent>
+                              </DropdownMenu>
+                            </td>
+                          </Can>
+                        </tr>
+                      ))
                     )}
                   </tbody>
                 </table>
               </div>
-            </>
-          )}
-        </section>
+            ) : (
+              <>
+                <div className="overflow-x-auto lg:block p-5">
+                  <table className="w-full min-w-[900px] table-fixed border-collapse text-sm lg:min-w-[1200px]">
+                    <thead>
+                      <tr
+                        className="h-10 border-b border-lightest-teal-blue text-left text-[10px] lg:text-[13px] font-medium uppercase 
+                tracking-wide text-slate-500"
+                      >
+                        <th className="px-2 lg:px-3">Code</th>
+                        <th className="px-2 lg:px-3">Name</th>
+                        <th className="px-2 lg:px-3">Description</th>
+                        <th className="px-2 lg:px-3">Category</th>
+                        <th className="px-2 text-right lg:px-3">Carton = kg</th>
+                        <th className="px-2 text-right lg:px-3">Min stock</th>
+                        <th className="px-2 lg:px-3">Status</th>
+                        <Can permission="product:deactivate">
+                          <th
+                            className="px-2 lg:px-3"
+                            aria-label="Actions"
+                            colSpan={2}
+                          />
+                        </Can>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {products.length === 0 ? (
+                        <tr>
+                          <td colSpan={9} className="px-3 py-10 text-center">
+                            <p className="font-medium text-slate-900">
+                              No products yet
+                            </p>
+                            <p className="mt-1 text-sm text-slate-500">
+                              Add a product using the button above.
+                            </p>
+                          </td>
+                        </tr>
+                      ) : (
+                        products.map((product) => {
+                          const carton = product.units.find(
+                            (unit) => unit.code === "carton",
+                          );
+                          const kgPerCarton = carton ? carton.kg_per_unit : "";
+
+                          return (
+                            <tr
+                              key={product.id}
+                              className="h-14 border-b border-lightest-teal-blue last:border-b-0 text-[10px] lg:text-[13px]"
+                            >
+                              <td className="px-2 font-mono lg:px-3">
+                                {product.sku}
+                              </td>
+                              <td className="px-2 font-medium lg:px-3">
+                                {product.name}
+                              </td>
+                              <td className="px-2 lg:px-3 text-wrap">
+                                {product.description || "—--------"}
+                              </td>
+                              <td className="px-2 lg:px-3">
+                                {product?.category_name ?? "Uncategorized"}
+                              </td>
+                              <td className="px-2 text-right tabular-nums lg:px-3">
+                                {kgPerCarton}
+                              </td>
+                              <td className="px-2 text-right tabular-nums lg:px-3">
+                                {product.min_stock_kg}
+                              </td>
+                              <td className="px-2 lg:px-3">
+                                <span
+                                  className={clsx(
+                                    "inline-flex rounded-full border px-2.5 py-1 text-xs font-medium leading-none capitalize",
+                                    product.status.toLocaleLowerCase() ===
+                                      "active"
+                                      ? "text-teal-blue bg-lighter-teal-blue border-lighter-teal-blue"
+                                      : "text-slate-700 bg-slate-200 border-slate-200",
+                                  )}
+                                >
+                                  {product.status}
+                                </span>
+                              </td>
+                              <Can permission="products:deactivate">
+                                <td className="px-2 lg:px-3 wrap-break-word break-all">
+                                  {product.status.toLocaleLowerCase() ===
+                                  "active" ? (
+                                    <button
+                                      className="whitespace-nowrap rounded-lg border border-lighter-teal-blue px-3 py-2 
+                              font-medium text-slate-900 transition hover:bg-slate-50 focus:outline-none focus:ring-2
+                              focus:ring-teal-blue"
+                                      onClick={() =>
+                                        handleDeactivateProduct(product.id)
+                                      }
+                                    >
+                                      Deactivate
+                                    </button>
+                                  ) : (
+                                    <button
+                                      className="whitespace-nowrap rounded-lg border border-lighter-teal-blue px-3 py-2
+                              font-medium text-slate-900 transition hover:bg-slate-50 focus:outline-none focus:ring-2
+                              focus:ring-teal-blue"
+                                      onClick={() =>
+                                        handleActivateProduct(product.id)
+                                      }
+                                    >
+                                      Activate
+                                    </button>
+                                  )}
+                                </td>
+                              </Can>
+                              <Can permission="products:edit">
+                                <td className="px-3 text-end">
+                                  <DropdownMenu>
+                                    <DropdownMenuTrigger
+                                      render={
+                                        <button className="rounded p-1 text-slate-600 hover:bg-slate-100">
+                                          <EllipsisVertical size={16} />
+                                        </button>
+                                      }
+                                    />
+                                    <DropdownMenuContent>
+                                      <DropdownMenuGroup>
+                                        <DropdownMenuItem
+                                          onClick={() => {
+                                            setSelectedProductId(product.id);
+                                            updateProductFields(
+                                              "name",
+                                              product.name,
+                                            );
+                                            updateProductFields(
+                                              "sku",
+                                              product.sku,
+                                            );
+                                            updateProductFields(
+                                              "category_id",
+                                              product.category_id,
+                                            );
+                                            updateProductFields(
+                                              "description",
+                                              product.description,
+                                            );
+                                            updateProductFields(
+                                              "min_stock_kg",
+                                              product.min_stock_kg,
+                                            );
+                                            if (carton)
+                                              updateProductFields(
+                                                "kg_per_carton",
+                                                kgPerCarton,
+                                              );
+                                            setIsOpen(true);
+                                          }}
+                                        >
+                                          Edit
+                                        </DropdownMenuItem>
+                                      </DropdownMenuGroup>
+                                    </DropdownMenuContent>
+                                  </DropdownMenu>
+                                </td>
+                              </Can>
+                            </tr>
+                          );
+                        })
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+              </>
+            )}
+          </section>
+        )}
       </div>
     </main>
   );

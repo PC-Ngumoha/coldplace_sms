@@ -70,7 +70,14 @@ export default function App() {
                 </RequirePermission>
               }
             />
-            <Route path="/received" element={<Received />} />
+            <Route
+              path="/received"
+              element={
+                <RequirePermission permission="receipts:list">
+                  <Received />
+                </RequirePermission>
+              }
+            />
             <Route path="/transfers" element={<Transfers />} />
             <Route path="/sales" element={<Sales />} />
             <Route path="/damage" element={<Damages />} />
@@ -126,7 +133,10 @@ export default function App() {
           <Route path="/edit/locations/:id" element={<ManageLocations />} />
           <Route path="/add/suppliers" element={<ManageSuppliers />} />
           <Route path="/edit/suppliers/:id" element={<ManageSuppliers />} />
-          <Route path="/received/details" element={<ReceivedLinesDetails />} />
+          <Route
+            path="/received/details/:id"
+            element={<ReceivedLinesDetails />}
+          />
         </Routes>
       )}
     </>

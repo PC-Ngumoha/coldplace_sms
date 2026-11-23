@@ -51,10 +51,10 @@ const navigation = [
     permission: "products:list",
   },
   {
-    label: "Received",
+    label: "Receiving",
     to: "/received",
     icon: Truck,
-    permission: "users:profile",
+    permission: "receipts:list",
   },
   {
     label: "Transfers",

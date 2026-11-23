@@ -29,7 +29,7 @@ export default function EditSupplierForm({
     console.log(field);
     try {
       await supplierApi.update(supplier.id, field);
-      showSuccess("Location created successfully");
+      showSuccess("Supplier editted successfully");
       onClose();
     } catch (err) {
       setError(
