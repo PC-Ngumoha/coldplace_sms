@@ -91,6 +91,14 @@ export interface ModifyCategory {
   name: string;
 }
 
+export interface Unit {
+  id: number;
+  code: string;
+  name: string;
+  is_base: boolean | number;
+  status: "active" | "inactive";
+}
+
 export interface ProductUnit {
   unit_id: number;
   code: string;

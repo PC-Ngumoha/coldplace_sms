@@ -20,7 +20,7 @@ export default function ReceivedLinesDetails() {
         className="w-full max-w-6xl rounded-lg bg-white p-6 shadow-[0_1rem_3rem_rgba(0,0,0,0.25)]"
       >
         <div className="flex items-center justify-between">
-          <h2 id="received-details-title">Receiving Lines Details</h2>
+          <h2 id="received-details-title">Details</h2>
           <button
             type="button"
             aria-label="Close details"
@@ -33,6 +33,53 @@ export default function ReceivedLinesDetails() {
             <X size={20} />
           </button>
         </div>
+        {/* General details about the Receiving record */}
+        <section
+          aria-label="Receiving record details"
+          className="mt-5 rounded-lg border border-gray-200 bg-gray-50 p-4"
+        >
+          <dl className="grid grid-cols-1 gap-x-6 gap-y-4 text-sm sm:grid-cols-2 lg:grid-cols-4">
+            <div>
+              <dt className="text-gray-500">Reference</dt>
+              <dd className="mt-1 font-medium text-gray-900">RCV-2024-001</dd>
+            </div>
+            <div>
+              <dt className="text-gray-500">Date</dt>
+              <dd className="mt-1 font-medium text-gray-900">Jun 12, 2024</dd>
+            </div>
+            <div>
+              <dt className="text-gray-500">Supplier</dt>
+              <dd className="mt-1 font-medium text-gray-900">
+                Green Valley Produce
+              </dd>
+            </div>
+            <div>
+              <dt className="text-gray-500">Location</dt>
+              <dd className="mt-1 font-medium text-gray-900">Main Warehouse</dd>
+            </div>
+            <div>
+              <dt className="text-gray-500">Delivery ref</dt>
+              <dd className="mt-1 font-medium text-gray-900">DEL-7842</dd>
+            </div>
+            <div>
+              <dt className="text-gray-500">Received by</dt>
+              <dd className="mt-1 font-medium text-gray-900">Alex Morgan</dd>
+            </div>
+            <div>
+              <dt className="text-gray-500">Time created</dt>
+              <dd className="mt-1 font-medium text-gray-900">
+                Jun 12, 2024, 10:42 AM
+              </dd>
+            </div>
+            <div className="sm:col-span-2 lg:col-span-4">
+              <dt className="text-gray-500">Notes</dt>
+              <dd className="mt-1 font-medium text-gray-900">
+                Delivery inspected on arrival.
+              </dd>
+            </div>
+          </dl>
+        </section>
+        {/* Details about the lines in that receiving. */}
         <div className="mt-6 overflow-x-auto">
           <table className="w-full min-w-[900px] border-collapse text-left text-sm">
             <thead>

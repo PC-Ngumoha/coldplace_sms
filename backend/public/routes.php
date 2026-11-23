@@ -130,6 +130,11 @@ return function (SlimApp $app, JwtAuthMiddleware $jwtAuth, CsrfGuardMiddleware $
             ->add(new RequirePermission(Permissions::CATEGORIES_EDIT))
             ->add(new MustChangePassword);
 
+        // ------ UNITS ------
+        $group
+            ->get('/units', App\Controllers\Units::class . ':list')
+            ->add(new RequirePermission(Permissions::UNITS_LIST));
+
 
         // ------ PRODUCTS ------
         $group

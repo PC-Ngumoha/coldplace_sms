@@ -54,3 +54,13 @@ export const SUPPLIER_PATHS = {
   deactivate: (id: number) => `/api/suppliers/${id}/deactivate`,
   update: (id: number) => `/api/suppliers/${id}`,
 };
+
+export const UNIT_PATHS = {
+  list: () => "/api/units",
+};
+
+export const RECEIVING_PATHS = {
+  list: () => "/api/received",
+  retrieve: (id: number) => `/api/received/${id}`,
+  create: () => "/api/received",
+};
