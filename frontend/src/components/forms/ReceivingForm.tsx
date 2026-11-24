@@ -98,9 +98,8 @@ export default function ReceivingForm({
     try {
       const payload = { ...fields, lines };
       await receivedApi.create(payload);
-      //   console.log(payload);
-      showSuccess("Receipt recorded successfully !!!");
       reloadList(); // Refetch records from the database;
+      showSuccess("Receipt recorded successfully !!!");
       onClose();
     } catch (err) {
       setError(

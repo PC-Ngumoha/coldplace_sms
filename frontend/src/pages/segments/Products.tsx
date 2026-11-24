@@ -12,9 +12,9 @@ import type { Category, Product, CreateProduct } from "@/types";
 import { categoryApi } from "@/services/Categoryapi";
 import { productsApi } from "@/services/Productsapi";
 import { showSuccess } from "@/services/toasts";
+import { getErrorMessage } from "@/lib/utils";
 import { Check, Plus, X, EllipsisVertical } from "lucide-react";
 import { useCallback, useEffect, useState, type SubmitEvent } from "react";
-import { isAxiosError } from "axios";
 import { clsx } from "cn";
 
 export default function Products() {
@@ -70,14 +70,12 @@ export default function Products() {
     console.log(categoryFields);
     try {
       await categoryApi.create(categoryFields);
-      showSuccess("Category created successfully !!!");
-      await fetchCategories();
-      setIsOpen(false);
       clearFields();
+      setIsOpen(false);
+      await fetchCategories();
+      showSuccess("Category created successfully !!!");
     } catch (err) {
-      setError(
-        isAxiosError(err) ? err.response?.data?.error : "Operation failed",
-      );
+      setError(getErrorMessage(err));
     }
   };
 
@@ -98,14 +96,12 @@ export default function Products() {
     try {
       console.log(productFields);
       await productsApi.create(productFields);
-      showSuccess("Product created successfully !");
-      await fetchProducts();
-      setIsOpen(false);
       clearFields();
+      setIsOpen(false);
+      await fetchProducts();
+      showSuccess("Product created successfully !");
     } catch (err) {
-      setError(
-        isAxiosError(err) ? err.response?.data?.error : "Operation failed",
-      );
+      setError(getErrorMessage(err));
     }
   };
 
@@ -119,15 +115,13 @@ export default function Products() {
     console.log(categoryFields);
     try {
       await categoryApi.update(selectedCategoryId, categoryFields);
-      showSuccess("Category updated successfully !!!");
+      setIsOpen(false);
       setSelectedCategoryId(0);
       await fetchCategories();
-      setIsOpen(false);
+      showSuccess("Category updated successfully !!!");
       clearFields();
     } catch (err) {
-      setError(
-        isAxiosError(err) ? err.response?.data?.error : "Operation failed",
-      );
+      setError(getErrorMessage(err));
     }
   };
 
@@ -143,91 +137,85 @@ export default function Products() {
 
     try {
       await productsApi.update(selectedProductId, productFields);
-      showSuccess("Product updated successfully !");
-      await fetchProducts();
-      setSelectedProductId(0);
       setIsOpen(false);
+      setSelectedProductId(0);
+      await fetchProducts();
+      showSuccess("Product updated successfully !");
       clearFields();
     } catch (err) {
-      setError(
-        isAxiosError(err) ? err.response?.data?.error : "Operation failed",
-      );
+      setError(getErrorMessage(err));
     }
   };
 
   const handleDeactivateCategory = async (id: number) => {
     try {
       await categoryApi.deactivate(id);
-      showSuccess("Category deactivated successfully !!!");
       await fetchCategories();
+      showSuccess("Category deactivated successfully !!!");
     } catch (err) {
-      setError(
-        isAxiosError(err) ? err.response?.data?.error : "Operation failed",
-      );
+      setError(getErrorMessage(err));
     }
   };
 
   const handleActivateCategory = async (id: number) => {
     try {
       await categoryApi.activate(id);
-      showSuccess("Category activated successfully !!!");
       await fetchCategories();
+      showSuccess("Category activated successfully !!!");
     } catch (err) {
-      setError(
-        isAxiosError(err) ? err.response?.data?.error : "Operation failed",
-      );
+      setError(getErrorMessage(err));
     }
   };
 
   const handleDeactivateProduct = async (id: number) => {
     try {
       await productsApi.deactivate(id);
-      showSuccess("Product deactivated successfully !!!");
       await fetchProducts();
+      showSuccess("Product deactivated successfully !!!");
     } catch (err) {
-      setError(
-        isAxiosError(err) ? err.response?.data?.error : "Operation failed",
-      );
+      setError(getErrorMessage(err));
     }
   };
 
   const handleActivateProduct = async (id: number) => {
     try {
       await productsApi.activate(id);
-      showSuccess("Product activated successfully !!!");
       await fetchProducts();
+      showSuccess("Product activated successfully !!!");
     } catch (err) {
-      setError(
-        isAxiosError(err) ? err.response?.data?.error : "Operation failed",
-      );
+      setError(getErrorMessage(err));
     }
   };
 
   const fetchCategories = useCallback(async () => {
-    const allCategories = await categoryApi.list();
-    setCategories(allCategories);
+    setError("");
+    setLoading(true);
+    try {
+      const allCategories = await categoryApi.list();
+      setCategories(allCategories);
+    } catch (err) {
+      setError(getErrorMessage(err));
+    } finally {
+      setLoading(false);
+    }
   }, []);
 
   const fetchProducts = useCallback(async () => {
-    const allProducts = await productsApi.list();
-    setProducts(allProducts);
+    setError("");
+    setLoading(true);
+    try {
+      const allProducts = await productsApi.list();
+      setProducts(allProducts);
+    } catch (err) {
+      setError(getErrorMessage(err));
+    } finally {
+      setLoading(false);
+    }
   }, []);
 
   useEffect(() => {
     async function fetchData() {
-      setError("");
-      setLoading(true);
-      try {
-        await Promise.all([fetchCategories(), fetchProducts()]);
-      } catch (err) {
-        setError(
-          isAxiosError(err)
-            ? err.response?.data.error
-            : "Operation failed. Please try again later.",
-        );
-      } finally {
-        setLoading(false);
-      }
+      await Promise.all([fetchCategories(), fetchProducts()]);
     }
 
     fetchData();
@@ -663,7 +651,7 @@ export default function Products() {
                         <th className="px-2 lg:px-3">Name</th>
                         <th className="px-2 lg:px-3">Description</th>
                         <th className="px-2 lg:px-3">Category</th>
-                        <th className="px-2 text-right lg:px-3">Carton = kg</th>
+                        <th className="px-2 text-right lg:px-3">Kg = Carton</th>
                         <th className="px-2 text-right lg:px-3">Min stock</th>
                         <th className="px-2 lg:px-3">Status</th>
                         <Can permission="product:deactivate">
