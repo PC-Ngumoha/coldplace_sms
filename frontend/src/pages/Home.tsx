@@ -28,7 +28,7 @@ import {
   Truck,
   UserRound,
   LogOut,
-  // SquareTerminal,
+  Warehouse,
   ListClock,
   Sidebar,
   SidebarClose,
@@ -49,6 +49,12 @@ const navigation = [
     to: "/products",
     icon: Package,
     permission: "products:list",
+  },
+  {
+    label: "Inventory",
+    to: "/inventory",
+    icon: Warehouse,
+    permission: "inventory:view",
   },
   {
     label: "Receiving",

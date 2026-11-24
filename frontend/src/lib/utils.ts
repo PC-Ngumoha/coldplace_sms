@@ -1,5 +1,8 @@
+import { isAxiosError } from "axios";
+
 export { cn } from "cn";
 
+// PARSERS
 type ParsedUserAgent = {
   browser: string;
   os: string;
@@ -41,4 +44,30 @@ export function parseUserAgent(userAgent?: string | null): ParsedUserAgent {
     browser: findMatch(BROWSERS, ua),
     os: findMatch(SYSTEMS, ua),
   };
+}
+
+// FORMATTERS
+// Decimal formatting stays entirely in string space to avoid losing precision.
+export function formatDecimal(value: string): string {
+  const match = value.trim().match(/^([+-]?)(\d+)(?:\.(\d*))?$/);
+  if (!match) return value;
+
+  const [, sign, whole, fraction = ""] = match;
+  const padded = `${fraction}0000`;
+  let thousandths = Number(`${whole}${padded.slice(0, 3)}`);
+  if (padded[3] >= "5") thousandths += 1;
+
+  const formattedWhole = String(Math.floor(thousandths / 1000));
+  const formattedFraction = String(thousandths % 1000).padStart(3, "0");
+  const isZero = thousandths === 0;
+  return `${sign === "-" && !isZero ? "-" : ""}${formattedWhole}.${formattedFraction}`;
+}
+
+export function getErrorMessage(error: unknown): string {
+  if (isAxiosError(error)) {
+    return (
+      error.response?.data?.error ?? "Operation failed. Please try again later."
+    );
+  }
+  return "Operation failed. Please try again later.";
 }

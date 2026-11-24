@@ -1,5 +1,7 @@
 import type { RoleName } from "@/lib/definitions";
 
+// USERS & AUTHENTICATION
+
 export interface User {
   id: number;
   email: string;
@@ -48,6 +50,8 @@ export interface AuthContextValue {
   logout: () => Promise<void>;
 }
 
+// LOCATION MANAGEMENT
+
 export interface Location {
   id: number;
   name: string;
@@ -60,6 +64,8 @@ export interface ModifyLocation {
   name: string;
   address: string | null;
 }
+
+// SUPPLIER MANAGEMENT
 
 export interface Supplier {
   id: number;
@@ -79,6 +85,8 @@ export interface ModifySupplier {
   outlet_allowed: boolean;
 }
 
+// CATEGORIES
+
 export interface Category {
   id: number;
   name: string;
@@ -90,6 +98,8 @@ export interface Category {
 export interface ModifyCategory {
   name: string;
 }
+
+// UNITS & PRODUCTS
 
 export interface Unit {
   id: number;
@@ -129,6 +139,8 @@ export interface CreateProduct {
 
 export type UpdateProduct = Omit<CreateProduct, "sku">;
 
+// RECEIPTS / RECEIVING
+
 export interface Received {
   id: number;
   reference: string;
@@ -140,7 +152,7 @@ export interface Received {
   delivery_ref: string | null;
   notes: string | null;
   created_by_name: string;
-  created_at: number;
+  created_at: string;
   total_value: string;
 }
 
@@ -180,6 +192,48 @@ export interface CreateReceivedLines {
   damage_reason?: string | null;
   unit_cost: string;
 }
+
+// INVENTORY
+export interface InventoryBalance {
+  product_id: number;
+  sku: string;
+  product_name: string;
+  location_id: number;
+  location_name: string;
+  balance_kg: string;
+  balance_cartons: string | null;
+  last_movement_at: string;
+}
+
+export interface LedgerItem {
+  id: number;
+  movement_type: string;
+  quantity_kg: string;
+  balance_after: string;
+  movement_date: string;
+  source_table: string;
+  source_id: string;
+  reason: string | null;
+  created_by_name: string;
+  created_at: string;
+}
+
+export interface LedgerResponse {
+  product: {
+    id: number;
+    sku: string;
+    name: string;
+  };
+  location: {
+    id: number;
+    name: string;
+  };
+  balance_kg: string;
+  balance_cartons: string | null;
+  items: LedgerItem[];
+}
+
+// UTILITIES & LOGS
 
 export interface ProcessResponse {
   error?: string;

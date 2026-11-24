@@ -1,12 +1,12 @@
 import { AlertCircle, Plus, X, UserPlus2 } from "lucide-react";
 import { Link, useLocation } from "react-router";
 import type { Received } from "@/types";
+import { getErrorMessage } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { receivedApi } from "@/services/Receivedapi";
 import { useState, useEffect, useCallback } from "react";
 import ReceivingForm from "@/components/forms/ReceivingForm";
 import Loading from "@/components/Loading";
-import { isAxiosError } from "axios";
 import { Can } from "@/components/permissions";
 
 export default function Received() {
@@ -30,26 +30,22 @@ export default function Received() {
   };
 
   const fetchReceived = useCallback(async () => {
-    const allReceived = await receivedApi.list();
-    setReceived(allReceived);
-    setCurrentPage(1);
+    setLoading(true);
+    setError("");
+    try {
+      const allReceived = await receivedApi.list();
+      setReceived(allReceived);
+      setCurrentPage(1);
+    } catch (err) {
+      setError(getErrorMessage(err));
+    } finally {
+      setLoading(false);
+    }
   }, []);
 
   useEffect(() => {
     async function fetchData() {
-      setLoading(true);
-      setError("");
-      try {
-        await fetchReceived();
-      } catch (err) {
-        setError(
-          isAxiosError(err)
-            ? err.response?.data.error
-            : "Operation failed. Please try again later !",
-        );
-      } finally {
-        setLoading(false);
-      }
+      await fetchReceived();
     }
 
     fetchData();

@@ -64,3 +64,9 @@ export const RECEIVED_PATHS = {
   retrieve: (id: number) => `/api/received/${id}`,
   create: () => "/api/received",
 };
+
+export const INVENTORY_PATHS = {
+  balances: () => "/api/inventory",
+  ledger: (productId: number, locationId: number) =>
+    `/api/inventory/ledger?product_id=${productId}&location_id=${locationId}`,
+};

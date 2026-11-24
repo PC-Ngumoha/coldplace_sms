@@ -13,6 +13,7 @@ import { productsApi } from "@/services/Productsapi";
 import { receivedApi } from "@/services/Receivedapi";
 import Loading from "@/components/Loading";
 import { validateReceipt } from "@/lib/validators";
+import { getErrorMessage } from "@/lib/utils";
 import { useAuth } from "@/contexts/auth_context";
 import { useState, useEffect, useCallback, type SubmitEvent } from "react";
 import { Plus, X } from "lucide-react";
@@ -113,49 +114,78 @@ export default function ReceivingForm({
   // FETCHING DATA
 
   // SUPPLIERS
-  const fetchSuppliers = useCallback(async () => {
-    const activeSuppliers = await supplierApi.list();
-    setSuppliers(activeSuppliers);
+  const fetchSuppliers = useCallback(async (cancelled: boolean = false) => {
+    setIsLoading(true);
+    setError("");
+    try {
+      const activeSuppliers = await supplierApi.list();
+      if (!cancelled) setSuppliers(activeSuppliers);
+    } catch (err) {
+      if (!cancelled) setError(getErrorMessage(err));
+    } finally {
+      if (!cancelled) setIsLoading(false);
+    }
   }, []);
 
   //LOCATIONS
-  const fetchLocations = useCallback(async () => {
-    const activeLocations = await locationApi.list();
-    setLocations(activeLocations);
+  const fetchLocations = useCallback(async (cancelled: boolean = false) => {
+    setIsLoading(true);
+    setError("");
+    try {
+      const activeLocations = await locationApi.list();
+      if (!cancelled) setLocations(activeLocations);
+    } catch (err) {
+      if (!cancelled) setError(getErrorMessage(err));
+    } finally {
+      if (!cancelled) setIsLoading(false);
+    }
   }, []);
 
   // UNITS
-  const fetchUnits = useCallback(async () => {
-    const activeUnits = await unitsApi.list();
-    setUnits(activeUnits);
+  const fetchUnits = useCallback(async (cancelled: boolean = false) => {
+    setIsLoading(true);
+    setError("");
+    try {
+      const activeUnits = await unitsApi.list();
+      if (!cancelled) setUnits(activeUnits);
+    } catch (err) {
+      if (!cancelled) setError(getErrorMessage(err));
+    } finally {
+      if (!cancelled) setIsLoading(false);
+    }
   }, []);
 
   // PRODUCTS
-  const fetchProducts = useCallback(async () => {
-    const activeProducts = await productsApi.list();
-    setProducts(activeProducts);
+  const fetchProducts = useCallback(async (cancelled: boolean = false) => {
+    setIsLoading(true);
+    setError("");
+    try {
+      const activeProducts = await productsApi.list();
+      if (!cancelled) setProducts(activeProducts);
+    } catch (err) {
+      if (!cancelled) setError(getErrorMessage(err));
+    } finally {
+      if (!cancelled) setIsLoading(false);
+    }
   }, []);
 
   useEffect(() => {
+    let cancelled = false;
+
     async function fetchData() {
-      setIsLoading(true);
-      setError("");
-      try {
-        // await new Promise((resolve) => setTimeout(resolve, 4000));
-        await Promise.all([
-          fetchSuppliers(),
-          fetchLocations(),
-          fetchUnits(),
-          fetchProducts(),
-        ]);
-      } catch {
-        setError("Failed to load data. Please try again later");
-      } finally {
-        setIsLoading(false);
-      }
+      await Promise.all([
+        fetchSuppliers(cancelled),
+        fetchLocations(cancelled),
+        fetchUnits(cancelled),
+        fetchProducts(cancelled),
+      ]);
     }
 
     fetchData();
+
+    return () => {
+      cancelled = true;
+    };
   }, [fetchSuppliers, fetchLocations, fetchUnits, fetchProducts]);
 
   return (

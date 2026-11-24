@@ -212,6 +212,17 @@ return function (SlimApp $app, JwtAuthMiddleware $jwtAuth, CsrfGuardMiddleware $
             ->add(new RequirePermission(Permissions::RECEIPTS_CREATE))
             ->add(new MustChangePassword);
 
+        // ------ INVENTORY ------
+        $group
+            ->get('/inventory', App\Controllers\Inventory::class . ':balances')
+            ->add(new RequirePermission(Permissions::INVENTORY_VIEW))
+            ->add(new MustChangePassword);
+
+        $group
+            ->get('/inventory/ledger', App\Controllers\Inventory::class . ':ledger')
+            ->add(new RequirePermission(Permissions::INVENTORY_VIEW))
+            ->add(new MustChangePassword);
+
     })->add($jwtAuth);
 
     // ---- AUTHENTICATION ROUTES ----

@@ -9,6 +9,7 @@ import {
   Dashboard,
   NotFound,
   Products,
+  Inventory,
   Received,
   ReceivedLinesDetails,
   Transfers,
@@ -67,6 +68,14 @@ export default function App() {
               element={
                 <RequirePermission permission="products:list">
                   <Products />
+                </RequirePermission>
+              }
+            />
+            <Route
+              path="/inventory"
+              element={
+                <RequirePermission permission="inventory:view">
+                  <Inventory />
                 </RequirePermission>
               }
             />
