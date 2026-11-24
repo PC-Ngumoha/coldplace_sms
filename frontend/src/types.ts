@@ -233,6 +233,45 @@ export interface LedgerResponse {
   items: LedgerItem[];
 }
 
+// Prices
+export interface PriceUnit {
+  unit_id: number;
+  unit_code: string;
+  kg_per_unit: string;
+  price: string | null;
+  derived_price: string | null;
+  effective_from: string | null;
+  set_by_name: string | null;
+}
+
+export interface ProductPrice {
+  product_id: number;
+  sku: string;
+  product_name: string;
+  units: PriceUnit[];
+}
+
+export interface PriceHistoryItem {
+  id: number;
+  unit_id: number;
+  unit_code: string;
+  price: string;
+  effective_from: string;
+  effective_to: string | null;
+  set_by_name: string;
+}
+
+export interface SetPrice {
+  product_id: number;
+  unit_id: number;
+  price: string;
+}
+
+export interface SetPriceResult {
+  id: number;
+  status: "created" | "changed" | "unchanged";
+}
+
 // UTILITIES & LOGS
 
 export interface ProcessResponse {

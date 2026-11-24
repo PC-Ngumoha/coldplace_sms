@@ -70,3 +70,10 @@ export const INVENTORY_PATHS = {
   ledger: (productId: number, locationId: number) =>
     `/api/inventory/ledger?product_id=${productId}&location_id=${locationId}`,
 };
+
+export const PRICES_PATHS = {
+  current: () => "/api/prices",
+  history: (productId: number, unitId?: number) =>
+    `/api/prices/history?product_id=${productId}&unit_id=${unitId}`,
+  set: () => "/api/prices",
+};

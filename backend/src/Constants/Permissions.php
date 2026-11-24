@@ -62,6 +62,11 @@ class Permissions
     public const RECEIPTS_RETRIEVE = 'receipts:retrieve';
     public const RECEIPTS_CREATE = 'receipts:create';
 
+    // Prices
+    public const PRICES_LIST = 'prices:list';
+    public const PRICES_HISTORY = 'prices:history';
+    public const PRICES_SET = 'prices:set';
+
     // Stock adjustments
     public const ADJUSTMENTS_LIST = 'adjustments:list';
     public const ADJUSTMENTS_CREATE = 'adjustments:create';
@@ -96,6 +101,9 @@ class Permissions
         self::RECEIPTS_LIST_ALL,
         self::RECEIPTS_RETRIEVE,
 
+        self::PRICES_LIST,
+        self::PRICES_HISTORY,
+
         self::INVENTORY_VIEW,
 
         self::SUPPLIERS_VIEW,
@@ -120,6 +128,10 @@ class Permissions
         self::RECEIPTS_LIST,
         self::RECEIPTS_CREATE,
         self::RECEIPTS_RETRIEVE,
+
+        self::PRICES_LIST,
+        self::PRICES_HISTORY,
+        self::PRICES_SET,
 
         self::INVENTORY_VIEW,
 
@@ -146,6 +158,9 @@ class Permissions
         self::RECEIPTS_CREATE,
         self::RECEIPTS_RETRIEVE,
 
+        self::PRICES_LIST,
+        self::PRICES_HISTORY,
+
         self::INVENTORY_VIEW,
 
         self::SUPPLIERS_LIST,
@@ -168,6 +183,9 @@ class Permissions
 
         self::RECEIPTS_LIST,
         self::RECEIPTS_RETRIEVE,
+
+        self::PRICES_LIST,
+        self::PRICES_HISTORY,
 
         self::INVENTORY_VIEW,
 
@@ -226,6 +244,10 @@ class Permissions
         self::RECEIPTS_LIST_ALL,
         self::RECEIPTS_RETRIEVE,
         self::RECEIPTS_CREATE,
+
+        self::PRICES_HISTORY,
+        self::PRICES_LIST,
+        self::PRICES_SET,
 
         self::INVENTORY_VIEW,
 

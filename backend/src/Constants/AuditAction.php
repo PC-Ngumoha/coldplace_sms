@@ -56,6 +56,10 @@ final class AuditAction
     // Receipts (Receiving)
     public const RECEIPT_CREATED = 'receipt.created';
 
+    // Prices
+    public const PRICE_CREATED = 'price.created';
+    public const PRICE_CHANGED = 'price.changed';
+
     // Stock adjustments
     public const ADJUSTMENT_CREATED = 'adjustment.created';
     public const ADJUSTMENT_APPROVED = 'adjustment.approved';

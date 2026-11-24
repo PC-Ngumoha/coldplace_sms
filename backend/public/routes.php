@@ -223,6 +223,23 @@ return function (SlimApp $app, JwtAuthMiddleware $jwtAuth, CsrfGuardMiddleware $
             ->add(new RequirePermission(Permissions::INVENTORY_VIEW))
             ->add(new MustChangePassword);
 
+        
+        // ------ PRICES ------
+        $group
+            ->get('/prices', App\Controllers\Prices::class . ':current')
+            ->add(new RequirePermission(Permissions::PRICES_LIST))
+            ->add(new MustChangePassword);
+
+        $group
+            ->get('/prices/history', App\Controllers\Prices::class . ':history')
+            ->add(new RequirePermission(Permissions::PRICES_HISTORY))
+            ->add(new MustChangePassword);
+
+        $group
+            ->post('/prices', App\Controllers\Prices::class . ':set')
+            ->add(new RequirePermission(Permissions::PRICES_SET))
+            ->add(new MustChangePassword);
+
     })->add($jwtAuth);
 
     // ---- AUTHENTICATION ROUTES ----
