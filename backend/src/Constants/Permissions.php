@@ -57,6 +57,7 @@ class Permissions
     public const SUPPLIERS_DEACTIVATE = 'suppliers:deactivate';
 
     // Receipts (Receiving)
+    public const RECEIPTS_LIST_ALL = 'receipts:list:all';
     public const RECEIPTS_LIST = 'receipts:list';
     public const RECEIPTS_RETRIEVE = 'receipts:retrieve';
     public const RECEIPTS_CREATE = 'receipts:create';
@@ -92,6 +93,8 @@ class Permissions
         self::PRODUCTS_LIST,
 
         self::RECEIPTS_LIST,
+        self::RECEIPTS_LIST_ALL,
+        self::RECEIPTS_RETRIEVE,
 
         self::INVENTORY_VIEW,
 
@@ -116,6 +119,7 @@ class Permissions
 
         self::RECEIPTS_LIST,
         self::RECEIPTS_CREATE,
+        self::RECEIPTS_RETRIEVE,
 
         self::INVENTORY_VIEW,
 
@@ -140,6 +144,7 @@ class Permissions
 
         self::RECEIPTS_LIST,
         self::RECEIPTS_CREATE,
+        self::RECEIPTS_RETRIEVE,
 
         self::INVENTORY_VIEW,
 
@@ -162,6 +167,7 @@ class Permissions
         self::PRODUCTS_LIST,
 
         self::RECEIPTS_LIST,
+        self::RECEIPTS_RETRIEVE,
 
         self::INVENTORY_VIEW,
 
@@ -217,6 +223,7 @@ class Permissions
         self::SUPPLIERS_DEACTIVATE,
 
         self::RECEIPTS_LIST,
+        self::RECEIPTS_LIST_ALL,
         self::RECEIPTS_RETRIEVE,
         self::RECEIPTS_CREATE,
 
