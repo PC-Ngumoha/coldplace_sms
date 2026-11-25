@@ -67,6 +67,19 @@ class Permissions
     public const PRICES_HISTORY = 'prices:history';
     public const PRICES_SET = 'prices:set';
 
+    // Customers
+    public const CUSTOMERS_LIST = 'customers:list';
+    public const CUSTOMERS_RETRIEVE = 'customers:retrieve';
+    public const CUSTOMERS_SEARCH = 'customers:search';
+    public const CUSTOMERS_EDIT = 'customers:edit';
+    public const CUSTOMERS_ACTIVATE = 'customers:activate';
+    public const CUSTOMERS_DEACTIVATE = 'customers:deactivate';
+
+    // Sales
+    public const SALES_LIST = 'sales:list';
+    public const SALES_RETRIEVE = 'sales:retrieve';
+    public const SALES_CREATE = 'sales:create';
+
     // Stock adjustments
     public const ADJUSTMENTS_LIST = 'adjustments:list';
     public const ADJUSTMENTS_CREATE = 'adjustments:create';
@@ -104,6 +117,12 @@ class Permissions
         self::PRICES_LIST,
         self::PRICES_HISTORY,
 
+        self::CUSTOMERS_LIST,
+        self::CUSTOMERS_RETRIEVE,
+
+        self::SALES_LIST,
+        self::SALES_RETRIEVE,
+
         self::INVENTORY_VIEW,
 
         self::SUPPLIERS_VIEW,
@@ -133,6 +152,12 @@ class Permissions
         self::PRICES_HISTORY,
         self::PRICES_SET,
 
+        self::CUSTOMERS_SEARCH,
+
+        self::SALES_LIST,
+        self::SALES_RETRIEVE,
+        self::SALES_CREATE,
+
         self::INVENTORY_VIEW,
 
         self::SUPPLIERS_LIST,
@@ -159,7 +184,12 @@ class Permissions
         self::RECEIPTS_RETRIEVE,
 
         self::PRICES_LIST,
-        // self::PRICES_HISTORY,
+
+        self::CUSTOMERS_SEARCH,
+
+        self::SALES_LIST,
+        self::SALES_RETRIEVE,
+        self::SALES_CREATE,
 
         self::INVENTORY_VIEW,
 
@@ -186,6 +216,12 @@ class Permissions
 
         self::PRICES_LIST,
         self::PRICES_HISTORY,
+
+        self::CUSTOMERS_LIST,
+        self::CUSTOMERS_RETRIEVE,
+
+        self::SALES_LIST,
+        self::SALES_RETRIEVE,
 
         self::INVENTORY_VIEW,
 
@@ -248,6 +284,17 @@ class Permissions
         self::PRICES_HISTORY,
         self::PRICES_LIST,
         self::PRICES_SET,
+
+        self::CUSTOMERS_LIST,
+        self::CUSTOMERS_RETRIEVE,
+        self::CUSTOMERS_SEARCH,
+        self::CUSTOMERS_EDIT,
+        self::CUSTOMERS_ACTIVATE,
+        self::CUSTOMERS_DEACTIVATE,
+
+        self::SALES_LIST,
+        self::SALES_RETRIEVE,
+        self::SALES_CREATE,
 
         self::INVENTORY_VIEW,
 

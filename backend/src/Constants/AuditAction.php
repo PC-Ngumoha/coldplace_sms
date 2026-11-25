@@ -60,6 +60,15 @@ final class AuditAction
     public const PRICE_CREATED = 'price.created';
     public const PRICE_CHANGED = 'price.changed';
 
+    // Customers
+    public const CUSTOMER_CREATED = 'customer.created';
+    public const CUSTOMER_UPDATED = 'customer.updated';
+    public const CUSTOMER_ACTIVATED = 'customer.activated';
+    public const CUSTOMER_DEACTIVATED = 'customer.deactivated';
+
+    // Sales
+    public const SALE_CREATED = 'sale.created';
+
     // Stock adjustments
     public const ADJUSTMENT_CREATED = 'adjustment.created';
     public const ADJUSTMENT_APPROVED = 'adjustment.approved';

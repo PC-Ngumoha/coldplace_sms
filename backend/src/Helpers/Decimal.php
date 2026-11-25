@@ -31,4 +31,11 @@ final class Decimal
         $half  = '0.' . str_repeat('0', $scale) . '5';
         return bcadd($exact, $half, $scale);   // bcadd truncates, so adding half rounds up
     }
+
+    /** Round half away from zero. Pass a value with at least scale+1 decimals. */
+    public static function round(string $v, int $scale): string
+    {
+        $half = '0.' . str_repeat('0', $scale) . '5';
+        return str_starts_with($v, '-') ? bcsub($v, $half, $scale) : bcadd($v, $half, $scale);
+    }
 }
