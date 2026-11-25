@@ -651,7 +651,7 @@ export default function Products() {
                         <th className="px-2 lg:px-3">Name</th>
                         <th className="px-2 lg:px-3">Description</th>
                         <th className="px-2 lg:px-3">Category</th>
-                        <th className="px-2 text-right lg:px-3">Kg = Carton</th>
+                        <th className="px-2 text-right lg:px-3">Carton = Kg</th>
                         <th className="px-2 text-right lg:px-3">Min stock</th>
                         <th className="px-2 lg:px-3">Status</th>
                         <Can permission="product:deactivate">

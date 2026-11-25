@@ -74,6 +74,8 @@ export const INVENTORY_PATHS = {
 export const PRICES_PATHS = {
   current: () => "/api/prices",
   history: (productId: number, unitId?: number) =>
-    `/api/prices/history?product_id=${productId}&unit_id=${unitId}`,
+    unitId
+      ? `/api/prices/history?product_id=${productId}&unit_id=${unitId}`
+      : `/api/prices/history?product_id=${productId}`,
   set: () => "/api/prices",
 };

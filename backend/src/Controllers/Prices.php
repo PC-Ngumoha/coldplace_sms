@@ -34,7 +34,7 @@ class Prices
             $historicalPrices = $this->service->history(
                 Actor::fromRequest($req),
                 (int) $query['product_id'],
-                (int) $query['unit_id']
+                $query['unit_id']
             );
         } catch (AppException $err) {
             return $this->json(['error' => $err->getMessage()], $err->getStatus());

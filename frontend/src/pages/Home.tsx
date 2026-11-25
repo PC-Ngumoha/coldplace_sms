@@ -80,7 +80,7 @@ const navigation = [
     icon: TriangleAlert,
     permission: "users:profile",
   },
-  { label: "Pricing", to: "/pricing", icon: Tag, permission: "users:profile" },
+  { label: "Pricing", to: "/pricing", icon: Tag, permission: "prices:list" },
   {
     label: "Reports",
     to: "/reports",

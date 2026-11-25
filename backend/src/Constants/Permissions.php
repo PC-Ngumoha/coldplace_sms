@@ -159,7 +159,7 @@ class Permissions
         self::RECEIPTS_RETRIEVE,
 
         self::PRICES_LIST,
-        self::PRICES_HISTORY,
+        // self::PRICES_HISTORY,
 
         self::INVENTORY_VIEW,
 

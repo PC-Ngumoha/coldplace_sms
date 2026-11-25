@@ -9,7 +9,8 @@ import {
   DrawerHeader,
   DrawerTitle,
 } from "@/components/ui/drawer";
-import { useAuth } from "@/contexts/auth_context";
+import { Can } from "@/components/permissions";
+import { usePermissions } from "@/hooks/use_permissions";
 import { getErrorMessage } from "@/lib/utils";
 import { pricesApi } from "@/services/Pricesapi";
 import { showError, showSuccess } from "@/services/toasts";
@@ -24,6 +25,8 @@ import {
 } from "lucide-react";
 
 const PAGE_SIZE = 10;
+const SET_PRICE = "prices:set";
+const VIEW_HISTORY = "prices:history";
 
 function formatMoney(value: string | null | undefined): string {
   if (value == null) return "Not set";
@@ -32,12 +35,15 @@ function formatMoney(value: string | null | undefined): string {
 
   const whole = match[1];
   const fraction = match[2] ?? "";
-  const kobo =
+
+  const totalInKobo =
     BigInt(`${whole}${fraction.padEnd(2, "0").slice(0, 2)}` || "0") +
     (fraction.length > 2 && fraction[2] >= "5" ? 1n : 0n);
-  const naira = (BigInt(whole) + kobo / 100n).toString();
-  const cents = (kobo % 100n).toString().padStart(2, "0");
-  return `₦${naira.replace(/\B(?=(\d{3})+(?!\d))/g, ",")}.${cents}`;
+
+  const naira = (totalInKobo / 100n).toString();
+  const kobo = (totalInKobo % 100n).toString().padStart(2, "0");
+
+  return `₦${naira.replace(/\B(?=(\d{3})+(?!\d))/g, ",")}.${kobo}`;
 }
 
 function toKobo(value: string): bigint {
@@ -85,29 +91,41 @@ function PriceHistoryDrawer({
   useEffect(() => {
     if (!open || !product) return;
     let cancelled = false;
-    setLoading(true);
-    setError("");
-    pricesApi
-      .history(
-        product.product_id,
-        unitFilter === "all" ? undefined : Number(unitFilter),
-      )
-      .then((items) => {
+    async function fetchData() {
+      setLoading(true);
+      setError("");
+      let items;
+
+      try {
+        if (unitFilter === "all") {
+          items = await pricesApi.history(product!.product_id);
+        } else {
+          items = await pricesApi.history(
+            product!.product_id,
+            Number(unitFilter),
+          );
+        }
         if (!cancelled) setHistory(items);
-      })
-      .catch((err: unknown) => {
+      } catch (err) {
         if (!cancelled) setError(getErrorMessage(err));
-      })
-      .finally(() => {
+      } finally {
         if (!cancelled) setLoading(false);
-      });
+      }
+    }
+
+    fetchData();
+
     return () => {
       cancelled = true;
     };
   }, [open, product, unitFilter, retry]);
 
   useEffect(() => {
-    if (open) setUnitFilter("all");
+    function selectAllUnits() {
+      if (open) setUnitFilter("all");
+    }
+
+    selectAllUnits();
   }, [open, product?.product_id]);
 
   const groupedHistory = useMemo(() => {
@@ -134,7 +152,8 @@ function PriceHistoryDrawer({
           </DrawerDescription>
           <DrawerClose
             aria-label="Close history"
-            className="absolute right-4 top-4 inline-flex h-11 w-11 items-center justify-center rounded-lg border border-lighter-teal-blue text-slate-600 hover:bg-slate-50"
+            className="absolute right-4 top-4 inline-flex h-11 w-11 items-center 
+            justify-center rounded-lg border border-lighter-teal-blue text-slate-600 hover:bg-slate-50"
           >
             <X size={18} />
           </DrawerClose>
@@ -148,7 +167,12 @@ function PriceHistoryDrawer({
             <button
               type="button"
               onClick={() => setUnitFilter("all")}
-              className={`min-h-11 rounded-lg border px-4 text-sm font-medium ${unitFilter === "all" ? "border-teal-blue bg-teal-blue text-white" : "border-lighter-teal-blue text-slate-600 hover:bg-slate-50"}`}
+              className={`min-h-11 rounded-lg border px-4 text-sm font-medium 
+                ${
+                  unitFilter === "all"
+                    ? "border-teal-blue bg-teal-blue text-white"
+                    : "border-lighter-teal-blue text-slate-600 hover:bg-slate-50"
+                }`}
             >
               All units
             </button>
@@ -157,7 +181,12 @@ function PriceHistoryDrawer({
                 key={unit.unit_id}
                 type="button"
                 onClick={() => setUnitFilter(String(unit.unit_id))}
-                className={`min-h-11 rounded-lg border px-4 text-sm font-medium ${unitFilter === String(unit.unit_id) ? "border-teal-blue bg-teal-blue text-white" : "border-lighter-teal-blue text-slate-600 hover:bg-slate-50"}`}
+                className={`min-h-11 rounded-lg border px-4 text-sm font-medium 
+                  ${
+                    unitFilter === String(unit.unit_id)
+                      ? "border-teal-blue bg-teal-blue text-white"
+                      : "border-lighter-teal-blue text-slate-600 hover:bg-slate-50"
+                  }`}
               >
                 {unit.unit_code}
               </button>
@@ -248,11 +277,10 @@ function PriceHistoryDrawer({
 }
 
 export default function Pricing() {
-  const { user } = useAuth();
-  const canSetPrice = ["admin", "manager", "central"].includes(
-    user?.role ?? "",
-  );
-  const canViewHistory = user?.role !== "outlet";
+  const { can } = usePermissions();
+  // const canSetPrice = can(SET_PRICE);
+  const canViewHistory = can(VIEW_HISTORY);
+
   const [prices, setPrices] = useState<ProductPrice[]>([]);
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState("");
@@ -268,6 +296,12 @@ export default function Pricing() {
     null,
   );
 
+  const clearFields = () => {
+    setSelectedProductId("");
+    setSelectedUnitId("");
+    setPriceValue("");
+  };
+
   async function loadPrices() {
     setLoading(true);
     setLoadError("");
@@ -281,7 +315,11 @@ export default function Pricing() {
   }
 
   useEffect(() => {
-    loadPrices();
+    async function fetchData() {
+      await loadPrices();
+    }
+
+    fetchData();
   }, []);
 
   const selectedProduct = prices.find(
@@ -339,6 +377,7 @@ export default function Pricing() {
         price: priceValue,
       };
       const result = await pricesApi.set(payload);
+      clearFields();
       await loadPrices();
       const message =
         result.status === "created"
@@ -367,7 +406,8 @@ export default function Pricing() {
           </p>
         </header>
 
-        {canSetPrice && (
+        {/* Set Price Card */}
+        <Can permission={SET_PRICE}>
           <section className="mb-5 overflow-hidden rounded-2xl border border-lighter-teal-blue bg-white">
             <div className="border-b border-lighter-teal-blue px-5 py-4">
               <h2 className="font-semibold">Set a price</h2>
@@ -454,8 +494,9 @@ export default function Pricing() {
               )}
             </form>
           </section>
-        )}
+        </Can>
 
+        {/* Current Prices Section */}
         <section className="overflow-hidden rounded-2xl border border-lighter-teal-blue bg-white">
           <div className="border-b border-lighter-teal-blue px-5 py-4">
             <h2 className="font-semibold">Current prices</h2>
@@ -539,7 +580,14 @@ export default function Pricing() {
                     }}
                     role={canViewHistory ? "button" : undefined}
                     tabIndex={canViewHistory ? 0 : undefined}
-                    className={`grid grid-cols-2 gap-x-4 gap-y-3 border-b border-lighter-teal-blue px-4 py-4 last:border-b-0 md:grid-cols-[minmax(0,1.5fr)_minmax(100px,0.8fr)_minmax(100px,0.8fr)_minmax(130px,1fr)_auto] md:items-center md:gap-3 md:px-5 ${canViewHistory ? "cursor-pointer hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-teal-700/30" : ""}`}
+                    className={`grid grid-cols-2 gap-x-4 gap-y-3 border-b 
+                      border-lighter-teal-blue px-4 py-4 last:border-b-0 
+                      md:grid-cols-[minmax(0,1.5fr)_minmax(100px,0.8fr)_minmax(100px,0.8fr)_minmax(130px,1fr)_auto]
+                      md:items-center md:gap-3 md:px-5 ${
+                        canViewHistory
+                          ? "cursor-pointer hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-teal-700/30"
+                          : ""
+                      }`}
                   >
                     <div className="col-span-2 min-w-0 md:col-span-1">
                       <p className="truncate text-sm font-medium text-slate-900">
@@ -587,7 +635,7 @@ export default function Pricing() {
                         "—"
                       )}
                     </div>
-                    {canViewHistory && (
+                    <Can permission={VIEW_HISTORY}>
                       <div className="col-span-2 md:col-span-1 md:text-right">
                         <Button
                           type="button"
@@ -595,13 +643,14 @@ export default function Pricing() {
                             event.stopPropagation();
                             openHistory(product);
                           }}
-                          className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-lg border border-lighter-teal-blue bg-white px-3 font-medium text-teal-800 hover:bg-teal-50 md:w-auto"
+                          className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-lg border 
+                          border-lighter-teal-blue bg-white px-3 font-medium text-teal-800 hover:bg-teal-50 md:w-auto"
                         >
                           <History size={16} />
                           History
                         </Button>
                       </div>
-                    )}
+                    </Can>
                   </div>
                 );
               })}
@@ -618,7 +667,8 @@ export default function Pricing() {
                   disabled={page === 0}
                   onClick={() => setPage((value) => value - 1)}
                   aria-label="Previous page"
-                  className="inline-flex h-11 w-11 items-center justify-center rounded-lg border border-lighter-teal-blue bg-white text-slate-700 disabled:opacity-50"
+                  className="inline-flex h-11 w-11 items-center justify-center rounded-lg border border-lighter-teal-blue 
+                  bg-white text-slate-700 disabled:opacity-50"
                 >
                   <ChevronLeft size={18} />
                 </Button>
@@ -627,7 +677,8 @@ export default function Pricing() {
                   disabled={page + 1 >= pageCount}
                   onClick={() => setPage((value) => value + 1)}
                   aria-label="Next page"
-                  className="inline-flex h-11 w-11 items-center justify-center rounded-lg border border-lighter-teal-blue bg-white text-slate-700 disabled:opacity-50"
+                  className="inline-flex h-11 w-11 items-center justify-center rounded-lg border border-lighter-teal-blue 
+                  bg-white text-slate-700 disabled:opacity-50"
                 >
                   <ChevronRight size={18} />
                 </Button>

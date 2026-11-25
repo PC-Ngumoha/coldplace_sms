@@ -90,7 +90,14 @@ export default function App() {
             <Route path="/transfers" element={<Transfers />} />
             <Route path="/sales" element={<Sales />} />
             <Route path="/damage" element={<Damages />} />
-            <Route path="/pricing" element={<Pricing />} />
+            <Route
+              path="/pricing"
+              element={
+                <RequirePermission permission="prices:list">
+                  <Pricing />
+                </RequirePermission>
+              }
+            />
             <Route path="/reports" element={<Reports />} />
             <Route
               path="/settings"
