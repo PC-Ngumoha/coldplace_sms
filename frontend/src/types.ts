@@ -272,6 +272,188 @@ export interface SetPriceResult {
   status: "created" | "changed" | "unchanged";
 }
 
+// CUSTOMERS & SALES & DAY CLOSING / REOPENING
+type DayState = "open" | "closed" | "locked" | "future";
+
+export interface DayWindow {
+  earliest: string;
+  latest: string;
+} // "2026-11-23"
+
+export interface DayStatus {
+  location_id: number;
+  date: string;
+  state: DayState;
+  was_reopened: boolean;
+  closed_by_name: string | null;
+  closed_at: string | null; // ISO 8601
+  reopened_by_name: string | null;
+  reopened_at: string | null; // ISO 8601
+  can_record: boolean;
+  can_close: boolean;
+  can_reopen: boolean;
+  day_total: string; // money string
+  window: DayWindow;
+}
+
+export interface DayRecord {
+  id: number;
+  location_id: number;
+  location_name: string;
+  date: string;
+  status: "closed" | "reopened";
+  closed_by_name: string;
+  closed_at: string;
+  reopened_by_name: string | null;
+  reopened_at: string | null;
+}
+
+export interface DayList {
+  window: DayWindow;
+  items: DayRecord[];
+}
+
+export interface CloseDayRequest {
+  location_id?: number;
+  date: string;
+}
+
+export interface ReopenDayRequest {
+  location_id: number;
+  date: string;
+  reason: string;
+}
+
+export interface DayActionResult {
+  status: "closed" | "reopened" | "unchanged";
+  date: string;
+}
+
+type CustomerType = "individual" | "business";
+type CustomerStatus = "active" | "inactive";
+
+export interface Customer {
+  id: number;
+  name: string;
+  customer_type: CustomerType;
+  phone: string | null; // international form, e.g. "+2348031234567"
+  address: string | null;
+  status: CustomerStatus;
+  created_at: string; // "2026-11-18 09:12:03" (Lagos time, no zone marker)
+  sales_count: number;
+  total_spent: string; // decimal string, 2 places
+  average_sale: string | null; // null when sales_count is 0
+  last_purchase_date: string | null; // "2026-11-23", date only
+}
+
+export interface CustomerRecentSale {
+  id: number;
+  reference: string;
+  sale_date: string; // date only
+  location_name: string;
+  total: string;
+}
+
+export type CustomerDetails = Customer & {
+  recent_sales: CustomerRecentSale[];
+};
+
+export interface UpdateCustomer {
+  name: string; // required
+  customer_type: CustomerType;
+  phone?: string | null;
+  address?: string | null;
+}
+
+// Used by the sales form later. Create the types now, build NO sales UI.
+export interface CustomerSuggestion {
+  id: number;
+  name: string;
+  phone: string | null;
+}
+
+export interface SaleCustomerInput {
+  id?: number; // picked from suggestions
+  name?: string; // required when id is absent
+  phone?: string | null;
+  address?: string | null;
+  force_new?: boolean; // "this is a different person"
+}
+
+export interface CreateSaleLine {
+  product_id: number;
+  unit_id: number;
+  quantity: string; // decimal string
+  applied_price?: string | null; // omit to use the set price
+}
+
+export interface CreateSale {
+  location_id?: number; // admin and manager only
+  sale_date?: string; // "YYYY-MM-DD", today or up to 3 days earlier
+  customer: SaleCustomerInput;
+  lines: CreateSaleLine[];
+}
+
+export interface CreateSaleResult {
+  id: number;
+  reference: string;
+  sale_date: string;
+  customer: {
+    id: number;
+    name: string;
+    outcome: "selected" | "matched" | "created";
+  };
+  total: string;
+  day_total: string;
+}
+
+export interface AmbiguousCustomerError {
+  error: string;
+  candidates: {
+    id: number;
+    name: string;
+    phone: string | null;
+    address: string | null;
+    status: CustomerStatus;
+  }[];
+}
+
+type VarianceLabel = "profit" | "loss" | "at_set_price" | "no_set_price";
+
+export interface Sale {
+  id: number;
+  reference: string;
+  location_id: number;
+  location_name: string;
+  customer_id: number;
+  customer_name: string;
+  sale_date: string;
+  created_by_name: string;
+  created_at: string;
+  total: string;
+  line_count: number;
+  variance_total: string | null;
+}
+
+export interface SaleLine {
+  id: number;
+  product_id: number;
+  sku: string;
+  product_name: string;
+  unit_id: number;
+  unit_code: string;
+  quantity: string;
+  quantity_kg: string;
+  applied_price: string;
+  line_total: string;
+  set_price: string | null;
+  set_price_total: string | null;
+  variance_amount: string | null;
+  variance_percent: string | null;
+  variance_label: VarianceLabel;
+}
+export type SaleDetails = Sale & { lines: SaleLine[] };
+
 // UTILITIES & LOGS
 
 export interface ProcessResponse {

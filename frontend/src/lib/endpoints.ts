@@ -79,3 +79,27 @@ export const PRICES_PATHS = {
       : `/api/prices/history?product_id=${productId}`,
   set: () => "/api/prices",
 };
+
+export const CUSTOMERS_PATHS = {
+  list: () => "/customers",
+  retrieve: (customerId: number) => `/customers/${customerId}`,
+  search: (q: string) => `/customers/search?q=${q}`,
+  update: (customerId: number) => `/customers/${customerId}`,
+  activate: (customerId: number) => `/customers/${customerId}/activate`,
+  deactivate: (customerId: number) => `/customers/${customerId}/deactivate`,
+};
+
+export const SALES_PATHS = {
+  list: (from: string, to: string) => `/sales?from=${from}&to=${to}`,
+  retrieve: (saleId: number) => `/sales/${saleId}`,
+  create: () => `/sales`,
+};
+
+export const DAY_PATHS = {
+  status: (locationId: number, date: string) =>
+    `/days/status?location_id=${locationId}&date=${date}`,
+  list: (from: string, to: string, locationId: number) =>
+    `/days?from=${from}&to=${to}&location_id=${locationId}`,
+  close: () => "/days/close",
+  reopen: () => "/days/reopen",
+};
