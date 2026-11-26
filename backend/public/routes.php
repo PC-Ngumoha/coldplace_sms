@@ -240,6 +240,75 @@ return function (SlimApp $app, JwtAuthMiddleware $jwtAuth, CsrfGuardMiddleware $
             ->add(new RequirePermission(Permissions::PRICES_SET))
             ->add(new MustChangePassword);
 
+
+        // ------ CUSTOMERS ------
+        $group
+            ->get('/customers', App\Controllers\Customers::class . ':list')
+            ->add(new RequirePermission(Permissions::CUSTOMERS_LIST))
+            ->add(new MustChangePassword);
+
+        $group
+            ->get('/customers/{id:[0-9]+}', App\Controllers\Customers::class . ':retrieve')
+            ->add(new RequirePermission(Permissions::CUSTOMERS_RETRIEVE))
+            ->add(new MustChangePassword);
+
+        $group
+            ->get('/customers/search', App\Controllers\Customers::class . ':search')
+            ->add(new RequirePermission(Permissions::CUSTOMERS_SEARCH))
+            ->add(new MustChangePassword);
+
+        $group
+            ->patch('/customers/{id:[0-9]+}', App\Controllers\Customers::class . ':update')
+            ->add(new RequirePermission(Permissions::CUSTOMERS_EDIT))
+            ->add(new MustChangePassword);
+
+        $group
+            ->post('/customers/{id:[0-9]+}/activate', App\Controllers\Customers::class . ':activate')
+            ->add(new RequirePermission(Permissions::CUSTOMERS_ACTIVATE))
+            ->add(new MustChangePassword);
+
+        $group
+            ->post('/customers/{id:[0-9]+}/deactivate', App\Controllers\Customers::class . ':deactivate')
+            ->add(new RequirePermission(Permissions::CUSTOMERS_DEACTIVATE))
+            ->add(new MustChangePassword);
+
+        // ------ SALES ------
+        $group
+            ->get('/sales', App\Controllers\Sales::class . ':list')
+            ->add(new RequirePermission(Permissions::SALES_LIST))
+            ->add(new MustChangePassword);
+
+        $group
+            ->get('/sales/{id:[0-9]+}', App\Controllers\Sales::class . ':retrieve')
+            ->add(new RequirePermission(Permissions::SALES_RETRIEVE))
+            ->add(new MustChangePassword);
+        
+        $group
+            ->post('/sales', App\Controllers\Sales::class . ':create')
+            ->add(new RequirePermission(Permissions::SALES_CREATE))
+            ->add(new MustChangePassword);
+
+        // ------ CLOSING & REOPENING BUSINESS DAYS ------
+        $group
+            ->get('/days/status', App\Controllers\Days::class . ':status')
+            ->add(new RequirePermission(Permissions::DAYS_STATUS))
+            ->add(new MustChangePassword);
+
+        $group
+            ->get('/days', App\Controllers\Days::class . ':list')
+            ->add(new RequirePermission(Permissions::DAYS_STATUS))
+            ->add(new MustChangePassword);
+
+        $group
+            ->post('/days/close', App\Controllers\Days::class . ':close')
+            ->add(new RequirePermission(Permissions::DAYS_CLOSE))
+            ->add(new MustChangePassword);
+
+        $group
+            ->post('/days/reopen', App\Controllers\Days::class . ':reopen')
+            ->add(new RequirePermission(Permissions::DAYS_REOPEN))
+            ->add(new MustChangePassword);
+
     })->add($jwtAuth);
 
     // ---- AUTHENTICATION ROUTES ----

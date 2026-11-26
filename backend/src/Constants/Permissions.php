@@ -80,6 +80,11 @@ class Permissions
     public const SALES_RETRIEVE = 'sales:retrieve';
     public const SALES_CREATE = 'sales:create';
 
+    // Sales (Business Day Closing & Reopening)
+    public const DAYS_STATUS = 'days:status';
+    public const DAYS_CLOSE = 'days:close';
+    public const DAYS_REOPEN = 'days:reopen';
+
     // Stock adjustments
     public const ADJUSTMENTS_LIST = 'adjustments:list';
     public const ADJUSTMENTS_CREATE = 'adjustments:create';
@@ -123,6 +128,8 @@ class Permissions
         self::SALES_LIST,
         self::SALES_RETRIEVE,
 
+        self::DAYS_STATUS,
+
         self::INVENTORY_VIEW,
 
         self::SUPPLIERS_VIEW,
@@ -158,6 +165,9 @@ class Permissions
         self::SALES_RETRIEVE,
         self::SALES_CREATE,
 
+        self::DAYS_STATUS,
+        self::DAYS_CLOSE,
+
         self::INVENTORY_VIEW,
 
         self::SUPPLIERS_LIST,
@@ -191,6 +201,9 @@ class Permissions
         self::SALES_RETRIEVE,
         self::SALES_CREATE,
 
+        self::DAYS_STATUS,
+        self::DAYS_CLOSE,
+
         self::INVENTORY_VIEW,
 
         self::SUPPLIERS_LIST,
@@ -222,6 +235,8 @@ class Permissions
 
         self::SALES_LIST,
         self::SALES_RETRIEVE,
+
+        self::DAYS_STATUS,
 
         self::INVENTORY_VIEW,
 
@@ -295,6 +310,10 @@ class Permissions
         self::SALES_LIST,
         self::SALES_RETRIEVE,
         self::SALES_CREATE,
+
+        self::DAYS_STATUS,
+        self::DAYS_CLOSE,
+        self::DAYS_REOPEN,
 
         self::INVENTORY_VIEW,
 

@@ -46,7 +46,7 @@ CREATE TABLE IF NOT EXISTS sale_lines (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Daily closes
-CREATE TABLE daily_closes (
+CREATE TABLE IF NOT EXISTS daily_closes (
   id          INT UNSIGNED NOT NULL AUTO_INCREMENT,
   location_id INT UNSIGNED NOT NULL,
   close_date  DATE NOT NULL,

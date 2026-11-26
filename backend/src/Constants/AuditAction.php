@@ -69,6 +69,10 @@ final class AuditAction
     // Sales
     public const SALE_CREATED = 'sale.created';
 
+    // Sales (Business Day Closing & Reopening)
+    public const DAY_CLOSED = 'day.closed';
+    public const DAY_REOPENED = 'day.reopened';
+
     // Stock adjustments
     public const ADJUSTMENT_CREATED = 'adjustment.created';
     public const ADJUSTMENT_APPROVED = 'adjustment.approved';
