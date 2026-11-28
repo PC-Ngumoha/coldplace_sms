@@ -71,3 +71,21 @@ export function getErrorMessage(error: unknown): string {
   }
   return "Operation failed. Please try again later.";
 }
+
+export function formatMoney(value: string | null | undefined): string | null {
+  if (value == null) return null;
+  const match = value.trim().match(/^(\d+)(?:\.(\d*))?$/);
+  if (!match) return `₦${value}`;
+
+  const whole = match[1];
+  const fraction = match[2] ?? "";
+
+  const totalInKobo =
+    BigInt(`${whole}${fraction.padEnd(2, "0").slice(0, 2)}` || "0") +
+    (fraction.length > 2 && fraction[2] >= "5" ? 1n : 0n);
+
+  const naira = (totalInKobo / 100n).toString();
+  const kobo = (totalInKobo % 100n).toString().padStart(2, "0");
+
+  return `₦${naira.replace(/\B(?=(\d{3})+(?!\d))/g, ",")}.${kobo}`;
+}

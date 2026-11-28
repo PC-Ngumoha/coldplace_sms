@@ -81,25 +81,25 @@ export const PRICES_PATHS = {
 };
 
 export const CUSTOMERS_PATHS = {
-  list: () => "/customers",
-  retrieve: (customerId: number) => `/customers/${customerId}`,
-  search: (q: string) => `/customers/search?q=${q}`,
-  update: (customerId: number) => `/customers/${customerId}`,
-  activate: (customerId: number) => `/customers/${customerId}/activate`,
-  deactivate: (customerId: number) => `/customers/${customerId}/deactivate`,
+  list: () => "/api/customers",
+  retrieve: (customerId: number) => `/api/customers/${customerId}`,
+  search: (q: string) => `/api/customers/search?q=${q}`,
+  update: (customerId: number) => `/api/customers/${customerId}`,
+  activate: (customerId: number) => `/api/customers/${customerId}/activate`,
+  deactivate: (customerId: number) => `/api/customers/${customerId}/deactivate`,
 };
 
 export const SALES_PATHS = {
-  list: (from: string, to: string) => `/sales?from=${from}&to=${to}`,
-  retrieve: (saleId: number) => `/sales/${saleId}`,
-  create: () => `/sales`,
+  list: (from: string, to: string) => `/api/sales?from=${from}&to=${to}`,
+  retrieve: (saleId: number) => `/api/sales/${saleId}`,
+  create: () => `/api/sales`,
 };
 
 export const DAY_PATHS = {
   status: (locationId: number, date: string) =>
-    `/days/status?location_id=${locationId}&date=${date}`,
+    `/api/days/status?location_id=${locationId}&date=${date}`,
   list: (from: string, to: string, locationId: number) =>
-    `/days?from=${from}&to=${to}&location_id=${locationId}`,
-  close: () => "/days/close",
-  reopen: () => "/days/reopen",
+    `/api/days?from=${from}&to=${to}&location_id=${locationId}`,
+  close: () => "/api/days/close",
+  reopen: () => "/api/days/reopen",
 };

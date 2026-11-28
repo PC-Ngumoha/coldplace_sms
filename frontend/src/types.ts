@@ -273,7 +273,7 @@ export interface SetPriceResult {
 }
 
 // CUSTOMERS & SALES & DAY CLOSING / REOPENING
-type DayState = "open" | "closed" | "locked" | "future";
+export type DayState = "open" | "closed" | "locked" | "future";
 
 export interface DayWindow {
   earliest: string;
@@ -329,8 +329,8 @@ export interface DayActionResult {
   date: string;
 }
 
-type CustomerType = "individual" | "business";
-type CustomerStatus = "active" | "inactive";
+export type CustomerType = "individual" | "business";
+export type CustomerStatus = "active" | "inactive";
 
 export interface Customer {
   id: number;
@@ -418,7 +418,7 @@ export interface AmbiguousCustomerError {
   }[];
 }
 
-type VarianceLabel = "profit" | "loss" | "at_set_price" | "no_set_price";
+export type VarianceLabel = "profit" | "loss" | "at_set_price" | "no_set_price";
 
 export interface Sale {
   id: number;

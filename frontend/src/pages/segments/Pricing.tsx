@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/drawer";
 import { Can } from "@/components/permissions";
 import { usePermissions } from "@/hooks/use_permissions";
-import { getErrorMessage } from "@/lib/utils";
+import { getErrorMessage, formatMoney } from "@/lib/utils";
 import { pricesApi } from "@/services/Pricesapi";
 import { showError, showSuccess } from "@/services/toasts";
 import type { PriceHistoryItem, ProductPrice, SetPrice } from "@/types";
@@ -27,24 +27,6 @@ import {
 const PAGE_SIZE = 10;
 const SET_PRICE = "prices:set";
 const VIEW_HISTORY = "prices:history";
-
-function formatMoney(value: string | null | undefined): string {
-  if (value == null) return "Not set";
-  const match = value.trim().match(/^(\d+)(?:\.(\d*))?$/);
-  if (!match) return `₦${value}`;
-
-  const whole = match[1];
-  const fraction = match[2] ?? "";
-
-  const totalInKobo =
-    BigInt(`${whole}${fraction.padEnd(2, "0").slice(0, 2)}` || "0") +
-    (fraction.length > 2 && fraction[2] >= "5" ? 1n : 0n);
-
-  const naira = (totalInKobo / 100n).toString();
-  const kobo = (totalInKobo % 100n).toString().padStart(2, "0");
-
-  return `₦${naira.replace(/\B(?=(\d{3})+(?!\d))/g, ",")}.${kobo}`;
-}
 
 function toKobo(value: string): bigint {
   const [whole, fraction = ""] = value.split(".");
@@ -66,7 +48,7 @@ function priceChange(olderPrice: string, newerPrice: string) {
   const absolute = difference < 0n ? -difference : difference;
   const tenths = (absolute * 1000n + older / 2n) / older;
   const percentage = `${tenths / 10n}.${tenths % 10n}%`;
-  const amount = `${difference > 0n ? "+" : "−"}${formatMoney((absolute / 100n).toString() + "." + (absolute % 100n).toString().padStart(2, "0")).slice(1)}`;
+  const amount = `${difference > 0n ? "+" : "−"}${formatMoney((absolute / 100n).toString() + "." + (absolute % 100n).toString().padStart(2, "0"))!.slice(1)}`;
   return {
     label: `${amount} (${difference > 0n ? "+" : "−"}${percentage})`,
     increased: difference > 0n,
@@ -235,7 +217,7 @@ function PriceHistoryDrawer({
                           />
                           <div className="flex flex-wrap items-center gap-2">
                             <span className="text-lg font-semibold text-slate-900">
-                              {formatMoney(entry.price)}
+                              {formatMoney(entry.price) ?? "Not Set"}
                             </span>
                             <span className="text-sm text-slate-500">
                               / {entry.unit_code}
@@ -601,7 +583,7 @@ export default function Pricing() {
                       <span className="mb-1 block text-xs text-slate-400 md:hidden">
                         Price / kg
                       </span>
-                      {formatMoney(kg?.price)}
+                      {formatMoney(kg?.price) ?? "Not Set"}
                     </div>
                     <div className="text-sm md:text-center">
                       <span className="mb-1 block text-xs text-slate-400 md:hidden">
@@ -610,10 +592,10 @@ export default function Pricing() {
                       {!carton ? (
                         <span className="text-slate-400">—</span>
                       ) : carton.price !== null ? (
-                        formatMoney(carton.price)
+                        (formatMoney(carton.price) ?? "Not Set")
                       ) : carton.derived_price !== null ? (
                         <span className="text-slate-400">
-                          {formatMoney(carton.derived_price)}{" "}
+                          {formatMoney(carton.derived_price) ?? "Not Set"}{" "}
                           <span className="block text-xs">≈ from kg price</span>
                         </span>
                       ) : (
